@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Atendimento Escolar</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 25px 0;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        input[type="date"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        .checklist-item:hover {
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-item label {
+            flex: 1;
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+        
+        .date-input {
+            margin-left: 15px;
+            flex: 0 0 150px;
+        }
+        
+        .date-input input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-color: #ddd;
+            flex-shrink: 0;
+        }
+        
+        .status-pendente {
+            background-color: var(--warning-color);
+        }
+        
+        .status-concluido {
+            background-color: var(--success-color);
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--secondary-color);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #27ae60);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .progress-container {
+            margin-bottom: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 12px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--success-color), #27ae60);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .school-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .school-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .school-card h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .school-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        
+        .selected-school {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .school-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .school-actions {
+            display: none;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .school-actions.active {
+            display: flex;
+        }
+        
+        .school-actions .btn {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+        
+        .checklist-section {
+            display: none;
+        }
+        
+        .checklist-section.active {
+            display: block;
+        }
+        
+        .saved-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: var(--success-color);
+            color: white;
+            display: none;
+        }
+        
+        .saved-status.visible {
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .checklist-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .date-input {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .date-input input {
+                width: 100%;
+            }
+            
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .school-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Checklist de Atendimento Escolar</h1>
+            <p class="subtitle">Sistema de verificação e registro de atendimentos técnicos</p>
+        </header>
+        
+        <div class="card">
+            <h2 class="section-title">Selecionar Escola</h2>
+            <div class="schools-grid" id="schools-list">
+                <!-- As escolas serão inseridas aqui via JavaScript -->
+            </div>
+        </div>
+        
+        <div class="checklist-section" id="checklist-section">
+            <div class="card">
+                <div class="form-group">
+                    <label for="escola-selecionada">Escola Selecionada:</label>
+                    <input type="text" id="escola-selecionada" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="data-atendimento">Data do Atendimento:</label>
+                    <input type="date" id="data-atendimento" name="data-atendimento">
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-text" id="progress-text">0% Concluído</div>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">Verificações de Infraestrutura</h2>
+                
+                <div class="checklist-item">
+                    <span class="status-indicator status-pendente"></span>
+                    <input type="checkbox" id="internet" name="internet">
+                    <label for="internet">Verificar conexão de internet</label>
+                    <div class="date-input">
+                        <input type="date" id="data-internet" class="data-checagem">
+                    </div>
+                </div>
+                
+                <div class="checklist-item">
+                    <span class="status-indicator status-pendente"></span>
+                    <input type="checkbox" id="voip" name="voip">
+                    <label for="voip">Verificar telefonia VoIP</label>
+                    <div class="date-input">
+                        <input type="date" id="data-voip" class="data-checagem">
+                    </div>
+                </div>
+                
+                <div class="checklist-item">
+                    <span class="status-indicator status-pendente"></span>
+                    <input type="checkbox" id="adm" name="adm">
+                    <label for="adm">Verificar administrativo</label>
+                    <div class="date-input">
+                        <input type="date" id="data-adm" class="data-checagem">
+                    </div>
+                </div>
+                
+                <div class="checklist-item">
+                    <span class="status-indicator status-pendente"></span>
+                    <input type="checkbox" id="medidor" name="medidor">
+                    <label for="medidor">Verificar a instalação do medidor</label>
+                    <div class="date-input">
+                        <input type="date" id="data-medidor" class="data-checagem">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">Inventário de Equipamentos</h2>
+                
+                <div class="form-group">
+                    <label for="computadores-adm">Quantidade de computadores no ADM:</label>
+                    <input type="number" id="computadores-adm" name="computadores-adm" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="computadores-lab">Quantidade de computadores no Laboratório:</label>
+                    <input type="number" id="computadores-lab" name="computadores-lab" min="0">
+                </div>
+                
+                <div class="checklist-item">
+                    <span class="status-indicator status-pendente"></span>
+                    <input type="checkbox" id="revisao-lab" name="revisao-lab">
+                    <label for="revisao-lab">Revisão do Laboratório</label>
+                    <div class="date-input">
+                        <input type="date" id="data-revisao-lab" class="data-checagem">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="section-title">Observações</h2>
+                <div class="form-group">
+                    <textarea id="observacoes" name="observacoes" placeholder="Digite aqui quaisquer observações relevantes sobre o atendimento..."></textarea>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" id="salvar-checklist">Salvar Checklist</button>
+                <button class="btn btn-success" id="exportar-checklist">Exportar para PDF</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Sistema de Checklist de Atendimento Escolar &copy; 2023</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lista de escolas
+            const escolas = [
+                "COLÉGIO ESTADUAL COELHO E CAMPOS",
+                "CENTRO DE EXCELÊNCIA EDELZIO VIEIRA DE MELO",
+                "COLÉGIO ESTADUAL IRMÃ MARIA CLEMÊNCIA",
+                "ESCOLA ESTADUAL MARIA DA GLORIA MOTA CABRAL",
+                "ESCOLA ESTADUAL MONSENHOR ERALDO BARBOSA DE ALMEIDA",
+                "ESCOLA ESTADUAL PROFª MARIA BERENICE B. ALVES",
+                "CENTRO ESTADUAL DE EDUCAÇÃO PROFISSIONAL GOVERNADOR MARCELO DÉDA CHAGAS",
+                "COLÉGIO ESTADUAL POETA JOSÉ SAMPAIO",
+                "CENTRO DE EXCELÊNCIA DOUTOR JOÃO DE MELO PRADO",
+                "CENTRO DE EXCELÊNCIA PROFESSORA MARIA CONCEIÇÃO DE SANTANA",
+                "CENTRO DE EXCELÊNCIA SENADOR GONÇALO ROLLEMBERG",
+                "COLÉGIO ESTADUAL JOSÉ DE MATOS TELES",
+                "COLÉGIO ESTADUAL JOSÉ AMARAL LEMOS",
+                "CENTRO DE EXCELÊNCIA LEANDRO MACIEL",
+                "CENTRO DE EXCELÊNCIA 'DR. EDELZIO VIEIRA DE MELO'",
+                "CENTRO DE EXCELÊNCIA CORONEL JOSÉ JOAQUIM BARBOSA",
+                "COLÉGIO ESTADUAL FRANCISCO FIGUEIREDO",
+                "CENTRO DE EXCELÊNCIA DE EDUCAÇÃO EM TEMPO INTEGRAL NAÇÕES UNIDAS",
+                "ESCOLA ESTADUAL MILTON AZEVEDO",
+                "COLÉGIO ESTADUAL ALCEBÍADES PAES",
+                "CENTRO DE EXCELÊNCIA DE EDUCAÇÃO EM TEMPO INTEGRAL MARIA MONTESSORI",
+                "COLÉGIO ESTADUAL MANOEL ALCINO DO NASCIMENTO",
+                "CENTRO DE EXCELÊNCIA MARIA DAS GRAÇAS MENEZES MOURA",
+                "CENTRO DE EXCELÊNCIA EDUCAÇÃO PROFISSIONALIZANTE BERILA ALVES DE ALMEIDA",
+                "COLÉGIO ESTADUAL GENERAL CALAZANS",
+                "COLÉGIO ESTADUAL PROFESSOR FERNANDO AZEVEDO"
+            ];
+            
+            // Objeto para armazenar os dados de cada escola
+            const dadosEscolas = {};
+            
+            // Inicializar dados para cada escola
+            escolas.forEach(escola => {
+                dadosEscolas[escola] = {
+                    dataAtendimento: '',
+                    internet: { verificado: false, dataChecagem: '' },
+                    voip: { verificado: false, dataChecagem: '' },
+                    adm: { verificado: false, dataChecagem: '' },
+                    medidor: { verificado: false, dataChecagem: '' },
+                    computadoresAdm: '',
+                    computadoresLab: '',
+                    revisaoLab: { verificado: false, dataChecagem: '' },
+                    observacoes: ''
+                };
+            });
+            
+            // Preencher a lista de escolas
+            const schoolsList = document.getElementById('schools-list');
+            escolas.forEach((escola, index) => {
+                const schoolCard = document.createElement('div');
+                schoolCard.className = 'school-card';
+                schoolCard.innerHTML = `
+                    <div class="school-link" data-school="${escola}">
+                        <h3>${escola}</h3>
+                        <div class="school-info">
+                            <span>Clique para selecionar</span>
+                            <span class="saved-status" id="status-${index}">Salvo</span>
+                        </div>
+                    </div>
+                    <div class="school-actions" id="actions-${index}">
+                        <button class="btn btn-primary btn-salvar-individual" data-school="${escola}">Salvar</button>
+                        <button class="btn btn-success btn-exportar-individual" data-school="${escola}">Exportar</button>
+                    </div>
+                `;
+                schoolsList.appendChild(schoolCard);
+            });
+            
+            // Definir data atual como padrão
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('data-atendimento').value = hoje;
+            
+            // Atualizar indicadores de status e progresso
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const dataChecagens = document.querySelectorAll('.data-checagem');
+            
+            // Definir data atual para todos os campos de data de checagem
+            dataChecagens.forEach(input => {
+                input.value = hoje;
+            });
+            
+            function atualizarProgresso() {
+                const total = checkboxes.length;
+                const concluidos = Array.from(checkboxes).filter(cb => cb.checked).length;
+                const percentual = Math.round((concluidos / total) * 100);
+                
+                document.getElementById('progress-bar').style.width = `${percentual}%`;
+                document.getElementById('progress-text').textContent = `${percentual}% Concluído`;
+            }
+            
+            checkboxes.forEach(checkbox => {
+                const statusIndicator = checkbox.parentElement.querySelector('.status-indicator');
+                const dataInput = checkbox.parentElement.querySelector('.data-checagem');
+                
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        statusIndicator.classList.add('status-concluido');
+                        statusIndicator.classList.remove('status-pendente');
+                        // Definir data atual se não estiver definida
+                        if (!dataInput.value) {
+                            dataInput.value = hoje;
+                        }
+                    } else {
+                        statusIndicator.classList.add('status-pendente');
+                        statusIndicator.classList.remove('status-concluido');
+                    }
+                    atualizarProgresso();
+                });
+                
+                // Inicializar status
+                if (checkbox.checked) {
+                    statusIndicator.classList.add('status-concluido');
+                    statusIndicator.classList.remove('status-pendente');
+                } else {
+                    statusIndicator.classList.add('status-pendente');
+                    statusIndicator.classList.remove('status-concluido');
+                }
+            });
+            
+            // Inicializar barra de progresso
+            atualizarProgresso();
+            
+            // Variável para armazenar a escola atualmente selecionada
+            let escolaAtual = '';
+            
+            // Selecionar escola
+            document.querySelectorAll('.school-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    escolaAtual = this.getAttribute('data-school');
+                    
+                    // Atualizar o campo da escola selecionada
+                    document.getElementById('escola-selecionada').value = escolaAtual;
+                    
+                    // Destacar a escola selecionada
+                    document.querySelectorAll('.school-card').forEach(card => {
+                        card.classList.remove('selected-school');
+                    });
+                    this.parentElement.classList.add('selected-school');
+                    
+                    // Mostrar botões de ação para a escola selecionada
+                    document.querySelectorAll('.school-actions').forEach(actions => {
+                        actions.classList.remove('active');
+                    });
+                    
+                    // Encontrar e mostrar os botões da escola selecionada
+                    const index = Array.from(document.querySelectorAll('.school-link')).indexOf(this);
+                    document.getElementById(`actions-${index}`).classList.add('active');
+                    
+                    // Carregar dados salvos da escola selecionada, se existirem
+                    carregarDadosEscola(escolaAtual);
+                    
+                    // Mostrar o checklist
+                    document.getElementById('checklist-section').classList.add('active');
+                    
+                    // Rolar para o checklist
+                    document.getElementById('checklist-section').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Função para carregar dados de uma escola específica
+            function carregarDadosEscola(escola) {
+                const dados = dadosEscolas[escola];
+                
+                if (dados.dataAtendimento) {
+                    document.getElementById('data-atendimento').value = dados.dataAtendimento;
+                }
+                
+                document.getElementById('internet').checked = dados.internet.verificado;
+                document.getElementById('data-internet').value = dados.internet.dataChecagem;
+                
+                document.getElementById('voip').checked = dados.voip.verificado;
+                document.getElementById('data-voip').value = dados.voip.dataChecagem;
+                
+                document.getElementById('adm').checked = dados.adm.verificado;
+                document.getElementById('data-adm').value = dados.adm.dataChecagem;
+                
+                document.getElementById('medidor').checked = dados.medidor.verificado;
+                document.getElementById('data-medidor').value = dados.medidor.dataChecagem;
+                
+                document.getElementById('computadores-adm').value = dados.computadoresAdm;
+                document.getElementById('computadores-lab').value = dados.computadoresLab;
+                
+                document.getElementById('revisao-lab').checked = dados.revisaoLab.verificado;
+                document.getElementById('data-revisao-lab').value = dados.revisaoLab.dataChecagem;
+                
+                document.getElementById('observacoes').value = dados.observacoes;
+                
+                // Atualizar status dos checkboxes
+                checkboxes.forEach(checkbox => {
+                    const statusIndicator = checkbox.parentElement.querySelector('.status-indicator');
+                    if (checkbox.checked) {
+                        statusIndicator.classList.add('status-concluido');
+                        statusIndicator.classList.remove('status-pendente');
+                    } else {
+                        statusIndicator.classList.add('status-pendente');
+                        statusIndicator.classList.remove('status-concluido');
+                    }
+                });
+                
+                atualizarProgresso();
+            }
+            
+            // Função para salvar dados de uma escola específica
+            function salvarDadosEscola(escola) {
+                dadosEscolas[escola] = {
+                    dataAtendimento: document.getElementById('data-atendimento').value,
+                    internet: {
+                        verificado: document.getElementById('internet').checked,
+                        dataChecagem: document.getElementById('data-internet').value
+                    },
+                    voip: {
+                        verificado: document.getElementById('voip').checked,
+                        dataChecagem: document.getElementById('data-voip').value
+                    },
+                    adm: {
+                        verificado: document.getElementById('adm').checked,
+                        dataChecagem: document.getElementById('data-adm').value
+                    },
+                    medidor: {
+                        verificado: document.getElementById('medidor').checked,
+                        dataChecagem: document.getElementById('data-medidor').value
+                    },
+                    computadoresAdm: document.getElementById('computadores-adm').value,
+                    computadoresLab: document.getElementById('computadores-lab').value,
+                    revisaoLab: {
+                        verificado: document.getElementById('revisao-lab').checked,
+                        dataChecagem: document.getElementById('data-revisao-lab').value
+                    },
+                    observacoes: document.getElementById('observacoes').value
+                };
+                
+                // Mostrar status de salvamento
+                const index = escolas.indexOf(escola);
+                const statusElement = document.getElementById(`status-${index}`);
+                statusElement.classList.add('visible');
+                
+                // Ocultar status após 3 segundos
+                setTimeout(() => {
+                    statusElement.classList.remove('visible');
+                }, 3000);
+                
+                console.log(`Dados salvos para ${escola}:`, dadosEscolas[escola]);
+            }
+            
+            // Função para exportar para PDF
+            function exportarParaPDF(escola) {
+                // Verificar se existem dados salvos para esta escola
+                if (dadosEscolas[escola].dataAtendimento === '') {
+                    alert(`Não existem dados salvos para ${escola}. Por favor, salve o checklist primeiro.`);
+                    return;
+                }
+                
+                // Simulação de exportação para PDF
+                const dados = dadosEscolas[escola];
+                
+                // Criar conteúdo do PDF
+                const conteudoPDF = `
+                    <html>
+                    <head>
+                        <title>Checklist - ${escola}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+                            h2 { color: #34495e; margin-top: 20px; }
+                            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                            .status { padding: 4px 8px; border-radius: 4px; }
+                            .concluido { background-color: #2ecc71; color: white; }
+                            .pendente { background-color: #f39c12; color: white; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Checklist de Atendimento - ${escola}</h1>
+                        <p><strong>Data do Atendimento:</strong> ${dados.dataAtendimento}</p>
+                        
+                        <h2>Verificações de Infraestrutura</h2>
+                        <table>
+                            <tr>
+                                <th>Item</th>
+                                <th>Status</th>
+                                <th>Data da Verificação</th>
+                            </tr>
+                            <tr>
+                                <td>Conexão de Internet</td>
+                                <td><span class="status ${dados.internet.verificado ? 'concluido' : 'pendente'}">${dados.internet.verificado ? 'Concluído' : 'Pendente'}</span></td>
+                                <td>${dados.internet.dataChecagem}</td>
+                            </tr>
+                            <tr>
+                                <td>Telefonia VoIP</td>
+                                <td><span class="status ${dados.voip.verificado ? 'concluido' : 'pendente'}">${dados.voip.verificado ? 'Concluído' : 'Pendente'}</span></td>
+                                <td>${dados.voip.dataChecagem}</td>
+                            </tr>
+                            <tr>
+                                <td>Administrativo</td>
+                                <td><span class="status ${dados.adm.verificado ? 'concluido' : 'pendente'}">${dados.adm.verificado ? 'Concluído' : 'Pendente'}</span></td>
+                                <td>${dados.adm.dataChecagem}</td>
+                            </tr>
+                            <tr>
+                                <td>Instalação do Medidor</td>
+                                <td><span class="status ${dados.medidor.verificado ? 'concluido' : 'pendente'}">${dados.medidor.verificado ? 'Concluído' : 'Pendente'}</span></td>
+                                <td>${dados.medidor.dataChecagem}</td>
+                            </tr>
+                        </table>
+                        
+                        <h2>Inventário de Equipamentos</h2>
+                        <p><strong>Computadores no ADM:</strong> ${dados.computadoresAdm || '0'}</p>
+                        <p><strong>Computadores no Laboratório:</strong> ${dados.computadoresLab || '0'}</p>
+                        <p><strong>Revisão do Laboratório:</strong> <span class="status ${dados.revisaoLab.verificado ? 'concluido' : 'pendente'}">${dados.revisaoLab.verificado ? 'Concluída' : 'Pendente'}</span> (${dados.revisaoLab.dataChecagem})</p>
+                        
+                        <h2>Observações</h2>
+                        <p>${dados.observacoes || 'Nenhuma observação registrada.'}</p>
+                        
+                        <p style="margin-top: 30px; text-align: right; font-style: italic;">
+                            Gerado em ${new Date().toLocaleDateString('pt-BR')}
+                        </p>
+                    </body>
+                    </html>
+                `;
+                
+                // Abrir nova janela com o conteúdo do PDF
+                const janelaPDF = window.open('', '_blank');
+                janelaPDF.document.write(conteudoPDF);
+                janelaPDF.document.close();
+                
+                // Dar opção de imprimir (que pode ser salvo como PDF)
+                setTimeout(() => {
+                    if (confirm('Deseja imprimir o checklist?')) {
+                        janelaPDF.print();
+                    }
+                }, 500);
+            }
+            
+            // Salvar checklist para a escola atual
+            document.getElementById('salvar-checklist').addEventListener('click', function() {
+                if (!escolaAtual) {
+                    alert('Por favor, selecione uma escola primeiro.');
+                    return;
+                }
+                
+                salvarDadosEscola(escolaAtual);
+                alert(`Checklist para ${escolaAtual} salvo com sucesso!`);
+            });
+            
+            // Exportar checklist para a escola atual
+            document.getElementById('exportar-checklist').addEventListener('click', function() {
+                if (!escolaAtual) {
+                    alert('Por favor, selecione uma escola primeiro.');
+                    return;
+                }
+                
+                exportarParaPDF(escolaAtual);
+            });
+            
+            // Salvar individualmente para cada escola
+            document.querySelectorAll('.btn-salvar-individual').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const escola = this.getAttribute('data-school');
+                    
+                    // Se a escola não é a atual, carregar seus dados primeiro
+                    if (escola !== escolaAtual) {
+                        escolaAtual = escola;
+                        carregarDadosEscola(escola);
+                    }
+                    
+                    salvarDadosEscola(escola);
+                });
+            });
+            
+            // Exportar individualmente para cada escola
+            document.querySelectorAll('.btn-exportar-individual').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const escola = this.getAttribute('data-school');
+                    exportarParaPDF(escola);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
