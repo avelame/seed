@@ -345,9 +345,9 @@
   <div class="loading" id="loading"><div class="spinner"></div><p>Gerando PDF...</p></div>
 
 <script>
-/* ============================
-   Dados iniciais / variáveis
-   ============================ */
+// ============================
+// Dados iniciais / variáveis
+// ============================
 let allEscalas = {};
 let observacoes = [];
 
@@ -363,16 +363,48 @@ const diasDaSemana = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
 
 function getStorageKey(){ return `escala_plantoes_data`; }
 
-/* ============================
-   Inicialização UI (meses/anos)
-   ============================ */
+// ============================
+// Funções auxiliares de data (CORRIGIDAS)
+// ============================
+function parseDate(dateString) {
+  if (!dateString) return null;
+  const parts = dateString.split('-');
+  if (parts.length !== 3) return null;
+  
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  
+  // Criar data sem problemas de fuso horário
+  return new Date(year, month, day);
+}
+
+function formatDateBR(date) {
+  if (!date || isNaN(date.getTime())) return '';
+  
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}/${month}/${year}`;
+}
+
+function getDaysInMonth(month, year) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+// ============================
+// Inicialização UI (meses/anos)
+// ============================
 function popularSelectsMesAno() {
   const monthSelect = document.getElementById('month-select');
   const yearSelect = document.getElementById('year-select');
 
   monthSelect.innerHTML = '';
   monthNames.forEach((m,i) => {
-    const opt = document.createElement('option'); opt.value = i; opt.textContent = m;
+    const opt = document.createElement('option'); 
+    opt.value = i; 
+    opt.textContent = m;
     monthSelect.appendChild(opt);
   });
   monthSelect.value = currentMonth;
@@ -380,7 +412,9 @@ function popularSelectsMesAno() {
   // anos (de -2 a +2 anos)
   yearSelect.innerHTML = '';
   for (let y = currentYear - 2; y <= currentYear + 2; y++) {
-    const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+    const opt = document.createElement('option'); 
+    opt.value = y; 
+    opt.textContent = y;
     yearSelect.appendChild(opt);
   }
   yearSelect.value = currentYear;
@@ -391,7 +425,9 @@ function popularSelectsMesAno() {
     if (!s) return;
     s.innerHTML = '<option value="">Todos</option>';
     monthNames.forEach((m,i) => {
-      const opt = document.createElement('option'); opt.value = i; opt.textContent = m;
+      const opt = document.createElement('option'); 
+      opt.value = i; 
+      opt.textContent = m;
       s.appendChild(opt);
     });
     if (id === 'filter-month') {
@@ -406,7 +442,9 @@ function popularSelectsMesAno() {
     if (!s) return;
     s.innerHTML = '';
     for (let y = currentYear - 2; y <= currentYear + 2; y++){
-      const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+      const opt = document.createElement('option'); 
+      opt.value = y; 
+      opt.textContent = y;
       s.appendChild(opt);
     }
     if (id === 'filter-year') s.value = currentYear;
@@ -414,9 +452,9 @@ function popularSelectsMesAno() {
   });
 }
 
-/* ============================
-   Escalas: obter/montar
-   ============================ */
+// ============================
+// Escalas: obter/montar
+// ============================
 function getEscalas(month, year) {
   const key = `${year}_${month}`;
   if (!allEscalas[key]) {
@@ -429,11 +467,14 @@ function getEscalas(month, year) {
   }
   return allEscalas[key];
 }
-function getCurrentEscalas(){ return getEscalas(currentMonth, currentYear); }
 
-/* ============================
-   Contadores / notificações
-   ============================ */
+function getCurrentEscalas(){ 
+  return getEscalas(currentMonth, currentYear); 
+}
+
+// ============================
+// Contadores / notificações
+// ============================
 function mostrarNotificacao(mensagem, isError=false, isWarning=false) {
   const notification = document.getElementById('notification');
   notification.textContent = mensagem;
@@ -443,14 +484,16 @@ function mostrarNotificacao(mensagem, isError=false, isWarning=false) {
   notification.classList.add('show');
   setTimeout(()=> notification.classList.remove('show'), 5000);
 }
+
 function mostrarLoading(mostrar){
   const l = document.getElementById('loading');
-  if (mostrar) l.classList.add('show'); else l.classList.remove('show');
+  if (mostrar) l.classList.add('show'); 
+  else l.classList.remove('show');
 }
 
-/* ============================
-   Salvar / Carregar / Reset
-   ============================ */
+// ============================
+// Salvar / Carregar / Reset
+// ============================
 function salvarDados() {
   try {
     const dados = { allEscalas, observacoes, dataSalvamento: new Date().toISOString() };
@@ -462,6 +505,7 @@ function salvarDados() {
     mostrarNotificacao('Erro ao salvar dados!', true);
   }
 }
+
 function carregarDados() {
   try {
     const raw = localStorage.getItem(getStorageKey());
@@ -484,71 +528,74 @@ function carregarDados() {
     mostrarNotificacao('Erro ao carregar dados!', true);
   }
 }
+
 function redefinirDados() {
   if (!confirm('Tem certeza que deseja redefinir todos os dados para este mês/ano?')) return;
   const key = `${currentYear}_${currentMonth}`;
-  allEscalas[key] = { "HUSE Diurno": [], "HUSE Noturno": [], "HRP Diurno": [], "HRP Noturno": [] };
+  allEscalas[key] = { 
+    "HUSE Diurno": [], 
+    "HUSE Noturno": [], 
+    "HRP Diurno": [], 
+    "HRP Noturno": [] 
+  };
   // remover observações deste mês/ano
   observacoes = observacoes.filter(obs => {
-    const dt = new Date(obs.data);
-    return !(dt.getMonth() === currentMonth && dt.getFullYear() === currentYear);
+    const dt = parseDate(obs.data);
+    return !(dt && dt.getMonth() === currentMonth && dt.getFullYear() === currentYear);
   });
   criarTabela();
   salvarDados();
   mostrarNotificacao('Dados redefinidos com sucesso!');
 }
 
-/* ============================
-   Contar trocas HRP (filtradas pelo mês/ano visualizado)
-   ============================ */
+// ============================
+// Contar trocas HRP (filtradas pelo mês/ano visualizado)
+// ============================
 function contarTrocasHRP() {
   let c = 0;
   observacoes.forEach(o => {
-    const extrair = (dstr) => {
-      if (!dstr) return null;
-      const parts = dstr.split('-');
-      if (parts.length >= 3) {
-        const y = parseInt(parts[0],10);
-        const m = parseInt(parts[1],10) - 1;
-        if (!isNaN(y) && !isNaN(m)) return { m, y };
-      }
-      const dt = new Date(dstr);
-      if (!isNaN(dt.getTime())) return { m: dt.getMonth(), y: dt.getFullYear() };
-      return null;
-    };
-    const a = extrair(o.data);
-    const b = extrair(o.dataTroca);
-    const matches = (a && a.m === currentMonth && a.y === currentYear) || (b && b.m === currentMonth && b.y === currentYear);
+    const dataOrigem = parseDate(o.data);
+    const dataTroca = parseDate(o.dataTroca);
+    
+    const matches = (dataOrigem && dataOrigem.getMonth() === currentMonth && dataOrigem.getFullYear() === currentYear) || 
+                   (dataTroca && dataTroca.getMonth() === currentMonth && dataTroca.getFullYear() === currentYear);
+    
     if (matches) {
-      if ((o.hospital && o.hospital.includes('HRP')) || (o.hospitalTroca && o.hospitalTroca.includes && o.hospitalTroca.includes('HRP')) || (o.hospitalTroca && o.hospitalTroca.includes('HRP'))) {
+      if ((o.hospital && o.hospital.includes('HRP')) || 
+          (o.hospitalTroca && o.hospitalTroca.includes('HRP'))) {
         c++;
       }
     }
   });
   return c;
 }
+
 function atualizarContadores(){
   document.getElementById('hrp-trocas-count').textContent = contarTrocasHRP();
 }
 
-/* ============================
-   Detectar conflitos / transições
-   ============================ */
+// ============================
+// Detectar conflitos / transições
+// ============================
 function detectarConflitos() {
   const escalas = getCurrentEscalas();
   const conflitos = {};
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+  
   for (let dia = 1; dia <= daysInMonth; dia++) {
     const plantoes = [];
-    Object.keys(escalas).forEach(h => { if (escalas[h].includes(dia)) plantoes.push(h); });
+    Object.keys(escalas).forEach(h => { 
+      if (escalas[h].includes(dia)) plantoes.push(h); 
+    });
     if (plantoes.length > 1) conflitos[dia] = plantoes;
   }
   return conflitos;
 }
+
 function obterDiasComTransicaoDeslocamento() {
   const escalas = getCurrentEscalas();
   const dias = new Set();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
   const noturnos = ["HUSE Noturno","HRP Noturno"];
   const diurnos = ["HUSE Diurno","HRP Diurno"];
 
@@ -557,9 +604,13 @@ function obterDiasComTransicaoDeslocamento() {
     if (diaAnterior >= 1) {
       const temNoturnoAnterior = noturnos.some(n => escalas[n].includes(diaAnterior));
       const temDiurnoAtual = diurnos.some(di => escalas[di].includes(d));
-      if (temNoturnoAnterior && temDiurnoAtual) { dias.add(diaAnterior); dias.add(d); }
+      if (temNoturnoAnterior && temDiurnoAtual) { 
+        dias.add(diaAnterior); 
+        dias.add(d); 
+      }
     }
   }
+  
   for (let d = 1; d <= daysInMonth; d++){
     const temDiurno = diurnos.some(di => escalas[di].includes(d));
     const temNoturno = noturnos.some(no => escalas[no].includes(d));
@@ -568,9 +619,9 @@ function obterDiasComTransicaoDeslocamento() {
   return Array.from(dias);
 }
 
-/* ============================
-   Criar tabela principal
-   ============================ */
+// ============================
+// Criar tabela principal
+// ============================
 function criarTabela() {
   const tabelaHead = document.querySelector('#table-header');
   const tabelaBody = document.querySelector('#table-body');
@@ -581,25 +632,37 @@ function criarTabela() {
   tabelaHead.innerHTML = '<th>Hospitais & Dias</th>';
   tabelaBody.innerHTML = '';
 
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
 
   for (let dia = 1; dia <= daysInMonth; dia++){
     const data = new Date(currentYear, currentMonth, dia);
     const diaSemana = data.getDay();
 
     const th = document.createElement('th');
-    if (diaSemana === 0 || diaSemana === 6) th.className = diaSemana === 0 ? 'sunday' : 'weekend';
+    if (diaSemana === 0 || diaSemana === 6) {
+      th.className = diaSemana === 0 ? 'sunday' : 'weekend';
+    }
 
-    const dayHeader = document.createElement('div'); dayHeader.className = 'day-header';
-    const dayNumber = document.createElement('div'); dayNumber.className = 'day-number'; dayNumber.textContent = dia;
-    const dayName = document.createElement('div'); dayName.className = 'day-name'; dayName.textContent = diasDaSemana[diaSemana];
+    const dayHeader = document.createElement('div'); 
+    dayHeader.className = 'day-header';
+    const dayNumber = document.createElement('div'); 
+    dayNumber.className = 'day-number'; 
+    dayNumber.textContent = dia;
+    const dayName = document.createElement('div'); 
+    dayName.className = 'day-name'; 
+    dayName.textContent = diasDaSemana[diaSemana];
 
     if (diasComTransicao.includes(dia)) {
-      const carroIndicator = document.createElement('div'); carroIndicator.className = 'carro-indicator'; carroIndicator.textContent = '🚗';
+      const carroIndicator = document.createElement('div'); 
+      carroIndicator.className = 'carro-indicator'; 
+      carroIndicator.textContent = '🚗';
       carroIndicator.title = 'Deslocamento necessário entre hospitais';
       dayHeader.appendChild(carroIndicator);
     }
-    dayHeader.appendChild(dayNumber); dayHeader.appendChild(dayName); th.appendChild(dayHeader);
+    
+    dayHeader.appendChild(dayNumber); 
+    dayHeader.appendChild(dayName); 
+    th.appendChild(dayHeader);
     th.setAttribute('data-day', dia);
     tabelaHead.appendChild(th);
   }
@@ -607,29 +670,43 @@ function criarTabela() {
   const hospitaisOrdenados = ["HUSE Diurno","HUSE Noturno","HRP Diurno","HRP Noturno"];
   hospitaisOrdenados.forEach(hospital => {
     const tr = document.createElement('tr');
-    const tdNome = document.createElement('td'); tdNome.className = 'hospital-name'; tdNome.textContent = hospital; tr.appendChild(tdNome);
+    const tdNome = document.createElement('td'); 
+    tdNome.className = 'hospital-name'; 
+    tdNome.textContent = hospital; 
+    tr.appendChild(tdNome);
 
     for (let dia = 1; dia <= daysInMonth; dia++){
       const data = new Date(currentYear, currentMonth, dia);
       const diaSemana = data.getDay();
       const td = document.createElement('td');
-      if (diaSemana === 0 || diaSemana === 6) td.className = diaSemana === 0 ? 'sunday' : 'weekend';
+      if (diaSemana === 0 || diaSemana === 6) {
+        td.className = diaSemana === 0 ? 'sunday' : 'weekend';
+      }
       td.setAttribute('data-hospital', hospital);
       td.setAttribute('data-day', dia);
 
       if (escalas[hospital].includes(dia)) {
         const div = document.createElement('div');
         if (conflitos[dia] && conflitos[dia].includes(hospital)) {
-          div.className = 'plantao-cell conflito-cell'; div.textContent = 'S'; div.title = 'Conflito de horário!';
+          div.className = 'plantao-cell conflito-cell'; 
+          div.textContent = 'S'; 
+          div.title = 'Conflito de horário!';
         } else if (diasComTransicao.includes(dia)) {
-          div.className = 'plantao-cell alerta-carro-cell'; div.textContent = 'S 🚗'; div.title = 'Plantão com deslocamento necessário';
+          div.className = 'plantao-cell alerta-carro-cell'; 
+          div.textContent = 'S 🚗'; 
+          div.title = 'Plantão com deslocamento necessário';
         } else {
-          div.className = 'plantao-cell plantao'; div.textContent = 'S'; div.title = 'Plantão confirmado';
+          div.className = 'plantao-cell plantao'; 
+          div.textContent = 'S'; 
+          div.title = 'Plantão confirmado';
         }
         div.addEventListener('click', () => togglePlantao(hospital, dia));
         td.appendChild(div);
       } else {
-        const div = document.createElement('div'); div.className = 'folga-cell'; div.textContent = 'Folga'; div.title = 'Dia de folga - Clique para adicionar plantão';
+        const div = document.createElement('div'); 
+        div.className = 'folga-cell'; 
+        div.textContent = 'Folga'; 
+        div.title = 'Dia de folga - Clique para adicionar plantão';
         div.addEventListener('click', () => togglePlantao(hospital, dia));
         td.appendChild(div);
       }
@@ -640,14 +717,15 @@ function criarTabela() {
   });
 }
 
-/* ============================
-   Adicionar/remover plantão
-   ============================ */
+// ============================
+// Adicionar/remover plantão
+// ============================
 function togglePlantao(hospital, dia) {
   const escalas = getCurrentEscalas();
   const idx = escalas[hospital].indexOf(dia);
   if (idx === -1) {
-    escalas[hospital].push(dia); escalas[hospital].sort((a,b) => a-b);
+    escalas[hospital].push(dia); 
+    escalas[hospital].sort((a,b) => a-b);
   } else {
     escalas[hospital].splice(idx,1);
   }
@@ -655,30 +733,26 @@ function togglePlantao(hospital, dia) {
   criarTabela();
 }
 
-/* ============================
-   MODAIS: abrir/fechar
-   ============================ */
+// ============================
+// MODAIS: abrir/fechar
+// ============================
 function abrirModalTroca() {
   const modal = document.getElementById('troca-modal');
   modal.classList.add('show');
 
   // limpar campos e preencher datas sugeridas no mês/ano atual
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
   const diaSugerido1 = Math.min(15, daysInMonth);
   const diaSugerido2 = Math.min(20, daysInMonth);
 
-  const formatDate = d => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const day = String(d.getDate()).padStart(2,'0');
-    return `${y}-${m}-${day}`;
-  };
-
+  const hoje = new Date();
   const dataOrig = new Date(currentYear, currentMonth, diaSugerido1);
   const dataDest = new Date(currentYear, currentMonth, diaSugerido2);
 
-  document.getElementById('origem-data').value = formatDate(dataOrig);
-  document.getElementById('destino-data').value = formatDate(dataDest);
+  // Formatar datas para o input type="date" (YYYY-MM-DD)
+  document.getElementById('origem-data').value = formatDateForInput(dataOrig);
+  document.getElementById('destino-data').value = formatDateForInput(dataDest);
+  
   document.getElementById('origem-mes').value = currentMonth;
   document.getElementById('origem-ano').value = currentYear;
   document.getElementById('destino-mes').value = currentMonth;
@@ -689,7 +763,18 @@ function abrirModalTroca() {
   document.getElementById('nome-troca').value = '';
   document.getElementById('obs-troca').value = '';
 }
-function fecharModalTroca(){ document.getElementById('troca-modal').classList.remove('show'); }
+
+function formatDateForInput(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function fecharModalTroca(){ 
+  document.getElementById('troca-modal').classList.remove('show'); 
+}
+
 function abrirModalTrocas() {
   const modal = document.getElementById('trocas-modal');
   document.getElementById('filter-month').value = currentMonth;
@@ -697,11 +782,14 @@ function abrirModalTrocas() {
   popularTabelaTrocas();
   modal.classList.add('show');
 }
-function fecharModalTrocas(){ document.getElementById('trocas-modal').classList.remove('show'); }
 
-/* ============================
-   Realizar troca entre meses (corrigida)
-   ============================ */
+function fecharModalTrocas(){ 
+  document.getElementById('trocas-modal').classList.remove('show'); 
+}
+
+// ============================
+// Realizar troca entre meses (CORRIGIDA)
+// ============================
 function realizarTroca() {
   const origemHospital = document.getElementById('origem-hospital').value;
   const destinoHospital = document.getElementById('destino-hospital').value;
@@ -721,25 +809,44 @@ function realizarTroca() {
     return;
   }
 
-  const [anoO,mesO,diaO] = origemDataInput.split('-').map(Number);
-  const [anoD,mesD,diaD] = destinoDataInput.split('-').map(Number);
-  const dataOrigem = new Date(anoO, mesO-1, diaO);
-  const dataDestino = new Date(anoD, mesD-1, diaD);
-  if (isNaN(dataOrigem.getTime()) || isNaN(dataDestino.getTime())) {
-    mostrarNotificacao('Datas inválidas!', true); return;
+  // Usar a função parseDate corrigida
+  const dataOrigem = parseDate(origemDataInput);
+  const dataDestino = parseDate(destinoDataInput);
+  
+  if (!dataOrigem || !dataDestino || isNaN(dataOrigem.getTime()) || isNaN(dataDestino.getTime())) {
+    mostrarNotificacao('Datas inválidas!', true); 
+    return;
   }
+
+  // VERIFICAÇÃO CRÍTICA: As datas devem corresponder aos meses/anos selecionados
+  if (dataOrigem.getMonth() !== origemMes || dataOrigem.getFullYear() !== origemAno) {
+    mostrarNotificacao('A data de origem não corresponde ao mês/ano selecionado!', true);
+    return;
+  }
+
+  if (dataDestino.getMonth() !== destinoMes || dataDestino.getFullYear() !== destinoAno) {
+    mostrarNotificacao('A data de destino não corresponde ao mês/ano selecionado!', true);
+    return;
+  }
+
+  // Extrair o dia corretamente - ESTA ERA A CAUSA DO PROBLEMA
   const diaOrigNum = dataOrigem.getDate();
   const diaDestNum = dataDestino.getDate();
+
+  console.log("Troca sendo processada:");
+  console.log("Origem:", origemHospital, "Data:", origemDataInput, "Dia:", diaOrigNum, "Mês:", origemMes, "Ano:", origemAno);
+  console.log("Destino:", destinoHospital, "Data:", destinoDataInput, "Dia:", diaDestNum, "Mês:", destinoMes, "Ano:", destinoAno);
 
   const escalasOrigem = getEscalas(origemMes, origemAno);
   const escalasDestino = getEscalas(destinoMes, destinoAno);
 
   if (!escalasOrigem[origemHospital].includes(diaOrigNum)) {
-    mostrarNotificacao(`Não existe plantão de ${origemHospital} no dia ${dataOrigem.toLocaleDateString('pt-BR')}!`, true);
+    mostrarNotificacao(`Não existe plantão de ${origemHospital} no dia ${formatDateBR(dataOrigem)}!`, true);
     return;
   }
+  
   if (escalasDestino[destinoHospital].includes(diaDestNum)) {
-    mostrarNotificacao(`Já existe plantão de ${destinoHospital} no dia ${dataDestino.toLocaleDateString('pt-BR')}!`, true);
+    mostrarNotificacao(`Já existe plantão de ${destinoHospital} no dia ${formatDateBR(dataDestino)}!`, true);
     return;
   }
 
@@ -764,15 +871,20 @@ function realizarTroca() {
 
   fecharModalTroca();
   salvarDados();
+  
   // Atualizar tabela se mês atual foi afetado
-  if ((origemMes === currentMonth && origemAno === currentYear) || (destinoMes === currentMonth && destinoAno === currentYear)) criarTabela();
+  if ((origemMes === currentMonth && origemAno === currentYear) || 
+      (destinoMes === currentMonth && destinoAno === currentYear)) {
+    criarTabela();
+  }
 
-  mostrarNotificacao(`Troca realizada: ${novaObservacao.hospital} ${new Date(novaObservacao.data).toLocaleDateString('pt-BR')} → ${novaObservacao.hospitalTroca} ${new Date(novaObservacao.dataTroca).toLocaleDateString('pt-BR')}`);
+  // Usar a função formatDateBR corrigida
+  mostrarNotificacao(`Troca realizada: ${novaObservacao.hospital} ${formatDateBR(dataOrigem)} → ${novaObservacao.hospitalTroca} ${formatDateBR(dataDestino)}`);
 }
 
-/* ============================
-   Popular tabela de trocas (com filtros)
-   ============================ */
+// ============================
+// Popular tabela de trocas (com filtros)
+// ============================
 function popularTabelaTrocas() {
   const tbody = document.getElementById('trocas-body');
   tbody.innerHTML = '';
@@ -785,27 +897,25 @@ function popularTabelaTrocas() {
   const fMonth = hasFilterMonth ? parseInt(fMonthVal,10) : null;
   const fYear = hasFilterYear ? parseInt(fYearVal,10) : null;
 
-  const extrair = (dstr) => {
-    if (!dstr) return null;
-    const parts = dstr.split('-');
-    if (parts.length >=3) {
-      const y = parseInt(parts[0],10);
-      const m = parseInt(parts[1],10) - 1;
-      const day = parseInt(parts[2],10);
-      if (!isNaN(y) && !isNaN(m) && !isNaN(day)) return { m, y, day };
-    }
-    const dt = new Date(dstr);
-    if (!isNaN(dt.getTime())) return { m: dt.getMonth(), y: dt.getFullYear(), day: dt.getDate() };
-    return null;
-  };
-
   const filtradas = observacoes.filter(o => {
     if (!hasFilterMonth && !hasFilterYear) return true;
-    const a = extrair(o.data);
-    const b = extrair(o.dataTroca);
+    
+    const dataOrigem = parseDate(o.data);
+    const dataTroca = parseDate(o.dataTroca);
+    
     let ok = false;
-    if (a) { if ((!hasFilterMonth || a.m === fMonth) && (!hasFilterYear || a.y === fYear)) ok = true; }
-    if (b && !ok) { if ((!hasFilterMonth || b.m === fMonth) && (!hasFilterYear || b.y === fYear)) ok = true; }
+    if (dataOrigem) { 
+      if ((!hasFilterMonth || dataOrigem.getMonth() === fMonth) && 
+          (!hasFilterYear || dataOrigem.getFullYear() === fYear)) {
+        ok = true; 
+      }
+    }
+    if (dataTroca && !ok) { 
+      if ((!hasFilterMonth || dataTroca.getMonth() === fMonth) && 
+          (!hasFilterYear || dataTroca.getFullYear() === fYear)) {
+        ok = true; 
+      }
+    }
     return ok;
   });
 
@@ -824,47 +934,92 @@ function popularTabelaTrocas() {
     const tdH = document.createElement('td');
     const selH = document.createElement('select');
     ['','HUSE Diurno','HUSE Noturno','HRP Diurno','HRP Noturno'].forEach(val => {
-      const opt = document.createElement('option'); opt.value = val; opt.textContent = val || '-- selecione --';
+      const opt = document.createElement('option'); 
+      opt.value = val; 
+      opt.textContent = val || '-- selecione --';
       if (val === o.hospital) opt.selected = true;
       selH.appendChild(opt);
     });
-    selH.addEventListener('change', e => { o.hospital = e.target.value; salvarDados(); popularTabelaTrocas(); });
-    tdH.appendChild(selH); tr.appendChild(tdH);
+    selH.addEventListener('change', e => { 
+      o.hospital = e.target.value; 
+      salvarDados(); 
+      popularTabelaTrocas(); 
+    });
+    tdH.appendChild(selH); 
+    tr.appendChild(tdH);
 
     // data origem
     const tdD = document.createElement('td');
-    const inpD = document.createElement('input'); inpD.type = 'date'; inpD.value = o.data || '';
-    inpD.addEventListener('change', e => { o.data = e.target.value; salvarDados(); popularTabelaTrocas(); });
-    tdD.appendChild(inpD); tr.appendChild(tdD);
+    const inpD = document.createElement('input'); 
+    inpD.type = 'date'; 
+    inpD.value = o.data || '';
+    inpD.addEventListener('change', e => { 
+      o.data = e.target.value; 
+      salvarDados(); 
+      popularTabelaTrocas(); 
+    });
+    tdD.appendChild(inpD); 
+    tr.appendChild(tdD);
 
     // data troca
     const tdDT = document.createElement('td');
-    const inpDT = document.createElement('input'); inpDT.type = 'date'; inpDT.value = o.dataTroca || '';
-    inpDT.addEventListener('change', e => { o.dataTroca = e.target.value; salvarDados(); popularTabelaTrocas(); });
-    tdDT.appendChild(inpDT); tr.appendChild(tdDT);
+    const inpDT = document.createElement('input'); 
+    inpDT.type = 'date'; 
+    inpDT.value = o.dataTroca || '';
+    inpDT.addEventListener('change', e => { 
+      o.dataTroca = e.target.value; 
+      salvarDados(); 
+      popularTabelaTrocas(); 
+    });
+    tdDT.appendChild(inpDT); 
+    tr.appendChild(tdDT);
 
     // nome
     const tdN = document.createElement('td');
-    const inpN = document.createElement('input'); inpN.type='text'; inpN.value = o.nome || ''; inpN.placeholder='Nome';
-    inpN.addEventListener('change', e => { o.nome = e.target.value; salvarDados(); });
-    tdN.appendChild(inpN); tr.appendChild(tdN);
+    const inpN = document.createElement('input'); 
+    inpN.type='text'; 
+    inpN.value = o.nome || ''; 
+    inpN.placeholder='Nome';
+    inpN.addEventListener('change', e => { 
+      o.nome = e.target.value; 
+      salvarDados(); 
+    });
+    tdN.appendChild(inpN); 
+    tr.appendChild(tdN);
 
     // obs
     const tdO = document.createElement('td');
-    const inpO = document.createElement('input'); inpO.type='text'; inpO.value = o.observacao || ''; inpO.placeholder='Observação';
-    inpO.addEventListener('change', e => { o.observacao = e.target.value; salvarDados(); });
-    tdO.appendChild(inpO); tr.appendChild(tdO);
+    const inpO = document.createElement('input'); 
+    inpO.type='text'; 
+    inpO.value = o.observacao || ''; 
+    inpO.placeholder='Observação';
+    inpO.addEventListener('change', e => { 
+      o.observacao = e.target.value; 
+      salvarDados(); 
+    });
+    tdO.appendChild(inpO); 
+    tr.appendChild(tdO);
 
     // ações
     const tdA = document.createElement('td');
-    const btnDel = document.createElement('button'); btnDel.className='btn btn-danger'; btnDel.innerHTML='<i class="fas fa-trash"></i>'; btnDel.title='Excluir troca';
+    const btnDel = document.createElement('button'); 
+    btnDel.className='btn btn-danger'; 
+    btnDel.innerHTML='<i class="fas fa-trash"></i>'; 
+    btnDel.title='Excluir troca';
     btnDel.addEventListener('click', ()=> {
       if (confirm('Tem certeza que deseja excluir esta troca?')) {
         const idx = observacoes.indexOf(o);
-        if (idx>-1) { observacoes.splice(idx,1); salvarDados(); popularTabelaTrocas(); criarTabela(); mostrarNotificacao('Troca excluída com sucesso!'); }
+        if (idx>-1) { 
+          observacoes.splice(idx,1); 
+          salvarDados(); 
+          popularTabelaTrocas(); 
+          criarTabela(); 
+          mostrarNotificacao('Troca excluída com sucesso!'); 
+        }
       }
     });
-    tdA.appendChild(btnDel); tr.appendChild(tdA);
+    tdA.appendChild(btnDel); 
+    tr.appendChild(tdA);
 
     tbody.appendChild(tr);
   });
@@ -872,12 +1027,12 @@ function popularTabelaTrocas() {
   document.getElementById('trocas-count').textContent = filtradas.length;
 }
 
-/* ============================
-   Gerar sugestões de trocas
-   ============================ */
+// ============================
+// Gerar sugestões de trocas
+// ============================
 function gerarSugestoesTrocas() {
   const escalas = getCurrentEscalas();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
   const conflitos = detectarConflitos();
   const sugestoes = [];
   const trocasHRP = contarTrocasHRP();
@@ -896,7 +1051,14 @@ function gerarSugestoesTrocas() {
           });
           if (!conflitoNovo) {
             if (hospitalConflito.includes('HRP') && trocasHRP >= maxTrocasHRP) continue;
-            sugestoes.push({ origem: hospitalConflito, diaOrigem: diaNum, destino: hospitalConflito, diaDestino: diaDestino, beneficio: 'Resolver conflito de horários', complexidade: 'Baixa' });
+            sugestoes.push({ 
+              origem: hospitalConflito, 
+              diaOrigem: diaNum, 
+              destino: hospitalConflito, 
+              diaDestino: diaDestino, 
+              beneficio: 'Resolver conflito de horários', 
+              complexidade: 'Baixa' 
+            });
             break;
           }
         }
@@ -916,7 +1078,14 @@ function gerarSugestoesTrocas() {
               if (outro !== hospital && escalas[outro].includes(diaDestino)) conflitoNovo = true;
             });
             if (!conflitoNovo) {
-              sugestoes.push({ origem: hospital, diaOrigem: plantoes[i], destino: hospital, diaDestino: diaDestino, beneficio: 'Reduzir sequência de plantões', complexidade: 'Média' });
+              sugestoes.push({ 
+                origem: hospital, 
+                diaOrigem: plantoes[i], 
+                destino: hospital, 
+                diaDestino: diaDestino, 
+                beneficio: 'Reduzir sequência de plantões', 
+                complexidade: 'Média' 
+              });
               break;
             }
           }
@@ -928,101 +1097,148 @@ function gerarSugestoesTrocas() {
   return sugestoes;
 }
 
-/* ============================
-   Exportar para PDF (CORRIGIDO - todas as páginas em retrato)
-   ============================ */
+// ============================
+// Função para obter trocas do mês atual (CORREÇÃO DO PROBLEMA)
+// ============================
+function getTrocasDoMesAtual() {
+  return observacoes.filter(o => {
+    const dataOrigem = parseDate(o.data);
+    const dataTroca = parseDate(o.dataTroca);
+    
+    // Verifica se pelo menos uma das datas está no mês/ano atual
+    const origemNoMes = dataOrigem && dataOrigem.getMonth() === currentMonth && dataOrigem.getFullYear() === currentYear;
+    const trocaNoMes = dataTroca && dataTroca.getMonth() === currentMonth && dataTroca.getFullYear() === currentYear;
+    
+    return origemNoMes || trocaNoMes;
+  });
+}
+
+// ============================
+// Exportar para PDF (CORRIGIDO - apenas trocas do mês atual)
+// ============================
 async function exportarPDFCompleto() {
   mostrarLoading(true);
   try {
-    // Montar container temporário
+    // Montar container temporário otimizado para paisagem
     const area = document.createElement('div');
-    area.style.width = '800px';
-    area.style.padding = '20px';
+    area.style.width = '1000px';
+    area.style.padding = '15px';
     area.style.background = 'white';
     area.style.color = '#333';
     area.style.fontFamily = 'Arial, sans-serif';
-    area.style.lineHeight = '1.2';
+    area.style.lineHeight = '1.1';
 
-    // Cabeçalho
+    // Cabeçalho compacto
     const cab = document.createElement('div');
-    cab.innerHTML = `<h2 style="text-align:center; color:#1a5276; margin-bottom:8px;">Escala de Plantões - ${monthNames[currentMonth]} ${currentYear}</h2>
-                     <p style="text-align:center; font-size:12px; color:#666; margin-top:0;">Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}</p>
-                     <hr style="margin:8px 0 16px 0;">`;
+    cab.innerHTML = `<h2 style="text-align:center; color:#1a5276; margin-bottom:5px; font-size:18px;">Escala de Plantões - ${monthNames[currentMonth]} ${currentYear}</h2>
+                     <p style="text-align:center; font-size:10px; color:#666; margin-top:0;">Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}</p>
+                     <hr style="margin:5px 0 10px 0;">`;
     area.appendChild(cab);
 
-    // Tabela de escala
+    // Tabela de escala otimizada
     const tabelaEscalaOriginal = document.querySelector('#escala-table');
     const tabelaClonada = tabelaEscalaOriginal.cloneNode(true);
     tabelaClonada.style.width = '100%';
     tabelaClonada.style.borderCollapse = 'collapse';
+    tabelaClonada.style.fontSize = '8px';
+    
+    // Ajustar células para melhor visualização em paisagem
     tabelaClonada.querySelectorAll('th, td').forEach(cell => {
-      cell.style.padding = '6px 4px';
-      cell.style.fontSize = '10px';
+      cell.style.padding = '4px 2px';
+      cell.style.fontSize = '8px';
       cell.style.border = '1px solid #ddd';
+      if (cell.classList.contains('hospital-name')) {
+        cell.style.width = '100px';
+      }
     });
+
+    // Ajustar células de plantão
+    tabelaClonada.querySelectorAll('.plantao-cell, .folga-cell, .empty-cell').forEach(cell => {
+      cell.style.padding = '3px 1px';
+      cell.style.fontSize = '7px';
+      cell.style.minWidth = '20px';
+    });
+
     area.appendChild(tabelaClonada);
 
-    // Separador e Tabela de trocas
-    const hr = document.createElement('hr'); hr.style.margin = '12px 0 12px 0'; area.appendChild(hr);
-    const tituloTrocas = document.createElement('h3'); tituloTrocas.textContent = 'Trocas Registradas'; tituloTrocas.style.color = '#1a5276'; tituloTrocas.style.marginBottom = '8px';
-    area.appendChild(tituloTrocas);
+    // Separador e Tabela de trocas (se houver trocas do mês atual)
+    const trocasDoMes = getTrocasDoMesAtual();
+    
+    if (trocasDoMes.length > 0) {
+      const hr = document.createElement('hr'); 
+      hr.style.margin = '8px 0 8px 0'; 
+      area.appendChild(hr);
+      
+      const tituloTrocas = document.createElement('h3'); 
+      tituloTrocas.textContent = `Trocas Registradas - ${monthNames[currentMonth]} ${currentYear}`; 
+      tituloTrocas.style.color = '#1a5276'; 
+      tituloTrocas.style.marginBottom = '5px';
+      tituloTrocas.style.fontSize = '12px';
+      area.appendChild(tituloTrocas);
 
-    // Tabela de trocas
-    const tabelaTrocas = document.createElement('table');
-    tabelaTrocas.style.width = '100%';
-    tabelaTrocas.style.borderCollapse = 'collapse';
-    tabelaTrocas.innerHTML = `<thead>
-      <tr>
-        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Hospital</th>
-        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Data Origem</th>
-        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Data Troca</th>
-        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Nome</th>
-        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Observação</th>
-      </tr></thead>`;
-    const tbody = document.createElement('tbody');
+      // Tabela de trocas compacta
+      const tabelaTrocas = document.createElement('table');
+      tabelaTrocas.style.width = '100%';
+      tabelaTrocas.style.borderCollapse = 'collapse';
+      tabelaTrocas.style.fontSize = '7px';
+      tabelaTrocas.innerHTML = `<thead>
+        <tr>
+          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Hospital</th>
+          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Data Origem</th>
+          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Data Troca</th>
+          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Nome</th>
+          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Observação</th>
+        </tr></thead>`;
+      const tbody = document.createElement('tbody');
 
-    if (observacoes.length === 0) {
-      const tr = document.createElement('tr'); tr.innerHTML = `<td colspan="5" style="text-align:center; padding:10px; color:#666;">Nenhuma troca registrada</td>`; tbody.appendChild(tr);
-    } else {
-      observacoes.forEach(o => {
+      trocasDoMes.forEach(o => {
         const tr = document.createElement('tr');
         const hosp = o.hospital || '';
-        const dOrig = o.data ? new Date(o.data).toLocaleDateString('pt-BR') : '';
-        const dTroca = o.dataTroca ? new Date(o.dataTroca).toLocaleDateString('pt-BR') : '';
+        // Usar as funções corrigidas de data
+        const dOrig = o.data ? formatDateBR(parseDate(o.data)) : '';
+        const dTroca = o.dataTroca ? formatDateBR(parseDate(o.dataTroca)) : '';
         const nome = o.nome || '';
         const obs = o.observacao || '';
-        tr.innerHTML = `<td style="border:1px solid #ddd; padding:6px; font-size:10px;">${hosp}</td>
-                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${dOrig}</td>
-                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${dTroca}</td>
-                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${nome}</td>
-                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${obs}</td>`;
+        tr.innerHTML = `<td style="border:1px solid #ddd; padding:3px; font-size:7px;">${hosp}</td>
+                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${dOrig}</td>
+                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${dTroca}</td>
+                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${nome}</td>
+                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${obs}</td>`;
         tbody.appendChild(tr);
       });
+      tabelaTrocas.appendChild(tbody);
+      area.appendChild(tabelaTrocas);
     }
-    tabelaTrocas.appendChild(tbody);
-    area.appendChild(tabelaTrocas);
 
     // Observação final
     const footerNote = document.createElement('p');
-    footerNote.style.fontSize = '10px';
+    footerNote.style.fontSize = '8px';
     footerNote.style.color = '#666';
-    footerNote.style.marginTop = '12px';
+    footerNote.style.marginTop = '8px';
     footerNote.textContent = 'Todas as trocas devem ser registradas no sistema para controle e aprovação.';
     area.appendChild(footerNote);
 
     document.body.appendChild(area);
 
     // Capturar com html2canvas
-    const canvas = await html2canvas(area, { scale: 2, useCORS: true, allowTaint: true });
+    const canvas = await html2canvas(area, { 
+      scale: 2, 
+      useCORS: true, 
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: area.scrollWidth,
+      windowHeight: area.scrollHeight
+    });
     const imgData = canvas.toDataURL('image/png');
 
-    // Criar jsPDF em retrato A4
+    // Criar jsPDF em PAISAGEM A4
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF('l', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    const margin = 10;
+    const margin = 8;
     const imgWidth = pageWidth - margin * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
@@ -1032,10 +1248,10 @@ async function exportarPDFCompleto() {
     let heightLeft = imgHeight + margin;
     let position = 0;
 
-    // Se a imagem for maior que uma página, adicionar páginas adicionais em retrato
+    // Se a imagem for maior que uma página, adicionar páginas adicionais em PAISAGEM
     while (heightLeft > pageHeight) {
       position = heightLeft - pageHeight;
-      pdf.addPage('p', 'a4'); // Forçar retrato explicitamente
+      pdf.addPage('l', 'a4');
       pdf.addImage(imgData, 'PNG', margin, -position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
@@ -1051,9 +1267,9 @@ async function exportarPDFCompleto() {
   }
 }
 
-/* ============================
-   Gatilhos / evento de botões
-   ============================ */
+// ============================
+// Gatilhos / evento de botões
+// ============================
 document.addEventListener('DOMContentLoaded', () => {
   popularSelectsMesAno();
 
@@ -1064,11 +1280,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // listeners para mudança de mês/ano
   document.getElementById('month-select').addEventListener('change', (e) => {
     currentMonth = parseInt(e.target.value,10);
-    criarTabela(); atualizarContadores();
+    criarTabela(); 
+    atualizarContadores();
   });
+  
   document.getElementById('year-select').addEventListener('change', (e) => {
     currentYear = parseInt(e.target.value,10);
-    criarTabela(); atualizarContadores();
+    criarTabela(); 
+    atualizarContadores();
   });
 
   // botões principais
@@ -1076,7 +1295,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('load-data').addEventListener('click', carregarDados);
   document.getElementById('reset-data').addEventListener('click', redefinirDados);
   document.getElementById('nova-troca').addEventListener('click', abrirModalTroca);
-
   document.getElementById('ver-trocas').addEventListener('click', abrirModalTrocas);
 
   // modal troca
@@ -1102,7 +1320,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Exportar PDF (corrigido)
+  // Exportar PDF
   document.getElementById('export-pdf').addEventListener('click', () => {
     exportarPDFCompleto();
   });
@@ -1111,9 +1329,9 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarDados();
 });
 
-/* ============================
-   Inicializar tabela e contadores
-   ============================ */
+// ============================
+// Inicializar tabela e contadores
+// ============================
 criarTabela();
 atualizarContadores();
 </script>
