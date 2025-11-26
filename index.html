@@ -8,12 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -23,19 +18,17 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  
   .container {
     max-width: 100%;
     margin: 0 auto;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     height: calc(100vh - 30px);
   }
-  
   header {
     background: linear-gradient(135deg, #1a5276 0%, #2c3e50 100%);
     color: white;
@@ -44,826 +37,140 @@
     flex-shrink: 0;
     position: relative;
   }
-  
-  h1 {
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
-    margin-bottom: 8px;
-    font-weight: 700;
-  }
-  
-  .subtitle {
-    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-    opacity: 0.9;
-  }
-  
-  .month-selector {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-  
-  .month-selector select {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    background: white;
-    font-size: 1rem;
-  }
-
-  .header-counter {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 8px 12px;
-    text-align: center;
-    min-width: 80px;
-    transition: all 0.3s ease;
-  }
-
-  .header-counter:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-  }
-
-  .counter-label {
-    font-size: 0.75rem;
-    opacity: 0.9;
-    margin-bottom: 2px;
-    font-weight: 500;
-  }
-
-  .counter-value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    line-height: 1;
-  }
-
-  .counter-subtitle {
-    font-size: 0.65rem;
-    opacity: 0.8;
-    margin-top: 1px;
-  }
-  
+  h1 { font-size: clamp(1.5rem,4vw,2.2rem); margin-bottom:8px; font-weight:700; }
+  .subtitle { font-size: clamp(0.9rem,2.5vw,1.1rem); opacity:0.9; }
+  .month-selector { display:flex; justify-content:center; align-items:center; gap:15px; margin-top:10px; flex-wrap:wrap; }
+  .month-selector select { padding:8px 12px; border-radius:8px; border:1px solid #ddd; background:white; font-size:1rem; }
+  .header-counter { position:absolute; top:15px; right:20px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:8px 12px; text-align:center; min-width:100px; transition:all 0.3s ease; }
+  .counter-label{ font-size:0.75rem; opacity:0.9; margin-bottom:2px; font-weight:500;}
+  .counter-value{ font-size:1.4rem; font-weight:700; line-height:1; }
+  .counter-subtitle{ font-size:0.65rem; opacity:0.8; margin-top:1px; }
   .controls {
-    padding: 15px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #eaeaea;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    padding: 15px; background: #f8f9fa; border-bottom:1px solid #eaeaea;
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; flex-shrink:0;
   }
-  
-  .btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: clamp(0.8rem, 2vw, 1rem);
-    flex: 1;
-    min-width: 140px;
-    justify-content: center;
-  }
-  
-  .btn-primary {
-    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-    color: white;
-  }
-  
-  .btn-success {
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-    color: white;
-  }
-  
-  .btn-danger {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    color: white;
-  }
-  
-  .btn-warning {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    color: white;
-  }
-  
-  .btn-info {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    color: white;
-  }
-  
-  .btn-purple {
-    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-    color: white;
-  }
-  
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
+  .btn { padding:10px 15px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all .3s; display:flex; align-items:center; gap:6px; font-size:clamp(.8rem,2vw,1rem); flex:1; min-width:140px; justify-content:center;}
+  .btn-primary{ background: linear-gradient(135deg,#3498db 0%,#2c3e50 100%); color:white;}
+  .btn-success{ background: linear-gradient(135deg,#2ecc71 0%,#27ae60 100%); color:white;}
+  .btn-danger{ background: linear-gradient(135deg,#e74c3c 0%,#c0392b 100%); color:white;}
+  .btn-warning{ background: linear-gradient(135deg,#f39c12 0%,#e67e22 100%); color:white;}
+  .btn-info{ background: linear-gradient(135deg,#17a2b8 0%,#138496 100%); color:white;}
+  .btn-purple{ background: linear-gradient(135deg,#9b59b6 0%,#8e44ad 100%); color:white;}
+  .btn:hover{ transform: translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.1); }
 
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1003;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    overflow-y: auto;
-  }
+  .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index:1003; align-items:center; justify-content:center; padding:15px; overflow-y:auto;}
+  .modal.show { display:flex; }
+  .modal-content { background:white; border-radius:12px; padding:20px; width:100%; max-width:800px; box-shadow:0 10px 30px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
+  .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:2px solid #eaeaea; position:sticky; top:0; background:white; z-index:1; }
+  .modal-title { font-size:1.3rem; font-weight:700; color:#1a5276; }
+  .close-modal { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#6c757d; transition:color .3s; flex-shrink:0;}
+  .close-modal:hover{ color:#e74c3c; }
+  .form-group { margin-bottom:18px; }
+  .form-group label { display:block; margin-bottom:8px; font-weight:600; color:#2c3e50; font-size:.95rem; }
+  .form-group select, .form-group input { width:100%; padding:12px 14px; border:2px solid #eaeaea; border-radius:8px; font-size:1rem; transition:border-color .3s; }
+  .form-group select:focus, .form-group input:focus{ outline:none; border-color:#3498db; box-shadow:0 0 0 3px rgba(52,152,219,.1); }
+  .form-row { display:flex; gap:12px; }
+  .form-row .form-group { flex:1; }
+  .data-fields { background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #eaeaea; margin-bottom:15px; }
+  .data-field-full { display:flex; gap:12px; }
+  .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:25px; padding-top:20px; border-top:1px solid #eaeaea; position:sticky; bottom:0; background:white; padding-bottom:5px; }
+  .btn-cancel{ background:#6c757d; color:white; flex:1; }
+  .btn-confirm{ background:#27ae60; color:white; flex:1; }
 
-  .modal.show {
-    display: flex;
-  }
+  .legend { display:flex; flex-wrap:wrap; gap:12px; margin:15px; padding:12px; background:#f9f9f9; border-radius:8px; justify-content:center; flex-shrink:0; }
+  .legend-item { display:flex; align-items:center; gap:6px; font-weight:500; font-size:clamp(.8rem,2vw,1rem); }
+  .legend-color { width:16px; height:16px; border-radius:4px; flex-shrink:0; }
+  .huse-day{ background: linear-gradient(135deg,#3498db 0%,#2c3e50 100%); }
+  .huse-night{ background: linear-gradient(135deg,#1a5276 0%,#2c3e50 100%); }
+  .hrp-day{ background: linear-gradient(135deg,#e74c3c 0%,#c0392b 100%); }
+  .hrp-night{ background: linear-gradient(135deg,#8e44ad 0%,#6c3483 100%); }
+  .conflito{ background: linear-gradient(135deg,#e74c3c 0%,#e67e22 100%); }
+  .alerta-carro{ background: linear-gradient(135deg,#ffd93d 0%,#ff9a3d 100%); }
+  .troca-realizada{ background: linear-gradient(135deg,#9b59b6 0%,#8e44ad 100%); color:white; }
 
-  .modal-content {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
+  .content { padding:15px; overflow:auto; flex:1; display:flex; flex-direction:column; gap:20px; }
+  .table-container { overflow-x:auto; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.05); background:white; max-height:100%; }
+  .editable-table { width:100%; border-collapse:collapse; margin:0; background:white; min-width:800px; }
+  .editable-table thead tr { background: linear-gradient(135deg,#1a5276 0%,#2c3e50 100%); color:white; position:sticky; top:0; z-index:10; }
+  .editable-table th { padding:12px 8px; font-weight:600; text-align:center; border:1px solid #1a5276; font-size:clamp(.75rem,1.5vw,.9rem); white-space:nowrap; position:relative; }
+  .editable-table tbody tr { border-bottom:1px solid #eaeaea; transition:background-color .2s; }
+  .editable-table tbody tr:nth-child(even){ background:#f8f9fa; }
+  .editable-table tbody tr:hover{ background:#e8f4fc; }
+  .editable-table td { padding:10px 6px; text-align:center; border:1px solid #eaeaea; transition:all .2s; font-size:clamp(.7rem,1.5vw,.8rem); white-space:nowrap; position:relative; }
+  .editable-table .hospital-name { text-align:left; padding-left:12px; font-weight:600; background:#f1f8ff; width:140px; font-size:clamp(.75rem,1.5vw,.9rem); position:sticky; left:0; z-index:5; }
+  .plantao-cell { border-radius:6px; padding:6px 4px; font-weight:600; cursor:pointer; transition:all .2s; min-width:32px; font-size:clamp(.7rem,1.5vw,.8rem); position:relative; }
+  .plantao-cell:hover { transform:scale(1.05); }
+  .plantao { background: linear-gradient(135deg,#2ecc71 0%,#27ae60 100%); color:white; }
+  .conflito-cell { background: linear-gradient(135deg,#e74c3c 0%,#e67e22 100%); color:white; animation:pulse 2s infinite; }
+  .alerta-carro-cell { background: linear-gradient(135deg,#ffd93d 0%,#ff9a3d 100%); color:#333; font-weight:bold; animation:bounce 2s infinite; }
+  @keyframes pulse { 0%{ box-shadow:0 0 0 0 rgba(231,76,60,0.7);} 70%{ box-shadow:0 0 0 8px rgba(231,76,60,0);} 100%{ box-shadow:0 0 0 0 rgba(231,76,60,0);} }
+  @keyframes bounce { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
+  .empty-cell{ background:#f8f9fa; color:#6c757d; cursor:pointer; border-radius:6px; padding:6px 4px; transition:all .2s; font-size:clamp(.7rem,1.5vw,.8rem); }
+  .empty-cell:hover{ background:#e9ecef; transform:scale(1.05); }
+  .weekend{ background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); color:#6c757d; }
+  .sunday{ background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); color:#6c757d; }
+  .folga-cell { background: linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 100%); color:#2e7d32; font-style:italic; font-weight:500; border-radius:6px; padding:6px 4px; cursor:pointer; transition:all .2s; font-size:clamp(.7rem,1.5vw,.8rem); }
+  .folga-cell:hover { background: linear-gradient(135deg,#dcedc8 0%,#c5e1a5 100%); transform:scale(1.05); }
+  .day-header { display:flex; flex-direction:column; align-items:center; position:relative; }
+  .day-number { font-size:1.1em; font-weight:bold; }
+  .day-name { font-size:.8em; opacity:0.9; }
+  .carro-indicator { position:absolute; top:-5px; right:-5px; font-size:.9em; animation:drive 3s infinite; z-index:2; }
+  @keyframes drive { 0%,100%{ transform:translateX(0) rotate(0deg);} 25%{ transform:translateX(3px) rotate(5deg);} 50%{ transform:translateX(0) rotate(0deg);} 75%{ transform:translateX(-3px) rotate(-5deg);} }
+  .footer { text-align:center; padding:15px; background:#f8f9fa; border-top:1px solid #eaeaea; color:#6c757d; font-size:clamp(.8rem,2vw,.9rem); flex-shrink:0; }
+  .notification { position:fixed; top:20px; right:20px; padding:12px 20px; background:#2ecc71; color:white; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.2); transform:translateX(150%); transition:transform .3s ease; z-index:1001; max-width:300px; font-size:clamp(.8rem,2vw,1rem); }
+  .notification.show { transform:translateX(0); }
+  .notification.error{ background:#e74c3c; }
+  .notification.warning{ background:#f39c12; }
+  .loading { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index:1002; align-items:center; justify-content:center; flex-direction:column; color:white; }
+  .loading.show{ display:flex; }
+  .spinner { border:5px solid #f3f3f3; border-top:5px solid #3498db; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin-bottom:15px; }
+  @keyframes spin { 0%{ transform:rotate(0deg);} 100%{ transform:rotate(360deg);} }
 
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eaeaea;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-  }
+  .filters { display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; }
+  .filters .form-group { flex:1; min-width:120px; margin-bottom:0; }
 
-  .modal-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #1a5276;
-  }
-
-  .close-modal {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #6c757d;
-    transition: color 0.3s ease;
-    flex-shrink: 0;
-  }
-
-  .close-modal:hover {
-    color: #e74c3c;
-  }
-
-  .form-group {
-    margin-bottom: 18px;
-  }
-
-  .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 0.95rem;
-  }
-
-  .form-group select, .form-group input {
-    width: 100%;
-    padding: 12px 14px;
-    border: 2px solid #eaeaea;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-  }
-
-  .form-group select:focus, .form-group input:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-  }
-
-  .form-row {
-    display: flex;
-    gap: 12px;
-  }
-
-  .form-row .form-group {
-    flex: 1;
-  }
-
-  .data-fields {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #eaeaea;
-    margin-bottom: 15px;
-  }
-
-  .data-field-full {
-    display: flex;
-    gap: 12px;
-  }
-
-  .data-field-full .form-group {
-    flex: 1;
-  }
-
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid #eaeaea;
-    position: sticky;
-    bottom: 0;
-    background: white;
-    padding-bottom: 5px;
-  }
-
-  .btn-cancel {
-    background: #6c757d;
-    color: white;
-    flex: 1;
-  }
-
-  .btn-confirm {
-    background: #27ae60;
-    color: white;
-    flex: 1;
-  }
-  
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 15px;
-    padding: 12px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 500;
-    font-size: clamp(0.8rem, 2vw, 1rem);
-  }
-  
-  .legend-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-  
-  .huse-day {
-    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-  }
-  
-  .huse-night {
-    background: linear-gradient(135deg, #1a5276 0%, #2c3e50 100%);
-  }
-  
-  .hrp-day {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  }
-  
-  .hrp-night {
-    background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
-  }
-  
-  .conflito {
-    background: linear-gradient(135deg, #e74c3c 0%, #e67e22 100%);
-  }
-  
-  .alerta-carro {
-    background: linear-gradient(135deg, #ffd93d 0%, #ff9a3d 100%);
-  }
-
-  .troca-realizada {
-    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-    color: white;
-  }
-  
-  .content {
-    padding: 15px;
-    overflow: auto;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .table-container {
-    overflow-x: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    background: white;
-    max-height: 100%;
-  }
-  
-  .editable-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0;
-    background: white;
-    min-width: 800px;
-  }
-  
-  .editable-table thead tr {
-    background: linear-gradient(135deg, #1a5276 0%, #2c3e50 100%);
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  
-  .editable-table th {
-    padding: 12px 8px;
-    font-weight: 600;
-    text-align: center;
-    border: 1px solid #1a5276;
-    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-    white-space: nowrap;
-    position: relative;
-  }
-  
-  .editable-table tbody tr {
-    border-bottom: 1px solid #eaeaea;
-    transition: background-color 0.2s;
-  }
-  
-  .editable-table tbody tr:nth-child(even) {
-    background-color: #f8f9fa;
-  }
-  
-  .editable-table tbody tr:hover {
-    background-color: #e8f4fc;
-  }
-  
-  .editable-table td {
-    padding: 10px 6px;
-    text-align: center;
-    border: 1px solid #eaeaea;
-    transition: all 0.2s;
-    font-size: clamp(0.7rem, 1.5vw, 0.8rem);
-    white-space: nowrap;
-    position: relative;
-  }
-  
-  .editable-table .hospital-name {
-    text-align: left;
-    padding-left: 12px;
-    font-weight: 600;
-    background: #f1f8ff;
-    width: 140px;
-    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-    position: sticky;
-    left: 0;
-    z-index: 5;
-  }
-  
-  .plantao-cell {
-    border-radius: 6px;
-    padding: 6px 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-width: 32px;
-    font-size: clamp(0.7rem, 1.5vw, 0.8rem);
-    position: relative;
-  }
-  
-  .plantao-cell:hover {
-    transform: scale(1.05);
-  }
-  
-  .plantao {
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-    color: white;
-  }
-  
-  .conflito-cell {
-    background: linear-gradient(135deg, #e74c3c 0%, #e67e22 100%);
-    color: white;
-    animation: pulse 2s infinite;
-  }
-  
-  .alerta-carro-cell {
-    background: linear-gradient(135deg, #ffd93d 0%, #ff9a3d 100%);
-    color: #333;
-    font-weight: bold;
-    animation: bounce 2s infinite;
-  }
-  
-  @keyframes pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
-    }
-    70% {
-      box-shadow: 0 0 0 8px rgba(231, 76, 60, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
-    }
-  }
-  
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
-  }
-  
-  .empty-cell {
-    background: #f8f9fa;
-    color: #6c757d;
-    cursor: pointer;
-    border-radius: 6px;
-    padding: 6px 4px;
-    transition: all 0.2s;
-    font-size: clamp(0.7rem, 1.5vw, 0.8rem);
-  }
-  
-  .empty-cell:hover {
-    background: #e9ecef;
-    transform: scale(1.05);
-  }
-  
-  .weekend {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    color: #6c757d;
-  }
-  
-  .sunday {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    color: #6c757d;
-  }
-  
-  .folga-cell {
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    color: #2e7d32;
-    font-style: italic;
-    font-weight: 500;
-    border-radius: 6px;
-    padding: 6px 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: clamp(0.7rem, 1.5vw, 0.8rem);
-  }
-  
-  .folga-cell:hover {
-    background: linear-gradient(135deg, #dcedc8 0%, #c5e1a5 100%);
-    transform: scale(1.05);
-  }
-  
-  .day-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-  
-  .day-number {
-    font-size: 1.1em;
-    font-weight: bold;
-  }
-  
-  .day-name {
-    font-size: 0.8em;
-    opacity: 0.9;
-  }
-  
-  .carro-indicator {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 0.9em;
-    animation: drive 3s infinite;
-    z-index: 2;
-  }
-  
-  @keyframes drive {
-    0%, 100% {
-      transform: translateX(0) rotate(0deg);
-    }
-    25% {
-      transform: translateX(3px) rotate(5deg);
-    }
-    50% {
-      transform: translateX(0) rotate(0deg);
-    }
-    75% {
-      transform: translateX(-3px) rotate(-5deg);
-    }
-  }
-  
-  .footer {
-    text-align: center;
-    padding: 15px;
-    background: #f8f9fa;
-    border-top: 1px solid #eaeaea;
-    color: #6c757d;
-    font-size: clamp(0.8rem, 2vw, 0.9rem);
-    flex-shrink: 0;
-  }
-  
-  .notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    background: #2ecc71;
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transform: translateX(150%);
-    transition: transform 0.3s ease;
-    z-index: 1001;
-    max-width: 300px;
-    font-size: clamp(0.8rem, 2vw, 1rem);
-  }
-  
-  .notification.show {
-    transform: translateX(0);
-  }
-  
-  .notification.error {
-    background: #e74c3c;
-  }
-  
-  .notification.warning {
-    background: #f39c12;
-  }
-  
-  .loading {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1002;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    color: white;
-  }
-  
-  .loading.show {
-    display: flex;
-  }
-  
-  .spinner {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* Filtros para a tabela de trocas */
-  .filters {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-  }
-  
-  .filters .form-group {
-    flex: 1;
-    min-width: 120px;
-    margin-bottom: 0;
-  }
-
-  /* Melhorias para dispositivos móveis */
-  @media (max-width: 768px) {
-    .modal {
-      padding: 10px;
-      align-items: flex-start;
-    }
-    
-    .modal-content {
-      padding: 15px;
-      max-height: 95vh;
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-    
-    .modal-header {
-      position: sticky;
-      top: 0;
-      background: white;
-      padding: 10px 0;
-      margin-bottom: 15px;
-    }
-    
-    .modal-title {
-      font-size: 1.2rem;
-    }
-    
-    .close-modal {
-      font-size: 1.4rem;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    .form-group label {
-      font-size: 0.9rem;
-    }
-    
-    .form-group select, .form-group input {
-      padding: 10px 12px;
-      font-size: 0.95rem;
-    }
-    
-    .form-row {
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .data-field-full {
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .data-fields {
-      padding: 12px;
-    }
-    
-    .modal-actions {
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 20px;
-      padding-top: 15px;
-    }
-    
-    .btn-cancel, .btn-confirm {
-      width: 100%;
-    }
-
-    .filters {
-      flex-direction: column;
-    }
-    
-    .filters .form-group {
-      min-width: 100%;
-    }
-  }
-  
-  @media (max-width: 576px) {
-    body {
-      padding: 10px;
-    }
-    
-    .container {
-      height: calc(100vh - 20px);
-      border-radius: 8px;
-    }
-    
-    header {
-      padding: 15px 10px;
-    }
-
-    .header-counter {
-      position: relative;
-      top: auto;
-      right: auto;
-      margin: 10px auto 0;
-      max-width: 120px;
-    }
-    
-    .controls {
-      padding: 10px;
-      gap: 8px;
-    }
-    
-    .btn {
-      min-width: 120px;
-      padding: 8px 10px;
-    }
-    
-    .modal {
-      padding: 5px;
-    }
-    
-    .modal-content {
-      padding: 12px;
-      border-radius: 10px;
-    }
-    
-    .modal-header {
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-    }
-    
-    .modal-title {
-      font-size: 1.1rem;
-    }
-    
-    .form-group select, .form-group input {
-      padding: 8px 10px;
-      font-size: 0.9rem;
-    }
-    
-    .legend {
-      margin: 10px;
-      padding: 10px;
-      gap: 8px;
-    }
-    
-    .content {
-      padding: 10px;
-    }
-    
-    .carro-indicator {
-      font-size: 0.7em;
-      top: -3px;
-      right: -3px;
-    }
-
-    .editable-table {
-      min-width: 700px;
-    }
-    
-    .editable-table td, .editable-table th {
-      padding: 8px 4px;
-      font-size: 0.7rem;
-    }
-  }
-  
-  @media (min-width: 1200px) {
-    .container {
-      max-width: 1400px;
-    }
-    
-    .editable-table {
-      min-width: 1000px;
-    }
-  }
-  
-  @media (max-height: 500px) and (orientation: landscape) {
-    .container {
-      height: auto;
-      min-height: 100vh;
-    }
-    
-    header, .controls, .legend {
-      flex-shrink: 0;
-    }
-    
-    .content {
-      flex: 1;
-      min-height: 300px;
-    }
-    
-    .modal {
-      align-items: flex-start;
-      padding-top: 10px;
-    }
-    
-    .modal-content {
-      max-height: 95vh;
-    }
+  @media (max-width:768px){
+    .modal { padding:10px; align-items:flex-start; }
+    .modal-content { padding:15px; max-height:95vh; margin-top:20px; margin-bottom:20px; }
+    .modal-header { position:sticky; top:0; background:white; padding:10px 0; margin-bottom:15px; }
+    .modal-title{ font-size:1.2rem; }
+    .close-modal{ font-size:1.4rem; }
+    .form-group{ margin-bottom:15px; }
+    .form-group label{ font-size:.9rem; }
+    .form-group select, .form-group input{ padding:10px 12px; font-size:.95rem; }
+    .form-row{ flex-direction:column; gap:10px; }
+    .data-field-full{ flex-direction:column; gap:10px; }
+    .data-fields{ padding:12px; }
+    .modal-actions{ flex-direction:column; gap:8px; margin-top:20px; padding-top:15px; }
+    .btn-cancel, .btn-confirm{ width:100%; }
+    .filters{ flex-direction:column; }
+    .filters .form-group{ min-width:100%; }
+  }
+  @media (max-width:576px){
+    body{ padding:10px; }
+    .container { height: calc(100vh - 20px); border-radius:8px; }
+    header { padding:15px 10px; }
+    .header-counter { position:relative; top:auto; right:auto; margin:10px auto 0; max-width:120px; }
+    .controls { padding:10px; gap:8px; }
+    .btn { min-width:120px; padding:8px 10px; }
+    .modal { padding:5px; }
+    .modal-content { padding:12px; border-radius:10px; }
+    .modal-header { margin-bottom:12px; padding-bottom:10px; }
+    .modal-title{ font-size:1.1rem; }
+    .form-group select, .form-group input { padding:8px 10px; font-size:.9rem; }
+    .legend { margin:10px; padding:10px; gap:8px; }
+    .content { padding:10px; }
+    .carro-indicator { font-size:.7em; top:-3px; right:-3px; }
+    .editable-table { min-width:700px; }
+    .editable-table td, .editable-table th { padding:8px 4px; font-size:.7rem; }
+  }
+  @media (min-width:1200px){ .container { max-width:1400px; } .editable-table { min-width:1000px; } }
+  @media (max-height:500px) and (orientation:landscape) {
+    .container { height:auto; min-height:100vh; }
+    header, .controls, .legend { flex-shrink:0; }
+    .content { flex:1; min-height:300px; }
+    .modal { align-items:flex-start; padding-top:10px; }
+    .modal-content { max-height:95vh; }
   }
 </style>
 </head>
@@ -872,109 +179,47 @@
     <header>
       <h1><i class="fas fa-calendar-alt"></i> Gerador de Escala de Plantões</h1>
       <p class="subtitle">Gerencie e exporte suas escalas de plantão</p>
-      
       <div class="header-counter">
         <div class="counter-label">TROCAS HRP</div>
         <div class="counter-value" id="hrp-trocas-count">0</div>
         <div class="counter-subtitle">este mês</div>
       </div>
-      
       <div class="month-selector">
-        <select id="month-select">
-          <option value="0">Janeiro</option>
-          <option value="1">Fevereiro</option>
-          <option value="2">Março</option>
-          <option value="3">Abril</option>
-          <option value="4">Maio</option>
-          <option value="5">Junho</option>
-          <option value="6">Julho</option>
-          <option value="7">Agosto</option>
-          <option value="8">Setembro</option>
-          <option value="9">Outubro</option>
-          <option value="10">Novembro</option>
-          <option value="11">Dezembro</option>
-        </select>
-        <select id="year-select">
-          <!-- Os anos serão preenchidos dinamicamente -->
-        </select>
+        <select id="month-select"></select>
+        <select id="year-select"></select>
       </div>
     </header>
-    
+
     <div class="controls">
-      <button class="btn btn-primary" id="save-data">
-        <i class="fas fa-save"></i> Salvar Dados
-      </button>
-      <button class="btn btn-info" id="load-data">
-        <i class="fas fa-folder-open"></i> Carregar Dados
-      </button>
-      <button class="btn btn-danger" id="reset-data">
-        <i class="fas fa-redo"></i> Redefinir Dados
-      </button>
-      <button class="btn btn-purple" id="gerar-trocas">
-        <i class="fas fa-lightbulb"></i> Gerar Possíveis Trocas
-      </button>
-      <button class="btn btn-success" id="export-pdf">
-        <i class="fas fa-file-pdf"></i> Exportar para PDF
-      </button>
-      <button class="btn btn-warning" id="nova-troca">
-        <i class="fas fa-exchange-alt"></i> Nova Troca
-      </button>
-      <!-- NOVO BOTÃO: Ver Trocas -->
-      <button class="btn btn-info" id="ver-trocas">
-        <i class="fas fa-list"></i> Ver Trocas
-      </button>
+      <button class="btn btn-primary" id="save-data"><i class="fas fa-save"></i> Salvar Dados</button>
+      <button class="btn btn-info" id="load-data"><i class="fas fa-folder-open"></i> Carregar Dados</button>
+      <button class="btn btn-danger" id="reset-data"><i class="fas fa-redo"></i> Redefinir Dados</button>
+      <button class="btn btn-purple" id="gerar-trocas"><i class="fas fa-lightbulb"></i> Gerar Possíveis Trocas</button>
+      <button class="btn btn-success" id="export-pdf"><i class="fas fa-file-pdf"></i> Exportar para PDF</button>
+      <button class="btn btn-warning" id="nova-troca"><i class="fas fa-exchange-alt"></i> Nova Troca</button>
+      <button class="btn btn-info" id="ver-trocas"><i class="fas fa-list"></i> Ver Trocas</button>
     </div>
-    
+
     <div class="legend">
-      <div class="legend-item">
-        <div class="legend-color huse-day"></div>
-        <span>HUSE Diurno</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color huse-night"></div>
-        <span>HUSE Noturno</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color hrp-day"></div>
-        <span>HRP Diurno</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color hrp-night"></div>
-        <span>HRP Noturno</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color conflito"></div>
-        <span>Conflito de Horários</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color alerta-carro"></div>
-        <span>🚗 Deslocamento</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color troca-realizada"></div>
-        <span>Troca Realizada</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);"></div>
-        <span>Folga</span>
-      </div>
+      <div class="legend-item"><div class="legend-color huse-day"></div><span>HUSE Diurno</span></div>
+      <div class="legend-item"><div class="legend-color huse-night"></div><span>HUSE Noturno</span></div>
+      <div class="legend-item"><div class="legend-color hrp-day"></div><span>HRP Diurno</span></div>
+      <div class="legend-item"><div class="legend-color hrp-night"></div><span>HRP Noturno</span></div>
+      <div class="legend-item"><div class="legend-color conflito"></div><span>Conflito de Horários</span></div>
+      <div class="legend-item"><div class="legend-color alerta-carro"></div><span>🚗 Deslocamento</span></div>
+      <div class="legend-item"><div class="legend-color troca-realizada"></div><span>Troca Realizada</span></div>
+      <div class="legend-item"><div class="legend-color" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);"></div><span>Folga</span></div>
     </div>
-    
+
     <div class="content">
       <div class="table-container">
         <table class="editable-table" id="escala-table">
-          <thead>
-            <tr id="table-header">
-              <!-- Cabeçalho será gerado dinamicamente -->
-            </tr>
-          </thead>
-          <tbody id="table-body">
-            <!-- Conteúdo será gerado dinamicamente -->
-          </tbody>
+          <thead><tr id="table-header"></tr></thead>
+          <tbody id="table-body"></tbody>
         </table>
       </div>
     </div>
-    
+
     <div class="footer">
       <p>Escala de Plantões - Sistema de Gerenciamento | Desenvolvido para facilitar o controle de escalas</p>
     </div>
@@ -987,65 +232,35 @@
         <h3 class="modal-title"><i class="fas fa-exchange-alt"></i> Registrar Troca</h3>
         <button class="close-modal" id="close-modal">&times;</button>
       </div>
-      
+
       <div class="data-fields">
         <div class="form-group">
           <label for="origem-data">Data de Origem:</label>
           <input type="date" id="origem-data">
         </div>
-        
+
         <div class="form-group">
           <label for="origem-mes">Mês/Ano de Origem:</label>
           <div class="form-row">
-            <select id="origem-mes">
-              <option value="0">Jan</option>
-              <option value="1">Fev</option>
-              <option value="2">Mar</option>
-              <option value="3">Abr</option>
-              <option value="4">Mai</option>
-              <option value="5">Jun</option>
-              <option value="6">Jul</option>
-              <option value="7">Ago</option>
-              <option value="8">Set</option>
-              <option value="9">Out</option>
-              <option value="10">Nov</option>
-              <option value="11">Dez</option>
-            </select>
-            <select id="origem-ano">
-              <!-- Preenchido dinamicamente -->
-            </select>
+            <select id="origem-mes"></select>
+            <select id="origem-ano"></select>
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="destino-data">Data de Destino:</label>
           <input type="date" id="destino-data">
         </div>
-        
+
         <div class="form-group">
           <label for="destino-mes">Mês/Ano de Destino:</label>
           <div class="form-row">
-            <select id="destino-mes">
-              <option value="0">Jan</option>
-              <option value="1">Fev</option>
-              <option value="2">Mar</option>
-              <option value="3">Abr</option>
-              <option value="4">Mai</option>
-              <option value="5">Jun</option>
-              <option value="6">Jul</option>
-              <option value="7">Ago</option>
-              <option value="8">Set</option>
-              <option value="9">Out</option>
-              <option value="10">Nov</option>
-              <option value="11">Dez</option>
-            </select>
-            <select id="destino-ano">
-              <!-- Preenchido dinamicamente -->
-            </select>
+            <select id="destino-mes"></select>
+            <select id="destino-ano"></select>
           </div>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="origem-hospital">Plantão de Origem:</label>
         <select id="origem-hospital">
@@ -1056,7 +271,7 @@
           <option value="HRP Noturno">HRP Noturno</option>
         </select>
       </div>
-      
+
       <div class="form-group">
         <label for="destino-hospital">Plantão de Destino:</label>
         <select id="destino-hospital">
@@ -1067,17 +282,17 @@
           <option value="HRP Noturno">HRP Noturno</option>
         </select>
       </div>
-      
+
       <div class="form-group">
         <label for="nome-troca">Nome:</label>
         <input type="text" id="nome-troca" placeholder="Digite seu nome">
       </div>
-      
+
       <div class="form-group">
         <label for="obs-troca">Observação:</label>
         <input type="text" id="obs-troca" placeholder="Digite uma observação (opcional)">
       </div>
-      
+
       <div class="modal-actions">
         <button class="btn btn-cancel" id="cancelar-troca">Cancelar</button>
         <button class="btn btn-confirm" id="confirmar-troca">Confirmar Troca</button>
@@ -1087,43 +302,25 @@
 
   <!-- Modal para Visualizar Trocas -->
   <div class="modal" id="trocas-modal">
-    <div class="modal-content" style="max-width: 95%;">
+    <div class="modal-content" style="max-width:95%;">
       <div class="modal-header">
         <h3 class="modal-title"><i class="fas fa-list"></i> Trocas Registradas - <span id="trocas-count">0</span> trocas</h3>
         <button class="close-modal" id="close-trocas-modal">&times;</button>
       </div>
 
-      <!-- Filtros -->
       <div class="filters">
         <div class="form-group">
           <label for="filter-month">Mês:</label>
-          <select id="filter-month">
-            <option value="">Todos</option>
-            <option value="0">Janeiro</option>
-            <option value="1">Fevereiro</option>
-            <option value="2">Março</option>
-            <option value="3">Abril</option>
-            <option value="4">Maio</option>
-            <option value="5">Junho</option>
-            <option value="6">Julho</option>
-            <option value="7">Agosto</option>
-            <option value="8">Setembro</option>
-            <option value="9">Outubro</option>
-            <option value="10">Novembro</option>
-            <option value="11">Dezembro</option>
-          </select>
+          <select id="filter-month"></select>
         </div>
         <div class="form-group">
           <label for="filter-year">Ano:</label>
-          <select id="filter-year">
-            <option value="">Todos</option>
-            <!-- Os anos serão preenchidos dinamicamente -->
-          </select>
+          <select id="filter-year"></select>
         </div>
       </div>
-      
+
       <div class="table-container">
-        <table class="editable-table">
+        <table class="editable-table" id="trocas-table">
           <thead>
             <tr>
               <th>Hospital</th>
@@ -1134,1189 +331,791 @@
               <th>Ações</th>
             </tr>
           </thead>
-          <tbody id="trocas-body">
-            <!-- Conteúdo será preenchido dinamicamente -->
-          </tbody>
+          <tbody id="trocas-body"></tbody>
         </table>
       </div>
-      
+
       <div class="modal-actions">
         <button class="btn btn-cancel" id="fechar-trocas-modal">Fechar</button>
       </div>
     </div>
   </div>
 
-  <!-- Notificação -->
   <div class="notification" id="notification"></div>
+  <div class="loading" id="loading"><div class="spinner"></div><p>Gerando PDF...</p></div>
 
-  <!-- Loading -->
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p>Gerando PDF...</p>
-  </div>
+<script>
+/* ============================
+   Dados iniciais / variáveis
+   ============================ */
+let allEscalas = {};
+let observacoes = [];
 
-  <script>
-    // Dados iniciais das escalas (agora por mês/ano)
-    let allEscalas = {};
-    let observacoes = [];
-    
-    // Mês e ano atuais
-    let currentMonth = new Date().getMonth();
-    let currentYear = new Date().getFullYear();
-    
-    // Dias da semana em português
-    const diasDaSemana = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-    
-    // Chave para armazenamento local
-    function getStorageKey() {
-      return `escala_plantoes_data`;
-    }
-    
-    // Obter escalas do mês atual
-    function getCurrentEscalas() {
-      const key = `${currentYear}_${currentMonth}`;
-      if (!allEscalas[key]) {
-        allEscalas[key] = {
-          "HUSE Diurno": [],
-          "HUSE Noturno": [],
-          "HRP Diurno": [],
-          "HRP Noturno": []
-        };
-      }
-      return allEscalas[key];
-    }
-    
-    // Obter escalas de um mês específico
-    function getEscalas(month, year) {
-      const key = `${year}_${month}`;
-      if (!allEscalas[key]) {
-        allEscalas[key] = {
-          "HUSE Diurno": [],
-          "HUSE Noturno": [],
-          "HRP Diurno": [],
-          "HRP Noturno": []
-        };
-      }
-      return allEscalas[key];
-    }
-    
-    // Função para contar trocas no HRP - ATUALIZADA
-    function contarTrocasHRP() {
-      // Conta apenas observações que ocorram no mês/ano atualmente visualizado (currentMonth/currentYear)
-      let c = 0;
-      observacoes.forEach(o => {
-        // função utilitária para extrair mês/ano de uma string YYYY-MM-DD (retorna {m,y} ou null)
-        const extrair = (dstr) => {
-          if (!dstr) return null;
-          // aceitar formatos ISO (YYYY-MM-DD). Evitar new Date direto por segurança.
-          const parts = dstr.split('-');
-          if (parts.length >= 3) {
-            const y = parseInt(parts[0], 10);
-            const m = parseInt(parts[1], 10) - 1; // retornar 0-based
-            if (!isNaN(y) && !isNaN(m)) return { m, y };
-          }
-          // fallback: tentar Date
-          const dt = new Date(dstr);
-          if (!isNaN(dt.getTime())) return { m: dt.getMonth(), y: dt.getFullYear() };
-          return null;
-        };
+const monthNames = [
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+];
 
-        const a = extrair(o.data);
-        const b = extrair(o.dataTroca);
-        const matchesMonth = (a && a.m === currentMonth && a.y === currentYear) ||
-                             (b && b.m === currentMonth && b.y === currentYear);
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
 
-        if (matchesMonth) {
-          // contar se a troca envolve HRP (origem ou destino)
-          if ((o.hospital && o.hospital.includes('HRP')) || (o.hospitalTroca && o.hospitalTroca.includes('HRP'))) {
-            c++;
-          }
-        }
-      });
-      return c;
-    }
-    
-    // Função para atualizar contadores
-    function atualizarContadores() {
-      const trocasHRP = contarTrocasHRP();
-      document.getElementById('hrp-trocas-count').textContent = trocasHRP;
-    }
-    
-    // Função para mostrar notificação
-    function mostrarNotificacao(mensagem, isError = false, isWarning = false) {
-      const notification = document.getElementById('notification');
-      notification.textContent = mensagem;
-      
-      if (isError) {
-        notification.className = 'notification error';
-      } else if (isWarning) {
-        notification.className = 'notification warning';
-      } else {
-        notification.className = 'notification';
-      }
-      
-      notification.classList.add('show');
-      
-      setTimeout(() => {
-        notification.classList.remove('show');
-      }, 5000);
-    }
-    
-    // Função para mostrar/ocultar loading
-    function mostrarLoading(mostrar) {
-      const loading = document.getElementById('loading');
-      if (mostrar) {
-        loading.classList.add('show');
-      } else {
-        loading.classList.remove('show');
-      }
-    }
-    
-    // Função para salvar dados no localStorage
-    function salvarDados() {
-      try {
-        const dadosParaSalvar = {
-          allEscalas: allEscalas,
-          observacoes: observacoes,
-          dataSalvamento: new Date().toISOString()
-        };
-        
-        localStorage.setItem(getStorageKey(), JSON.stringify(dadosParaSalvar));
-        atualizarContadores();
-        mostrarNotificacao('Dados salvos com sucesso!');
-      } catch (error) {
-        console.error('Erro ao salvar dados:', error);
-        mostrarNotificacao('Erro ao salvar dados!', true);
-      }
-    }
-    
-    // Função para carregar dados do localStorage
-    function carregarDados() {
-      try {
-        const dadosSalvos = localStorage.getItem(getStorageKey());
-        
-        if (dadosSalvos) {
-          const dados = JSON.parse(dadosSalvos);
-          allEscalas = dados.allEscalas || {};
-          observacoes = dados.observacoes || [];
-          
-          criarTabela();
-          atualizarContadores();
-          mostrarNotificacao('Dados carregados com sucesso!');
-        } else {
-          allEscalas = {};
-          observacoes = [];
-          criarTabela();
-          atualizarContadores();
-          mostrarNotificacao('Nenhum dado salvo encontrado!', true);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        mostrarNotificacao('Erro ao carregar dados!', true);
-      }
-    }
-    
-    // Função para detectar conflitos
-    function detectarConflitos() {
-      const escalas = getCurrentEscalas();
-      const conflitos = {};
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      for (let dia = 1; dia <= daysInMonth; dia++) {
-        const plantoesNoDia = [];
-        
-        Object.keys(escalas).forEach(hospital => {
-          if (escalas[hospital].includes(dia)) {
-            plantoesNoDia.push(hospital);
-          }
-        });
-        
-        if (plantoesNoDia.length > 1) {
-          conflitos[dia] = plantoesNoDia;
-        }
-      }
-      
-      return conflitos;
-    }
-    
-    // Função para obter dias com transição noturno → diurno e diurno → noturno no mesmo dia
-    function obterDiasComTransicaoDeslocamento() {
-      const escalas = getCurrentEscalas();
-      const diasComTransicao = new Set();
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      const noturnos = ["HUSE Noturno", "HRP Noturno"];
-      const diurnos = ["HUSE Diurno", "HRP Diurno"];
-      
-      // CASO 1: Noturno → Diurno (dia anterior → dia atual)
-      for (let dia = 1; dia <= daysInMonth; dia++) {
-        const diaAnterior = dia - 1;
-        if (diaAnterior >= 1) {
-          const temNoturnoAnterior = noturnos.some(noturno => 
-            escalas[noturno].includes(diaAnterior)
-          );
-          
-          const temDiurnoAtual = diurnos.some(diurno => 
-            escalas[diurno].includes(dia)
-          );
-          
-          if (temNoturnoAnterior && temDiurnoAtual) {
-            diasComTransicao.add(diaAnterior);
-            diasComTransicao.add(dia);
-          }
-        }
-      }
-      
-      // CASO 2: Diurno → Noturno no mesmo dia
-      for (let dia = 1; dia <= daysInMonth; dia++) {
-        const temDiurno = diurnos.some(diurno => 
-          escalas[diurno].includes(dia)
-        );
-        
-        const temNoturno = noturnos.some(noturno => 
-          escalas[noturno].includes(dia)
-        );
-        
-        if (temDiurno && temNoturno) {
-          diasComTransicao.add(dia);
-        }
-      }
-      
-      return Array.from(diasComTransicao);
-    }
-    
-    // Função para criar a tabela
-    function criarTabela() {
-      const tabelaHead = document.querySelector('#table-header');
-      const tabelaBody = document.querySelector('#table-body');
-      const conflitos = detectarConflitos();
-      const diasComTransicao = obterDiasComTransicaoDeslocamento();
-      const escalas = getCurrentEscalas();
-      
-      // Limpar conteúdo existente
-      tabelaHead.innerHTML = '<th>Hospitais & Dias</th>';
-      tabelaBody.innerHTML = '';
-      
-      // Obter o número de dias no mês atual
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      // Adicionar cabeçalhos dos dias
-      for (let dia = 1; dia <= daysInMonth; dia++) {
-        const data = new Date(currentYear, currentMonth, dia);
-        const diaSemana = data.getDay();
-        
-        const th = document.createElement('th');
-        
-        if (diaSemana === 0 || diaSemana === 6) {
-          th.className = diaSemana === 0 ? 'sunday' : 'weekend';
-        }
-        
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'day-header';
-        
-        const dayNumber = document.createElement('div');
-        dayNumber.className = 'day-number';
-        dayNumber.textContent = dia;
-        
-        const dayName = document.createElement('div');
-        dayName.className = 'day-name';
-        dayName.textContent = diasDaSemana[diaSemana];
-        
-        if (diasComTransicao.includes(dia)) {
-          const carroIndicator = document.createElement('div');
-          carroIndicator.className = 'carro-indicator';
-          carroIndicator.textContent = '🚗';
-          carroIndicator.title = 'Deslocamento necessário entre hospitais';
-          dayHeader.appendChild(carroIndicator);
-        }
-        
-        dayHeader.appendChild(dayNumber);
-        dayHeader.appendChild(dayName);
-        th.appendChild(dayHeader);
-        
-        th.setAttribute('data-day', dia);
-        tabelaHead.appendChild(th);
-      }
-      
-      // Adicionar linhas para cada hospital
-      const hospitaisOrdenados = ["HUSE Diurno", "HUSE Noturno", "HRP Diurno", "HRP Noturno"];
-      
-      hospitaisOrdenados.forEach(hospital => {
-        const tr = document.createElement('tr');
-        const tdNome = document.createElement('td');
-        tdNome.className = 'hospital-name';
-        tdNome.textContent = hospital;
-        tr.appendChild(tdNome);
-        
-        for (let dia = 1; dia <= daysInMonth; dia++) {
-          const data = new Date(currentYear, currentMonth, dia);
-          const diaSemana = data.getDay();
-          
-          const td = document.createElement('td');
-          
-          if (diaSemana === 0 || diaSemana === 6) {
-            td.className = diaSemana === 0 ? 'sunday' : 'weekend';
-          }
-          
-          td.setAttribute('data-hospital', hospital);
-          td.setAttribute('data-day', dia);
-          
-          if (escalas[hospital].includes(dia)) {
-            const div = document.createElement('div');
-            
-            if (conflitos[dia] && conflitos[dia].includes(hospital)) {
-              div.className = 'plantao-cell conflito-cell';
-              div.textContent = 'S';
-              div.title = 'Conflito de horário!';
-            } else if (diasComTransicao.includes(dia)) {
-              div.className = 'plantao-cell alerta-carro-cell';
-              div.textContent = 'S 🚗';
-              div.title = 'Plantão com deslocamento necessário entre hospitais';
-            } else {
-              div.className = 'plantao-cell plantao';
-              div.textContent = 'S';
-              div.title = 'Plantão confirmado';
-            }
-            
-            div.addEventListener('click', () => {
-              togglePlantao(hospital, dia);
-            });
-            
-            td.appendChild(div);
-          } else {
-            const div = document.createElement('div');
-            div.className = 'folga-cell';
-            div.textContent = 'Folga';
-            div.title = 'Dia de folga - Clique para adicionar plantão';
-            
-            div.addEventListener('click', () => {
-              togglePlantao(hospital, dia);
-            });
-            
-            td.appendChild(div);
-          }
-          
-          tr.appendChild(td);
-        }
-        
-        tabelaBody.appendChild(tr);
-      });
-    }
-    
-    // Função para adicionar/remover plantão
-    function togglePlantao(hospital, dia) {
-      const escalas = getCurrentEscalas();
-      const index = escalas[hospital].indexOf(dia);
-      
-      if (index === -1) {
-        escalas[hospital].push(dia);
-        escalas[hospital].sort((a, b) => a - b);
-      } else {
-        escalas[hospital].splice(index, 1);
-      }
-      
-      salvarDados();
-      criarTabela();
-    }
-    
-    // Função para redefinir dados
-    function redefinirDados() {
-      if (confirm('Tem certeza que deseja redefinir todos os dados para este mês/ano?')) {
-        const key = `${currentYear}_${currentMonth}`;
-        allEscalas[key] = {
-          "HUSE Diurno": [],
-          "HUSE Noturno": [],
-          "HRP Diurno": [],
-          "HRP Noturno": []
-        };
-        
-        // Remover observações deste mês
-        observacoes = observacoes.filter(obs => {
-          const dataObs = new Date(obs.data);
-          return dataObs.getMonth() !== currentMonth || dataObs.getFullYear() !== currentYear;
-        });
-        
-        criarTabela();
-        salvarDados();
-        mostrarNotificacao('Dados redefinidos com sucesso!');
-      }
-    }
+const diasDaSemana = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
 
-    // Função para realizar troca entre meses - CORRIGIDA
-    function realizarTroca() {
-      const origemHospital = document.getElementById('origem-hospital').value;
-      const destinoHospital = document.getElementById('destino-hospital').value;
-      const nome = document.getElementById('nome-troca').value;
-      const observacao = document.getElementById('obs-troca').value;
-      
-      const origemDataInput = document.getElementById('origem-data').value;
-      const origemMes = parseInt(document.getElementById('origem-mes').value);
-      const origemAno = parseInt(document.getElementById('origem-ano').value);
-      
-      const destinoDataInput = document.getElementById('destino-data').value;
-      const destinoMes = parseInt(document.getElementById('destino-mes').value);
-      const destinoAno = parseInt(document.getElementById('destino-ano').value);
+function getStorageKey(){ return `escala_plantoes_data`; }
 
-      // Validações básicas
-      if (!origemHospital || !destinoHospital || !nome || !origemDataInput || !destinoDataInput) {
-        mostrarNotificacao('Preencha todos os campos obrigatórios!', true);
-        return;
-      }
+/* ============================
+   Inicialização UI (meses/anos)
+   ============================ */
+function popularSelectsMesAno() {
+  const monthSelect = document.getElementById('month-select');
+  const yearSelect = document.getElementById('year-select');
 
-      // Converter datas para objetos Date
-      const [anoOrigem, mesOrigem, diaOrigem] = origemDataInput.split('-').map(Number);
-      const [anoDestino, mesDestino, diaDestino] = destinoDataInput.split('-').map(Number);
-      
-      const dataOrigem = new Date(anoOrigem, mesOrigem - 1, diaOrigem);
-      const dataDestino = new Date(anoDestino, mesDestino - 1, diaDestino);
-      
-      // Verificar se as datas são válidas
-      if (isNaN(dataOrigem.getTime()) || isNaN(dataDestino.getTime())) {
-        mostrarNotificacao('Datas inválidas!', true);
-        return;
-      }
+  monthSelect.innerHTML = '';
+  monthNames.forEach((m,i) => {
+    const opt = document.createElement('option'); opt.value = i; opt.textContent = m;
+    monthSelect.appendChild(opt);
+  });
+  monthSelect.value = currentMonth;
 
-      // Extrair o DIA da data (1-31)
-      const diaOrigemNum = dataOrigem.getDate();
-      const diaDestinoNum = dataDestino.getDate();
+  // anos (de -2 a +2 anos)
+  yearSelect.innerHTML = '';
+  for (let y = currentYear - 2; y <= currentYear + 2; y++) {
+    const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+    yearSelect.appendChild(opt);
+  }
+  yearSelect.value = currentYear;
 
-      // Obter escalas dos meses de origem e destino
-      const escalasOrigem = getEscalas(origemMes, origemAno);
-      const escalasDestino = getEscalas(destinoMes, destinoAno);
-
-      // Verificar se existe plantão na origem
-      if (!escalasOrigem[origemHospital].includes(diaOrigemNum)) {
-        const dataFormatada = dataOrigem.toLocaleDateString('pt-BR');
-        mostrarNotificacao(`Não existe plantão de ${origemHospital} no dia ${dataFormatada}!`, true);
-        return;
-      }
-
-      // Verificar se o destino está livre
-      if (escalasDestino[destinoHospital].includes(diaDestinoNum)) {
-        const dataFormatada = dataDestino.toLocaleDateString('pt-BR');
-        mostrarNotificacao(`Já existe plantão de ${destinoHospital} no dia ${dataFormatada}!`, true);
-        return;
-      }
-
-      // Realizar a troca nos meses de origem e destino
-      const indexOrigem = escalasOrigem[origemHospital].indexOf(diaOrigemNum);
-      escalasOrigem[origemHospital].splice(indexOrigem, 1);
-
-      escalasDestino[destinoHospital].push(diaDestinoNum);
-      escalasDestino[destinoHospital].sort((a, b) => a - b);
-
-      // Adicionar observação da troca - CORREÇÃO: garantir que seja salva
-      const novaObservacao = {
-        hospital: origemHospital,
-        data: origemDataInput,
-        dataTroca: destinoDataInput,
-        nome: nome,
-        observacao: observacao || `Troca realizada: ${origemHospital} → ${destinoHospital}`
-      };
-      
-      observacoes.push(novaObservacao);
-
-      // Fechar modal e atualizar interface
-      fecharModal();
-      salvarDados();
-      
-      // Atualizar a tabela atual se for o mês de origem ou destino
-      if ((origemMes === currentMonth && origemAno === currentYear) || 
-          (destinoMes === currentMonth && destinoAno === currentYear)) {
-        criarTabela();
-      }
-      
-      const dataOrigemFormatada = dataOrigem.toLocaleDateString('pt-BR');
-      const dataDestinoFormatada = dataDestino.toLocaleDateString('pt-BR');
-      
-      mostrarNotificacao(`Troca realizada com sucesso! ${origemHospital} ${dataOrigemFormatada} → ${destinoHospital} ${dataDestinoFormatada}`);
-    }
-
-    // Função para abrir modal de troca
-    function abrirModalTroca() {
-      const modal = document.getElementById('troca-modal');
-      modal.classList.add('show');
-
-      // Limpar campos
-      document.getElementById('origem-hospital').value = '';
-      document.getElementById('destino-hospital').value = '';
-      
-      // Preencher com datas que estão no mês/ano correto
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      // Usar datas no meio do mês
-      const diaOrigemSugerido = Math.max(1, Math.min(15, daysInMonth));
-      const diaDestinoSugerido = Math.max(1, Math.min(20, daysInMonth));
-      
-      // Garantir que as datas são do mês/ano correto
-      const dataOrigemSugerida = new Date(currentYear, currentMonth, diaOrigemSugerido);
-      const dataDestinoSugerida = new Date(currentYear, currentMonth, diaDestinoSugerido);
-      
-      // Formatar datas como YYYY-MM-DD
-      const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-      
-      document.getElementById('origem-data').value = formatDate(dataOrigemSugerida);
-      document.getElementById('destino-data').value = formatDate(dataDestinoSugerida);
-      
-      // Definir meses/anos atuais
-      document.getElementById('origem-mes').value = currentMonth;
-      document.getElementById('origem-ano').value = currentYear;
-      document.getElementById('destino-mes').value = currentMonth;
-      document.getElementById('destino-ano').value = currentYear;
-      
-      document.getElementById('nome-troca').value = '';
-      document.getElementById('obs-troca').value = '';
-    }
-
-    // Função para fechar modal
-    function fecharModal() {
-      const modal = document.getElementById('troca-modal');
-      modal.classList.remove('show');
-    }
-    
-    // Função para popular tabela de trocas - ATUALIZADA
-    function popularTabelaTrocas() {
-      const tbody = document.getElementById('trocas-body');
-      tbody.innerHTML = '';
-
-      const fMonthVal = document.getElementById('filter-month').value;
-      const fYearVal = document.getElementById('filter-year').value;
-
-      // converter filtros para integers quando fornecidos; fMonth será 0..11 (se preenchido)
-      const hasFilterMonth = fMonthVal !== '';
-      const hasFilterYear = fYearVal !== '';
-      const fMonth = hasFilterMonth ? parseInt(fMonthVal, 10) : null;
-      const fYear = hasFilterYear ? parseInt(fYearVal, 10) : null;
-
-      const extrair = (dstr) => {
-        if (!dstr) return null;
-        const parts = dstr.split('-');
-        if (parts.length >= 3) {
-          const y = parseInt(parts[0],10);
-          const m = parseInt(parts[1],10) - 1;
-          const day = parseInt(parts[2],10);
-          if (!isNaN(y) && !isNaN(m) && !isNaN(day)) return { m, y, day };
-        }
-        const dt = new Date(dstr);
-        if (!isNaN(dt.getTime())) return { m: dt.getMonth(), y: dt.getFullYear(), day: dt.getDate() };
-        return null;
-      };
-
-      const filtradas = observacoes.filter(o => {
-        if (!hasFilterMonth && !hasFilterYear) return true;
-
-        const a = extrair(o.data);
-        const b = extrair(o.dataTroca);
-
-        let ok = false;
-        if (a) {
-          if ((!hasFilterMonth || a.m === fMonth) && (!hasFilterYear || a.y === fYear)) ok = true;
-        }
-        if (b && !ok) {
-          if ((!hasFilterMonth || b.m === fMonth) && (!hasFilterYear || b.y === fYear)) ok = true;
-        }
-        return ok;
-      });
-
-      if (filtradas.length === 0) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = '<td colspan="6" style="text-align:center; color:#666;">Nenhuma troca registrada</td>';
-        tbody.appendChild(tr);
-        return;
-      }
-
-      filtradas.forEach((o, i) => {
-        const tr = document.createElement('tr');
-        // hospital select
-        const tdH = document.createElement('td');
-        const selH = document.createElement('select');
-        ['','HUSE Diurno','HUSE Noturno','HRP Diurno','HRP Noturno'].forEach(val=>{
-          const opt = document.createElement('option'); opt.value = val; opt.textContent = val || '-- selecione --';
-          if (val === o.hospital) opt.selected = true;
-          selH.appendChild(opt);
-        });
-        selH.addEventListener('change', e => { o.hospital = e.target.value; salvarDados(); popularTabelaTrocas(); });
-        tdH.appendChild(selH); tr.appendChild(tdH);
-
-        // data origem
-        const tdD = document.createElement('td');
-        const inpD = document.createElement('input'); inpD.type='date'; inpD.value = o.data || '';
-        inpD.addEventListener('change', e => { o.data = e.target.value; salvarDados(); popularTabelaTrocas(); });
-        tdD.appendChild(inpD); tr.appendChild(tdD);
-
-        // data troca
-        const tdDT = document.createElement('td');
-        const inpDT = document.createElement('input'); inpDT.type='date'; inpDT.value = o.dataTroca || '';
-        inpDT.addEventListener('change', e => { o.dataTroca = e.target.value; salvarDados(); popularTabelaTrocas(); });
-        tdDT.appendChild(inpDT); tr.appendChild(tdDT);
-
-        // nome
-        const tdN = document.createElement('td');
-        const inpN = document.createElement('input'); inpN.type='text'; inpN.value = o.nome || ''; inpN.placeholder='Nome';
-        inpN.addEventListener('change', e => { o.nome = e.target.value; salvarDados(); });
-        tdN.appendChild(inpN); tr.appendChild(tdN);
-
-        // obs
-        const tdO = document.createElement('td');
-        const inpO = document.createElement('input'); inpO.type='text'; inpO.value = o.observacao || ''; inpO.placeholder='Observação';
-        inpO.addEventListener('change', e => { o.observacao = e.target.value; salvarDados(); });
-        tdO.appendChild(inpO); tr.appendChild(tdO);
-
-        // ações
-        const tdA = document.createElement('td');
-        const btnDel = document.createElement('button'); 
-        btnDel.className='btn btn-danger'; 
-        btnDel.innerHTML = '<i class="fas fa-trash"></i>';
-        btnDel.title = 'Excluir troca';
-        btnDel.addEventListener('click', ()=> {
-          if (confirm('Tem certeza que deseja excluir esta troca?')) {
-            const idx = observacoes.indexOf(o);
-            if (idx>-1){ 
-              observacoes.splice(idx,1); 
-              salvarDados(); 
-              popularTabelaTrocas(); 
-              criarTabela(); 
-              mostrarNotificacao('Troca excluída com sucesso!');
-            }
-          }
-        });
-        tdA.appendChild(btnDel);
-        tr.appendChild(tdA);
-
-        tbody.appendChild(tr);
-      });
-
-      // Atualizar contador no modal
-      document.getElementById('trocas-count').textContent = filtradas.length;
-    }
-
-    // NOVA FUNÇÃO: Abrir modal de visualização de trocas
-    function abrirModalTrocas() {
-      const modal = document.getElementById('trocas-modal');
-      
-      // Definir filtros para o mês atual
-      document.getElementById('filter-month').value = currentMonth;
-      document.getElementById('filter-year').value = currentYear;
-      
-      popularTabelaTrocas();
-      modal.classList.add('show');
-    }
-
-    // NOVA FUNÇÃO: Fechar modal de trocas
-    function fecharModalTrocas() {
-      const modal = document.getElementById('trocas-modal');
-      modal.classList.remove('show');
-    }
-    
-    // Função para gerar PDF com possíveis trocas
-    function gerarPossiveisTrocasPDF() {
-      mostrarLoading(true);
-      
-      setTimeout(() => {
-        try {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF('p', 'mm', 'a4');
-          const escalas = getCurrentEscalas();
-          const trocasHRP = contarTrocasHRP();
-          const maxTrocasHRP = 6;
-          const trocasRestantesHRP = maxTrocasHRP - trocasHRP;
-          
-          const monthNames = [
-            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-          ];
-          const monthName = monthNames[currentMonth];
-          
-          // PÁGINA 1: CABEÇALHO E INFORMAÇÕES
-          doc.setFontSize(20);
-          doc.setTextColor(26, 82, 118);
-          doc.text(`Possíveis Trocas de Plantão - ${monthName} ${currentYear}`, 20, 20);
-          
-          doc.setFontSize(10);
-          doc.setTextColor(100, 100, 100);
-          doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`, 20, 30);
-          
-          // Informações sobre trocas no HRP
-          doc.setFontSize(12);
-          doc.setTextColor(231, 76, 60);
-          doc.text(`Trocas no HRP este mês: ${trocasHRP} de ${maxTrocasHRP} (${trocasRestantesHRP} restantes)`, 20, 45);
-          
-          // Análise da escala atual
-          doc.setFontSize(14);
-          doc.setTextColor(26, 82, 118);
-          doc.text('Análise da Escala Atual:', 20, 60);
-          
-          doc.setFontSize(10);
-          doc.setTextColor(100, 100, 100);
-          
-          let yPos = 70;
-          
-          // Contar plantões por hospital
-          Object.keys(escalas).forEach(hospital => {
-            const count = escalas[hospital].length;
-            doc.text(`${hospital}: ${count} plantões`, 20, yPos);
-            yPos += 6;
-          });
-          
-          yPos += 10;
-          
-          // Detectar conflitos
-          const conflitos = detectarConflitos();
-          if (Object.keys(conflitos).length > 0) {
-            doc.setFontSize(12);
-            doc.setTextColor(231, 76, 60);
-            doc.text('Conflitos Detectados:', 20, yPos);
-            yPos += 8;
-            
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            
-            Object.keys(conflitos).forEach(dia => {
-              doc.text(`Dia ${dia}: ${conflitos[dia].join(', ')}`, 20, yPos);
-              yPos += 6;
-              
-              if (yPos > 270) {
-                doc.addPage();
-                yPos = 20;
-              }
-            });
-            
-            yPos += 10;
-          }
-          
-          // SUGESTÕES DE TROCAS
-          doc.addPage();
-          doc.setFontSize(16);
-          doc.setTextColor(26, 82, 118);
-          doc.text('Sugestões de Trocas Possíveis', 20, 20);
-          
-          doc.setFontSize(10);
-          doc.setTextColor(100, 100, 100);
-          doc.text('As seguintes trocas são sugeridas para melhorar a distribuição de plantões:', 20, 30);
-          
-          yPos = 40;
-          
-          // Gerar sugestões de trocas
-          const sugestoes = gerarSugestoesTrocas();
-          
-          if (sugestoes.length === 0) {
-            doc.setFontSize(12);
-            doc.setTextColor(100, 100, 100);
-            doc.text('Não foram encontradas sugestões de trocas para este mês.', 20, yPos);
-          } else {
-            sugestoes.forEach((sugestao, index) => {
-              if (yPos > 270) {
-                doc.addPage();
-                yPos = 20;
-              }
-              
-              doc.setFontSize(12);
-              doc.setTextColor(52, 152, 219);
-              doc.text(`Sugestão ${index + 1}:`, 20, yPos);
-              yPos += 8;
-              
-              doc.setFontSize(10);
-              doc.setTextColor(100, 100, 100);
-              doc.text(`Trocar ${sugestao.origem} no dia ${sugestao.diaOrigem} por ${sugestao.destino} no dia ${sugestao.diaDestino}`, 20, yPos);
-              yPos += 6;
-              
-              doc.text(`Benefício: ${sugestao.beneficio}`, 20, yPos);
-              yPos += 6;
-              
-              doc.text(`Complexidade: ${sugestao.complexidade}`, 20, yPos);
-              yPos += 10;
-            });
-          }
-          
-          // PÁGINA FINAL: RECOMENDAÇÕES
-          doc.addPage();
-          doc.setFontSize(16);
-          doc.setTextColor(26, 82, 118);
-          doc.text('Recomendações para Trocas', 20, 20);
-          
-          doc.setFontSize(10);
-          doc.setTextColor(100, 100, 100);
-          
-          const recomendacoes = [
-            '1. Priorize trocas que resolvam conflitos de horários',
-            '2. Considere o limite máximo de 6 trocas no HRP por mês',
-            '3. Evite trocas que criem deslocamentos desnecessários entre hospitais',
-            '4. Mantenha um equilíbrio entre plantões diurnos e noturnos',
-            '5. Considere a proximidade das datas para facilitar a organização',
-            '6. Comunique todas as trocas com antecedência à chefia'
-          ];
-          
-          yPos = 40;
-          recomendacoes.forEach(recomendacao => {
-            doc.text(recomendacao, 20, yPos);
-            yPos += 8;
-          });
-          
-          yPos += 10;
-          doc.setFontSize(12);
-          doc.setTextColor(231, 76, 60);
-          doc.text('Lembrete Importante:', 20, yPos);
-          yPos += 8;
-          
-          doc.setFontSize(10);
-          doc.setTextColor(100, 100, 100);
-          doc.text('Todas as trocas devem ser registradas no sistema para controle e aprovação.', 20, yPos);
-          
-          const pageHeight = doc.internal.pageSize.height;
-          doc.setFontSize(9);
-          doc.setTextColor(150, 150, 150);
-          doc.text('Sistema de Gerenciamento de Escalas - Gerador de Possíveis Trocas', 20, pageHeight - 10);
-          
-          doc.save(`Possiveis_Trocas_${monthName}_${currentYear}.pdf`);
-          
-          mostrarLoading(false);
-          mostrarNotificacao('PDF com possíveis trocas gerado com sucesso!');
-        } catch (error) {
-          console.error('Erro ao gerar PDF de trocas:', error);
-          mostrarLoading(false);
-          mostrarNotificacao('Erro ao gerar PDF!', true);
-        }
-      }, 100);
-    }
-    
-    // Função para gerar sugestões de trocas
-    function gerarSugestoesTrocas() {
-      const escalas = getCurrentEscalas();
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      const conflitos = detectarConflitos();
-      const sugestoes = [];
-      const trocasHRP = contarTrocasHRP();
-      const maxTrocasHRP = 6;
-      
-      // Prioridade 1: Resolver conflitos
-      Object.keys(conflitos).forEach(dia => {
-        const diaNum = parseInt(dia);
-        const hospitaisConflito = conflitos[dia];
-        
-        // Para cada hospital em conflito, tentar encontrar um dia livre para troca
-        hospitaisConflito.forEach(hospitalConflito => {
-          for (let diaDestino = 1; diaDestino <= daysInMonth; diaDestino++) {
-            // Verificar se o dia de destino está livre para este hospital
-            if (!escalas[hospitalConflito].includes(diaDestino)) {
-              // Verificar se a troca não criaria outro conflito
-              let conflitoNovo = false;
-              Object.keys(escalas).forEach(outroHospital => {
-                if (outroHospital !== hospitalConflito && escalas[outroHospital].includes(diaDestino)) {
-                  conflitoNovo = true;
-                }
-              });
-              
-              if (!conflitoNovo) {
-                // Verificar limite de trocas no HRP
-                if (hospitalConflito.includes('HRP') && trocasHRP >= maxTrocasHRP) {
-                  continue;
-                }
-                
-                sugestoes.push({
-                  origem: hospitalConflito,
-                  diaOrigem: diaNum,
-                  destino: hospitalConflito,
-                  diaDestino: diaDestino,
-                  beneficio: 'Resolver conflito de horários',
-                  complexidade: 'Baixa'
-                });
-                break;
-              }
-            }
-          }
-        });
-      });
-      
-      // Prioridade 2: Melhorar distribuição (evitar muitos plantões consecutivos)
-      Object.keys(escalas).forEach(hospital => {
-        const plantoes = escalas[hospital];
-        
-        // Verificar se há muitos plantões consecutivos
-        for (let i = 0; i < plantoes.length - 3; i++) {
-          if (plantoes[i+3] - plantoes[i] <= 4) {
-            // Encontrar um dia livre para trocar um dos plantões
-            for (let diaDestino = 1; diaDestino <= daysInMonth; diaDestino++) {
-              if (!plantoes.includes(diaDestino) && 
-                  Math.abs(diaDestino - plantoes[i]) > 2) {
-                
-                // Verificar se a troca não criaria conflito
-                let conflitoNovo = false;
-                Object.keys(escalas).forEach(outroHospital => {
-                  if (outroHospital !== hospital && escalas[outroHospital].includes(diaDestino)) {
-                    conflitoNovo = true;
-                  }
-                });
-                
-                if (!conflitoNovo) {
-                  // Verificar limite de trocas no HRP
-                  if (hospital.includes('HRP') && trocasHRP >= maxTrocasHRP) {
-                    continue;
-                  }
-                  
-                  sugestoes.push({
-                    origem: hospital,
-                    diaOrigem: plantoes[i],
-                    destino: hospital,
-                    diaDestino: diaDestino,
-                    beneficio: 'Melhorar distribuição de plantões',
-                    complexidade: 'Média'
-                  });
-                  break;
-                }
-              }
-            }
-          }
-        }
-      });
-      
-      // Limitar a 10 sugestões para não sobrecarregar o PDF
-      return sugestoes.slice(0, 10);
-    }
-    
-    // Função para exportar para PDF
-    function exportarParaPDF() {
-      mostrarLoading(true);
-      
-      setTimeout(() => {
-        try {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF('l', 'mm', 'a4');
-          const tabela = document.getElementById('escala-table');
-          const trocasHRP = contarTrocasHRP();
-          
-          const monthNames = [
-            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-          ];
-          const monthName = monthNames[currentMonth];
-          
-          // PÁGINA 1: ESCALA DE PLANTÕES
-          doc.setFontSize(20);
-          doc.setTextColor(26, 82, 118);
-          doc.text(`Escala de Plantões - ${monthName} ${currentYear}`, 20, 20);
-          
-          doc.setFontSize(10);
-          doc.setTextColor(100, 100, 100);
-          doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`, 20, 30);
-          
-          html2canvas(tabela, {
-            scale: 2,
-            useCORS: true,
-            logging: false
-          }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const imgWidth = 270;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            
-            doc.addImage(imgData, 'PNG', 15, 40, imgWidth, imgHeight);
-            
-            const infoY = 40 + imgHeight + 15;
-            doc.setFontSize(12);
-            doc.setTextColor(26, 82, 118);
-            doc.text('INFORMAÇÕES:', 20, infoY);
-            
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            
-            const informacoes = [
-              '• Plantões noturnos: 19h às 7h do dia seguinte',
-              '• Plantões diurnos: 7h às 19h',
-              '• Símbolo "S" indica plantão confirmado',
-              '• "Folga" indica dia sem plantão',
-              '• 🚗 indica deslocamento necessário entre hospitais',
-              '• Células em vermelho indicam conflito de horários'
-            ];
-            
-            informacoes.forEach((info, index) => {
-              doc.text(info, 20, infoY + 10 + (index * 5));
-            });
-            
-            const pageHeight = doc.internal.pageSize.height;
-            doc.setFontSize(9);
-            doc.setTextColor(150, 150, 150);
-            doc.text('Página 1 de 2 - Escala de Plantões', 20, pageHeight - 10);
-            
-            // PÁGINA 2: TROCAS E OBSERVAÇÕES
-            doc.addPage();
-            
-            doc.setFontSize(20);
-            doc.setTextColor(26, 82, 118);
-            doc.text(`Registro de Trocas e Observações - ${monthName} ${currentYear}`, 20, 20);
-            
-            doc.setFontSize(16);
-            doc.setTextColor(231, 76, 60);
-            doc.text(`Trocas no HRP este mês: ${trocasHRP}`, 20, 40);
-            
-            if (observacoes.length > 0) {
-              // Criar uma tabela simples para as trocas
-              let yPos = 60;
-              doc.setFontSize(12);
-              doc.setTextColor(26, 82, 118);
-              doc.text('Trocas Registradas:', 20, yPos);
-              yPos += 10;
-              
-              doc.setFontSize(10);
-              doc.setTextColor(100, 100, 100);
-              
-              const observacoesDoMes = observacoes.filter(obs => {
-                if (!obs.data) return false;
-                const dataObs = new Date(obs.data);
-                return dataObs.getMonth() === currentMonth && dataObs.getFullYear() === currentYear;
-              });
-              
-              observacoesDoMes.forEach(obs => {
-                if (yPos > 270) {
-                  doc.addPage();
-                  yPos = 20;
-                }
-                
-                const texto = `${obs.hospital} - ${obs.data ? new Date(obs.data).toLocaleDateString('pt-BR') : ''} → ${obs.dataTroca ? new Date(obs.dataTroca).toLocaleDateString('pt-BR') : ''} - ${obs.nome}`;
-                doc.text(texto, 20, yPos);
-                yPos += 6;
-                
-                if (obs.observacao) {
-                  doc.text(`Obs: ${obs.observacao}`, 25, yPos);
-                  yPos += 6;
-                }
-                
-                yPos += 4;
-              });
-            } else {
-              doc.setFontSize(14);
-              doc.setTextColor(100, 100, 100);
-              doc.text('Nenhuma troca ou observação registrada para este mês.', 20, 60);
-            }
-            
-            const infoObsY = 270;
-            doc.setFontSize(12);
-            doc.setTextColor(100, 100, 100);
-            doc.text('• As trocas devem ser comunicadas com antecedência à chefia', 20, infoObsY);
-            doc.text('• Observações devem ser registradas para controle', 20, infoObsY + 8);
-            
-            const pageHeight2 = doc.internal.pageSize.height;
-            doc.setFontSize(9);
-            doc.setTextColor(150, 150, 150);
-            doc.text('Página 2 de 2 - Registro de Trocas e Observações', 20, pageHeight2 - 15);
-            doc.text('Sistema de Gerenciamento de Escalas - Desenvolvido para facilitar o controle de plantões', 
-                    20, pageHeight2 - 8);
-            
-            doc.save(`Escala_Plantões_${monthName}_${currentYear}.pdf`);
-            
-            mostrarLoading(false);
-            mostrarNotificacao('PDF exportado com sucesso!');
-          }).catch(error => {
-            console.error('Erro ao gerar PDF:', error);
-            mostrarLoading(false);
-            mostrarNotificacao('Erro ao gerar PDF!', true);
-          });
-          
-        } catch (error) {
-          console.error('Erro ao exportar para PDF:', error);
-          mostrarLoading(false);
-          mostrarNotificacao('Erro ao exportar para PDF!', true);
-        }
-      }, 100);
-    }
-    
-    // Função para preencher os seletores de anos
-    function preencherAnos() {
-      const yearSelect = document.getElementById('year-select');
-      const origemAnoSelect = document.getElementById('origem-ano');
-      const destinoAnoSelect = document.getElementById('destino-ano');
-      const filterYearSelect = document.getElementById('filter-year');
-      const currentYear = new Date().getFullYear();
-      
-      for (let year = 2020; year <= 2030; year++) {
-        // Para o seletor principal
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
-        
-        // Para os seletores do modal
-        const optionOrigem = document.createElement('option');
-        optionOrigem.value = year;
-        optionOrigem.textContent = year;
-        origemAnoSelect.appendChild(optionOrigem);
-        
-        const optionDestino = document.createElement('option');
-        optionDestino.value = year;
-        optionDestino.textContent = year;
-        destinoAnoSelect.appendChild(optionDestino);
-        
-        // Para o filtro da modal de trocas
-        const optionFilter = document.createElement('option');
-        optionFilter.value = year;
-        optionFilter.textContent = year;
-        filterYearSelect.appendChild(optionFilter);
-      }
-      
-      yearSelect.value = currentYear;
-      origemAnoSelect.value = currentYear;
-      destinoAnoSelect.value = currentYear;
-      filterYearSelect.value = currentYear;
-    }
-    
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', function() {
-      preencherAnos();
-      document.getElementById('month-select').value = currentMonth;
-      carregarDados();
-      criarTabela();
-      
-      // Event Listeners
-      document.getElementById('save-data').addEventListener('click', salvarDados);
-      document.getElementById('load-data').addEventListener('click', carregarDados);
-      document.getElementById('reset-data').addEventListener('click', redefinirDados);
-      document.getElementById('gerar-trocas').addEventListener('click', gerarPossiveisTrocasPDF);
-      document.getElementById('export-pdf').addEventListener('click', exportarParaPDF);
-      document.getElementById('nova-troca').addEventListener('click', abrirModalTroca);
-      document.getElementById('ver-trocas').addEventListener('click', abrirModalTrocas);
-      
-      // Modal events
-      document.getElementById('close-modal').addEventListener('click', fecharModal);
-      document.getElementById('cancelar-troca').addEventListener('click', fecharModal);
-      document.getElementById('confirmar-troca').addEventListener('click', realizarTroca);
-      
-      // Modal de trocas events
-      document.getElementById('close-trocas-modal').addEventListener('click', fecharModalTrocas);
-      document.getElementById('fechar-trocas-modal').addEventListener('click', fecharModalTrocas);
-      
-      // Filtros da modal de trocas
-      document.getElementById('filter-month').addEventListener('change', popularTabelaTrocas);
-      document.getElementById('filter-year').addEventListener('change', popularTabelaTrocas);
-      
-      // Fechar modal ao clicar fora
-      document.getElementById('troca-modal').addEventListener('click', (e) => {
-        if (e.target.id === 'troca-modal') {
-          fecharModal();
-        }
-      });
-      
-      document.getElementById('trocas-modal').addEventListener('click', (e) => {
-        if (e.target.id === 'trocas-modal') {
-          fecharModalTrocas();
-        }
-      });
-      
-      // Mudança de mês/ano
-      document.getElementById('month-select').addEventListener('change', (e) => {
-        currentMonth = parseInt(e.target.value);
-        carregarDados();
-      });
-      
-      document.getElementById('year-select').addEventListener('change', (e) => {
-        currentYear = parseInt(e.target.value);
-        carregarDados();
-      });
-      
-      window.addEventListener('beforeunload', salvarDados);
+  // preencher selects de origem/destino no modal
+  ['origem-mes','destino-mes','filter-month'].forEach(id => {
+    const s = document.getElementById(id);
+    if (!s) return;
+    s.innerHTML = '<option value="">Todos</option>';
+    monthNames.forEach((m,i) => {
+      const opt = document.createElement('option'); opt.value = i; opt.textContent = m;
+      s.appendChild(opt);
     });
-  </script>
+    if (id === 'filter-month') {
+      s.value = currentMonth;
+    } else {
+      s.value = currentMonth;
+    }
+  });
+
+  ['origem-ano','destino-ano','filter-year'].forEach(id => {
+    const s = document.getElementById(id);
+    if (!s) return;
+    s.innerHTML = '';
+    for (let y = currentYear - 2; y <= currentYear + 2; y++){
+      const opt = document.createElement('option'); opt.value = y; opt.textContent = y;
+      s.appendChild(opt);
+    }
+    if (id === 'filter-year') s.value = currentYear;
+    else s.value = currentYear;
+  });
+}
+
+/* ============================
+   Escalas: obter/montar
+   ============================ */
+function getEscalas(month, year) {
+  const key = `${year}_${month}`;
+  if (!allEscalas[key]) {
+    allEscalas[key] = {
+      "HUSE Diurno": [],
+      "HUSE Noturno": [],
+      "HRP Diurno": [],
+      "HRP Noturno": []
+    };
+  }
+  return allEscalas[key];
+}
+function getCurrentEscalas(){ return getEscalas(currentMonth, currentYear); }
+
+/* ============================
+   Contadores / notificações
+   ============================ */
+function mostrarNotificacao(mensagem, isError=false, isWarning=false) {
+  const notification = document.getElementById('notification');
+  notification.textContent = mensagem;
+  notification.className = 'notification';
+  if (isError) notification.classList.add('error');
+  if (isWarning) notification.classList.add('warning');
+  notification.classList.add('show');
+  setTimeout(()=> notification.classList.remove('show'), 5000);
+}
+function mostrarLoading(mostrar){
+  const l = document.getElementById('loading');
+  if (mostrar) l.classList.add('show'); else l.classList.remove('show');
+}
+
+/* ============================
+   Salvar / Carregar / Reset
+   ============================ */
+function salvarDados() {
+  try {
+    const dados = { allEscalas, observacoes, dataSalvamento: new Date().toISOString() };
+    localStorage.setItem(getStorageKey(), JSON.stringify(dados));
+    atualizarContadores();
+    mostrarNotificacao('Dados salvos com sucesso!');
+  } catch(err){
+    console.error(err);
+    mostrarNotificacao('Erro ao salvar dados!', true);
+  }
+}
+function carregarDados() {
+  try {
+    const raw = localStorage.getItem(getStorageKey());
+    if (raw) {
+      const dados = JSON.parse(raw);
+      allEscalas = dados.allEscalas || {};
+      observacoes = dados.observacoes || [];
+      criarTabela();
+      atualizarContadores();
+      mostrarNotificacao('Dados carregados com sucesso!');
+    } else {
+      allEscalas = {};
+      observacoes = [];
+      criarTabela();
+      atualizarContadores();
+      mostrarNotificacao('Nenhum dado salvo encontrado', true);
+    }
+  } catch(err){
+    console.error(err);
+    mostrarNotificacao('Erro ao carregar dados!', true);
+  }
+}
+function redefinirDados() {
+  if (!confirm('Tem certeza que deseja redefinir todos os dados para este mês/ano?')) return;
+  const key = `${currentYear}_${currentMonth}`;
+  allEscalas[key] = { "HUSE Diurno": [], "HUSE Noturno": [], "HRP Diurno": [], "HRP Noturno": [] };
+  // remover observações deste mês/ano
+  observacoes = observacoes.filter(obs => {
+    const dt = new Date(obs.data);
+    return !(dt.getMonth() === currentMonth && dt.getFullYear() === currentYear);
+  });
+  criarTabela();
+  salvarDados();
+  mostrarNotificacao('Dados redefinidos com sucesso!');
+}
+
+/* ============================
+   Contar trocas HRP (filtradas pelo mês/ano visualizado)
+   ============================ */
+function contarTrocasHRP() {
+  let c = 0;
+  observacoes.forEach(o => {
+    const extrair = (dstr) => {
+      if (!dstr) return null;
+      const parts = dstr.split('-');
+      if (parts.length >= 3) {
+        const y = parseInt(parts[0],10);
+        const m = parseInt(parts[1],10) - 1;
+        if (!isNaN(y) && !isNaN(m)) return { m, y };
+      }
+      const dt = new Date(dstr);
+      if (!isNaN(dt.getTime())) return { m: dt.getMonth(), y: dt.getFullYear() };
+      return null;
+    };
+    const a = extrair(o.data);
+    const b = extrair(o.dataTroca);
+    const matches = (a && a.m === currentMonth && a.y === currentYear) || (b && b.m === currentMonth && b.y === currentYear);
+    if (matches) {
+      if ((o.hospital && o.hospital.includes('HRP')) || (o.hospitalTroca && o.hospitalTroca.includes && o.hospitalTroca.includes('HRP')) || (o.hospitalTroca && o.hospitalTroca.includes('HRP'))) {
+        c++;
+      }
+    }
+  });
+  return c;
+}
+function atualizarContadores(){
+  document.getElementById('hrp-trocas-count').textContent = contarTrocasHRP();
+}
+
+/* ============================
+   Detectar conflitos / transições
+   ============================ */
+function detectarConflitos() {
+  const escalas = getCurrentEscalas();
+  const conflitos = {};
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  for (let dia = 1; dia <= daysInMonth; dia++) {
+    const plantoes = [];
+    Object.keys(escalas).forEach(h => { if (escalas[h].includes(dia)) plantoes.push(h); });
+    if (plantoes.length > 1) conflitos[dia] = plantoes;
+  }
+  return conflitos;
+}
+function obterDiasComTransicaoDeslocamento() {
+  const escalas = getCurrentEscalas();
+  const dias = new Set();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const noturnos = ["HUSE Noturno","HRP Noturno"];
+  const diurnos = ["HUSE Diurno","HRP Diurno"];
+
+  for (let d = 1; d <= daysInMonth; d++){
+    const diaAnterior = d - 1;
+    if (diaAnterior >= 1) {
+      const temNoturnoAnterior = noturnos.some(n => escalas[n].includes(diaAnterior));
+      const temDiurnoAtual = diurnos.some(di => escalas[di].includes(d));
+      if (temNoturnoAnterior && temDiurnoAtual) { dias.add(diaAnterior); dias.add(d); }
+    }
+  }
+  for (let d = 1; d <= daysInMonth; d++){
+    const temDiurno = diurnos.some(di => escalas[di].includes(d));
+    const temNoturno = noturnos.some(no => escalas[no].includes(d));
+    if (temDiurno && temNoturno) dias.add(d);
+  }
+  return Array.from(dias);
+}
+
+/* ============================
+   Criar tabela principal
+   ============================ */
+function criarTabela() {
+  const tabelaHead = document.querySelector('#table-header');
+  const tabelaBody = document.querySelector('#table-body');
+  const conflitos = detectarConflitos();
+  const diasComTransicao = obterDiasComTransicaoDeslocamento();
+  const escalas = getCurrentEscalas();
+
+  tabelaHead.innerHTML = '<th>Hospitais & Dias</th>';
+  tabelaBody.innerHTML = '';
+
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  for (let dia = 1; dia <= daysInMonth; dia++){
+    const data = new Date(currentYear, currentMonth, dia);
+    const diaSemana = data.getDay();
+
+    const th = document.createElement('th');
+    if (diaSemana === 0 || diaSemana === 6) th.className = diaSemana === 0 ? 'sunday' : 'weekend';
+
+    const dayHeader = document.createElement('div'); dayHeader.className = 'day-header';
+    const dayNumber = document.createElement('div'); dayNumber.className = 'day-number'; dayNumber.textContent = dia;
+    const dayName = document.createElement('div'); dayName.className = 'day-name'; dayName.textContent = diasDaSemana[diaSemana];
+
+    if (diasComTransicao.includes(dia)) {
+      const carroIndicator = document.createElement('div'); carroIndicator.className = 'carro-indicator'; carroIndicator.textContent = '🚗';
+      carroIndicator.title = 'Deslocamento necessário entre hospitais';
+      dayHeader.appendChild(carroIndicator);
+    }
+    dayHeader.appendChild(dayNumber); dayHeader.appendChild(dayName); th.appendChild(dayHeader);
+    th.setAttribute('data-day', dia);
+    tabelaHead.appendChild(th);
+  }
+
+  const hospitaisOrdenados = ["HUSE Diurno","HUSE Noturno","HRP Diurno","HRP Noturno"];
+  hospitaisOrdenados.forEach(hospital => {
+    const tr = document.createElement('tr');
+    const tdNome = document.createElement('td'); tdNome.className = 'hospital-name'; tdNome.textContent = hospital; tr.appendChild(tdNome);
+
+    for (let dia = 1; dia <= daysInMonth; dia++){
+      const data = new Date(currentYear, currentMonth, dia);
+      const diaSemana = data.getDay();
+      const td = document.createElement('td');
+      if (diaSemana === 0 || diaSemana === 6) td.className = diaSemana === 0 ? 'sunday' : 'weekend';
+      td.setAttribute('data-hospital', hospital);
+      td.setAttribute('data-day', dia);
+
+      if (escalas[hospital].includes(dia)) {
+        const div = document.createElement('div');
+        if (conflitos[dia] && conflitos[dia].includes(hospital)) {
+          div.className = 'plantao-cell conflito-cell'; div.textContent = 'S'; div.title = 'Conflito de horário!';
+        } else if (diasComTransicao.includes(dia)) {
+          div.className = 'plantao-cell alerta-carro-cell'; div.textContent = 'S 🚗'; div.title = 'Plantão com deslocamento necessário';
+        } else {
+          div.className = 'plantao-cell plantao'; div.textContent = 'S'; div.title = 'Plantão confirmado';
+        }
+        div.addEventListener('click', () => togglePlantao(hospital, dia));
+        td.appendChild(div);
+      } else {
+        const div = document.createElement('div'); div.className = 'folga-cell'; div.textContent = 'Folga'; div.title = 'Dia de folga - Clique para adicionar plantão';
+        div.addEventListener('click', () => togglePlantao(hospital, dia));
+        td.appendChild(div);
+      }
+      tr.appendChild(td);
+    }
+
+    tabelaBody.appendChild(tr);
+  });
+}
+
+/* ============================
+   Adicionar/remover plantão
+   ============================ */
+function togglePlantao(hospital, dia) {
+  const escalas = getCurrentEscalas();
+  const idx = escalas[hospital].indexOf(dia);
+  if (idx === -1) {
+    escalas[hospital].push(dia); escalas[hospital].sort((a,b) => a-b);
+  } else {
+    escalas[hospital].splice(idx,1);
+  }
+  salvarDados();
+  criarTabela();
+}
+
+/* ============================
+   MODAIS: abrir/fechar
+   ============================ */
+function abrirModalTroca() {
+  const modal = document.getElementById('troca-modal');
+  modal.classList.add('show');
+
+  // limpar campos e preencher datas sugeridas no mês/ano atual
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const diaSugerido1 = Math.min(15, daysInMonth);
+  const diaSugerido2 = Math.min(20, daysInMonth);
+
+  const formatDate = d => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  };
+
+  const dataOrig = new Date(currentYear, currentMonth, diaSugerido1);
+  const dataDest = new Date(currentYear, currentMonth, diaSugerido2);
+
+  document.getElementById('origem-data').value = formatDate(dataOrig);
+  document.getElementById('destino-data').value = formatDate(dataDest);
+  document.getElementById('origem-mes').value = currentMonth;
+  document.getElementById('origem-ano').value = currentYear;
+  document.getElementById('destino-mes').value = currentMonth;
+  document.getElementById('destino-ano').value = currentYear;
+
+  document.getElementById('origem-hospital').value = '';
+  document.getElementById('destino-hospital').value = '';
+  document.getElementById('nome-troca').value = '';
+  document.getElementById('obs-troca').value = '';
+}
+function fecharModalTroca(){ document.getElementById('troca-modal').classList.remove('show'); }
+function abrirModalTrocas() {
+  const modal = document.getElementById('trocas-modal');
+  document.getElementById('filter-month').value = currentMonth;
+  document.getElementById('filter-year').value = currentYear;
+  popularTabelaTrocas();
+  modal.classList.add('show');
+}
+function fecharModalTrocas(){ document.getElementById('trocas-modal').classList.remove('show'); }
+
+/* ============================
+   Realizar troca entre meses (corrigida)
+   ============================ */
+function realizarTroca() {
+  const origemHospital = document.getElementById('origem-hospital').value;
+  const destinoHospital = document.getElementById('destino-hospital').value;
+  const nome = document.getElementById('nome-troca').value.trim();
+  const observacao = document.getElementById('obs-troca').value.trim();
+
+  const origemDataInput = document.getElementById('origem-data').value;
+  const origemMes = parseInt(document.getElementById('origem-mes').value,10);
+  const origemAno = parseInt(document.getElementById('origem-ano').value,10);
+
+  const destinoDataInput = document.getElementById('destino-data').value;
+  const destinoMes = parseInt(document.getElementById('destino-mes').value,10);
+  const destinoAno = parseInt(document.getElementById('destino-ano').value,10);
+
+  if (!origemHospital || !destinoHospital || !nome || !origemDataInput || !destinoDataInput) {
+    mostrarNotificacao('Preencha todos os campos obrigatórios!', true);
+    return;
+  }
+
+  const [anoO,mesO,diaO] = origemDataInput.split('-').map(Number);
+  const [anoD,mesD,diaD] = destinoDataInput.split('-').map(Number);
+  const dataOrigem = new Date(anoO, mesO-1, diaO);
+  const dataDestino = new Date(anoD, mesD-1, diaD);
+  if (isNaN(dataOrigem.getTime()) || isNaN(dataDestino.getTime())) {
+    mostrarNotificacao('Datas inválidas!', true); return;
+  }
+  const diaOrigNum = dataOrigem.getDate();
+  const diaDestNum = dataDestino.getDate();
+
+  const escalasOrigem = getEscalas(origemMes, origemAno);
+  const escalasDestino = getEscalas(destinoMes, destinoAno);
+
+  if (!escalasOrigem[origemHospital].includes(diaOrigNum)) {
+    mostrarNotificacao(`Não existe plantão de ${origemHospital} no dia ${dataOrigem.toLocaleDateString('pt-BR')}!`, true);
+    return;
+  }
+  if (escalasDestino[destinoHospital].includes(diaDestNum)) {
+    mostrarNotificacao(`Já existe plantão de ${destinoHospital} no dia ${dataDestino.toLocaleDateString('pt-BR')}!`, true);
+    return;
+  }
+
+  // Remover origem
+  const idx = escalasOrigem[origemHospital].indexOf(diaOrigNum);
+  if (idx > -1) escalasOrigem[origemHospital].splice(idx,1);
+
+  // Adicionar destino
+  escalasDestino[destinoHospital].push(diaDestNum);
+  escalasDestino[destinoHospital].sort((a,b)=>a-b);
+
+  // Registrar observação/troca
+  const novaObservacao = {
+    hospital: origemHospital,
+    hospitalTroca: destinoHospital,
+    data: origemDataInput,
+    dataTroca: destinoDataInput,
+    nome: nome,
+    observacao: observacao || `Troca: ${origemHospital} → ${destinoHospital}`
+  };
+  observacoes.push(novaObservacao);
+
+  fecharModalTroca();
+  salvarDados();
+  // Atualizar tabela se mês atual foi afetado
+  if ((origemMes === currentMonth && origemAno === currentYear) || (destinoMes === currentMonth && destinoAno === currentYear)) criarTabela();
+
+  mostrarNotificacao(`Troca realizada: ${novaObservacao.hospital} ${new Date(novaObservacao.data).toLocaleDateString('pt-BR')} → ${novaObservacao.hospitalTroca} ${new Date(novaObservacao.dataTroca).toLocaleDateString('pt-BR')}`);
+}
+
+/* ============================
+   Popular tabela de trocas (com filtros)
+   ============================ */
+function popularTabelaTrocas() {
+  const tbody = document.getElementById('trocas-body');
+  tbody.innerHTML = '';
+
+  const fMonthVal = document.getElementById('filter-month').value;
+  const fYearVal = document.getElementById('filter-year').value;
+
+  const hasFilterMonth = fMonthVal !== '';
+  const hasFilterYear = fYearVal !== '';
+  const fMonth = hasFilterMonth ? parseInt(fMonthVal,10) : null;
+  const fYear = hasFilterYear ? parseInt(fYearVal,10) : null;
+
+  const extrair = (dstr) => {
+    if (!dstr) return null;
+    const parts = dstr.split('-');
+    if (parts.length >=3) {
+      const y = parseInt(parts[0],10);
+      const m = parseInt(parts[1],10) - 1;
+      const day = parseInt(parts[2],10);
+      if (!isNaN(y) && !isNaN(m) && !isNaN(day)) return { m, y, day };
+    }
+    const dt = new Date(dstr);
+    if (!isNaN(dt.getTime())) return { m: dt.getMonth(), y: dt.getFullYear(), day: dt.getDate() };
+    return null;
+  };
+
+  const filtradas = observacoes.filter(o => {
+    if (!hasFilterMonth && !hasFilterYear) return true;
+    const a = extrair(o.data);
+    const b = extrair(o.dataTroca);
+    let ok = false;
+    if (a) { if ((!hasFilterMonth || a.m === fMonth) && (!hasFilterYear || a.y === fYear)) ok = true; }
+    if (b && !ok) { if ((!hasFilterMonth || b.m === fMonth) && (!hasFilterYear || b.y === fYear)) ok = true; }
+    return ok;
+  });
+
+  if (filtradas.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="6" style="text-align:center; color:#666;">Nenhuma troca registrada</td>';
+    tbody.appendChild(tr);
+    document.getElementById('trocas-count').textContent = 0;
+    return;
+  }
+
+  filtradas.forEach((o, i) => {
+    const tr = document.createElement('tr');
+
+    // hospital (select)
+    const tdH = document.createElement('td');
+    const selH = document.createElement('select');
+    ['','HUSE Diurno','HUSE Noturno','HRP Diurno','HRP Noturno'].forEach(val => {
+      const opt = document.createElement('option'); opt.value = val; opt.textContent = val || '-- selecione --';
+      if (val === o.hospital) opt.selected = true;
+      selH.appendChild(opt);
+    });
+    selH.addEventListener('change', e => { o.hospital = e.target.value; salvarDados(); popularTabelaTrocas(); });
+    tdH.appendChild(selH); tr.appendChild(tdH);
+
+    // data origem
+    const tdD = document.createElement('td');
+    const inpD = document.createElement('input'); inpD.type = 'date'; inpD.value = o.data || '';
+    inpD.addEventListener('change', e => { o.data = e.target.value; salvarDados(); popularTabelaTrocas(); });
+    tdD.appendChild(inpD); tr.appendChild(tdD);
+
+    // data troca
+    const tdDT = document.createElement('td');
+    const inpDT = document.createElement('input'); inpDT.type = 'date'; inpDT.value = o.dataTroca || '';
+    inpDT.addEventListener('change', e => { o.dataTroca = e.target.value; salvarDados(); popularTabelaTrocas(); });
+    tdDT.appendChild(inpDT); tr.appendChild(tdDT);
+
+    // nome
+    const tdN = document.createElement('td');
+    const inpN = document.createElement('input'); inpN.type='text'; inpN.value = o.nome || ''; inpN.placeholder='Nome';
+    inpN.addEventListener('change', e => { o.nome = e.target.value; salvarDados(); });
+    tdN.appendChild(inpN); tr.appendChild(tdN);
+
+    // obs
+    const tdO = document.createElement('td');
+    const inpO = document.createElement('input'); inpO.type='text'; inpO.value = o.observacao || ''; inpO.placeholder='Observação';
+    inpO.addEventListener('change', e => { o.observacao = e.target.value; salvarDados(); });
+    tdO.appendChild(inpO); tr.appendChild(tdO);
+
+    // ações
+    const tdA = document.createElement('td');
+    const btnDel = document.createElement('button'); btnDel.className='btn btn-danger'; btnDel.innerHTML='<i class="fas fa-trash"></i>'; btnDel.title='Excluir troca';
+    btnDel.addEventListener('click', ()=> {
+      if (confirm('Tem certeza que deseja excluir esta troca?')) {
+        const idx = observacoes.indexOf(o);
+        if (idx>-1) { observacoes.splice(idx,1); salvarDados(); popularTabelaTrocas(); criarTabela(); mostrarNotificacao('Troca excluída com sucesso!'); }
+      }
+    });
+    tdA.appendChild(btnDel); tr.appendChild(tdA);
+
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('trocas-count').textContent = filtradas.length;
+}
+
+/* ============================
+   Gerar sugestões de trocas
+   ============================ */
+function gerarSugestoesTrocas() {
+  const escalas = getCurrentEscalas();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const conflitos = detectarConflitos();
+  const sugestoes = [];
+  const trocasHRP = contarTrocasHRP();
+  const maxTrocasHRP = 6;
+
+  // Prioridade 1: resolver conflitos
+  Object.keys(conflitos).forEach(dia => {
+    const diaNum = parseInt(dia,10);
+    const hospitaisConflito = conflitos[dia];
+    hospitaisConflito.forEach(hospitalConflito => {
+      for (let diaDestino = 1; diaDestino <= daysInMonth; diaDestino++) {
+        if (!escalas[hospitalConflito].includes(diaDestino)) {
+          let conflitoNovo = false;
+          Object.keys(escalas).forEach(outro => {
+            if (outro !== hospitalConflito && escalas[outro].includes(diaDestino)) conflitoNovo = true;
+          });
+          if (!conflitoNovo) {
+            if (hospitalConflito.includes('HRP') && trocasHRP >= maxTrocasHRP) continue;
+            sugestoes.push({ origem: hospitalConflito, diaOrigem: diaNum, destino: hospitalConflito, diaDestino: diaDestino, beneficio: 'Resolver conflito de horários', complexidade: 'Baixa' });
+            break;
+          }
+        }
+      }
+    });
+  });
+
+  // Prioridade 2: melhorar distribuição (evitar consecutivos)
+  Object.keys(escalas).forEach(hospital => {
+    const plantoes = escalas[hospital];
+    for (let i = 0; i < plantoes.length - 3; i++) {
+      if (plantoes[i+3] - plantoes[i] <= 4) {
+        for (let diaDestino = 1; diaDestino <= daysInMonth; diaDestino++) {
+          if (!plantoes.includes(diaDestino) && Math.abs(diaDestino - plantoes[i]) > 2) {
+            let conflitoNovo = false;
+            Object.keys(escalas).forEach(outro => {
+              if (outro !== hospital && escalas[outro].includes(diaDestino)) conflitoNovo = true;
+            });
+            if (!conflitoNovo) {
+              sugestoes.push({ origem: hospital, diaOrigem: plantoes[i], destino: hospital, diaDestino: diaDestino, beneficio: 'Reduzir sequência de plantões', complexidade: 'Média' });
+              break;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return sugestoes;
+}
+
+/* ============================
+   Exportar para PDF (CORRIGIDO - todas as páginas em retrato)
+   ============================ */
+async function exportarPDFCompleto() {
+  mostrarLoading(true);
+  try {
+    // Montar container temporário
+    const area = document.createElement('div');
+    area.style.width = '800px';
+    area.style.padding = '20px';
+    area.style.background = 'white';
+    area.style.color = '#333';
+    area.style.fontFamily = 'Arial, sans-serif';
+    area.style.lineHeight = '1.2';
+
+    // Cabeçalho
+    const cab = document.createElement('div');
+    cab.innerHTML = `<h2 style="text-align:center; color:#1a5276; margin-bottom:8px;">Escala de Plantões - ${monthNames[currentMonth]} ${currentYear}</h2>
+                     <p style="text-align:center; font-size:12px; color:#666; margin-top:0;">Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}</p>
+                     <hr style="margin:8px 0 16px 0;">`;
+    area.appendChild(cab);
+
+    // Tabela de escala
+    const tabelaEscalaOriginal = document.querySelector('#escala-table');
+    const tabelaClonada = tabelaEscalaOriginal.cloneNode(true);
+    tabelaClonada.style.width = '100%';
+    tabelaClonada.style.borderCollapse = 'collapse';
+    tabelaClonada.querySelectorAll('th, td').forEach(cell => {
+      cell.style.padding = '6px 4px';
+      cell.style.fontSize = '10px';
+      cell.style.border = '1px solid #ddd';
+    });
+    area.appendChild(tabelaClonada);
+
+    // Separador e Tabela de trocas
+    const hr = document.createElement('hr'); hr.style.margin = '12px 0 12px 0'; area.appendChild(hr);
+    const tituloTrocas = document.createElement('h3'); tituloTrocas.textContent = 'Trocas Registradas'; tituloTrocas.style.color = '#1a5276'; tituloTrocas.style.marginBottom = '8px';
+    area.appendChild(tituloTrocas);
+
+    // Tabela de trocas
+    const tabelaTrocas = document.createElement('table');
+    tabelaTrocas.style.width = '100%';
+    tabelaTrocas.style.borderCollapse = 'collapse';
+    tabelaTrocas.innerHTML = `<thead>
+      <tr>
+        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Hospital</th>
+        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Data Origem</th>
+        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Data Troca</th>
+        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Nome</th>
+        <th style="border:1px solid #ddd; padding:6px; font-size:11px;">Observação</th>
+      </tr></thead>`;
+    const tbody = document.createElement('tbody');
+
+    if (observacoes.length === 0) {
+      const tr = document.createElement('tr'); tr.innerHTML = `<td colspan="5" style="text-align:center; padding:10px; color:#666;">Nenhuma troca registrada</td>`; tbody.appendChild(tr);
+    } else {
+      observacoes.forEach(o => {
+        const tr = document.createElement('tr');
+        const hosp = o.hospital || '';
+        const dOrig = o.data ? new Date(o.data).toLocaleDateString('pt-BR') : '';
+        const dTroca = o.dataTroca ? new Date(o.dataTroca).toLocaleDateString('pt-BR') : '';
+        const nome = o.nome || '';
+        const obs = o.observacao || '';
+        tr.innerHTML = `<td style="border:1px solid #ddd; padding:6px; font-size:10px;">${hosp}</td>
+                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${dOrig}</td>
+                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${dTroca}</td>
+                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${nome}</td>
+                        <td style="border:1px solid #ddd; padding:6px; font-size:10px;">${obs}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    tabelaTrocas.appendChild(tbody);
+    area.appendChild(tabelaTrocas);
+
+    // Observação final
+    const footerNote = document.createElement('p');
+    footerNote.style.fontSize = '10px';
+    footerNote.style.color = '#666';
+    footerNote.style.marginTop = '12px';
+    footerNote.textContent = 'Todas as trocas devem ser registradas no sistema para controle e aprovação.';
+    area.appendChild(footerNote);
+
+    document.body.appendChild(area);
+
+    // Capturar com html2canvas
+    const canvas = await html2canvas(area, { scale: 2, useCORS: true, allowTaint: true });
+    const imgData = canvas.toDataURL('image/png');
+
+    // Criar jsPDF em retrato A4
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const margin = 10;
+    const imgWidth = pageWidth - margin * 2;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    // Adicionar primeira página
+    pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+    
+    let heightLeft = imgHeight + margin;
+    let position = 0;
+
+    // Se a imagem for maior que uma página, adicionar páginas adicionais em retrato
+    while (heightLeft > pageHeight) {
+      position = heightLeft - pageHeight;
+      pdf.addPage('p', 'a4'); // Forçar retrato explicitamente
+      pdf.addImage(imgData, 'PNG', margin, -position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save(`Escala_${monthNames[currentMonth]}_${currentYear}.pdf`);
+    area.remove();
+    mostrarLoading(false);
+    mostrarNotificacao('PDF gerado com sucesso!');
+  } catch (err) {
+    console.error('Erro ao gerar PDF:', err);
+    mostrarLoading(false);
+    mostrarNotificacao('Erro ao gerar PDF!', true);
+  }
+}
+
+/* ============================
+   Gatilhos / evento de botões
+   ============================ */
+document.addEventListener('DOMContentLoaded', () => {
+  popularSelectsMesAno();
+
+  // inicializa mês/ano nos selects
+  document.getElementById('month-select').value = currentMonth;
+  document.getElementById('year-select').value = currentYear;
+
+  // listeners para mudança de mês/ano
+  document.getElementById('month-select').addEventListener('change', (e) => {
+    currentMonth = parseInt(e.target.value,10);
+    criarTabela(); atualizarContadores();
+  });
+  document.getElementById('year-select').addEventListener('change', (e) => {
+    currentYear = parseInt(e.target.value,10);
+    criarTabela(); atualizarContadores();
+  });
+
+  // botões principais
+  document.getElementById('save-data').addEventListener('click', salvarDados);
+  document.getElementById('load-data').addEventListener('click', carregarDados);
+  document.getElementById('reset-data').addEventListener('click', redefinirDados);
+  document.getElementById('nova-troca').addEventListener('click', abrirModalTroca);
+
+  document.getElementById('ver-trocas').addEventListener('click', abrirModalTrocas);
+
+  // modal troca
+  document.getElementById('close-modal').addEventListener('click', fecharModalTroca);
+  document.getElementById('cancelar-troca').addEventListener('click', fecharModalTroca);
+  document.getElementById('confirmar-troca').addEventListener('click', realizarTroca);
+
+  // modal trocas
+  document.getElementById('close-trocas-modal').addEventListener('click', fecharModalTrocas);
+  document.getElementById('fechar-trocas-modal').addEventListener('click', fecharModalTrocas);
+  document.getElementById('filter-month').addEventListener('change', popularTabelaTrocas);
+  document.getElementById('filter-year').addEventListener('change', popularTabelaTrocas);
+
+  // gerar sugestões
+  document.getElementById('gerar-trocas').addEventListener('click', () => {
+    const sugestoes = gerarSugestoesTrocas();
+    if (sugestoes.length === 0) {
+      mostrarNotificacao('Nenhuma sugestão de troca encontrada para este mês.', true);
+    } else {
+      let msg = `${sugestoes.length} sugestão(ões) gerada(s). Ver console para detalhes.`;
+      console.log('Sugestões:', sugestoes);
+      mostrarNotificacao(msg);
+    }
+  });
+
+  // Exportar PDF (corrigido)
+  document.getElementById('export-pdf').addEventListener('click', () => {
+    exportarPDFCompleto();
+  });
+
+  // Carregar dados ao iniciar
+  carregarDados();
+});
+
+/* ============================
+   Inicializar tabela e contadores
+   ============================ */
+criarTabela();
+atualizarContadores();
+</script>
 </body>
 </html>
