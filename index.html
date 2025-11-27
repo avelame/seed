@@ -1,186 +1,734 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Escala de Plantões</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: #333;
-    line-height: 1.6;
-    padding: 15px;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  .container {
-    max-width: 100%;
-    margin: 0 auto;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 30px);
-  }
-  header {
-    background: linear-gradient(135deg, #1a5276 0%, #2c3e50 100%);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    flex-shrink: 0;
-    position: relative;
-  }
-  h1 { font-size: clamp(1.5rem,4vw,2.2rem); margin-bottom:8px; font-weight:700; }
-  .subtitle { font-size: clamp(0.9rem,2.5vw,1.1rem); opacity:0.9; }
-  .month-selector { display:flex; justify-content:center; align-items:center; gap:15px; margin-top:10px; flex-wrap:wrap; }
-  .month-selector select { padding:8px 12px; border-radius:8px; border:1px solid #ddd; background:white; font-size:1rem; }
-  .header-counter { position:absolute; top:15px; right:20px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:8px 12px; text-align:center; min-width:100px; transition:all 0.3s ease; }
-  .counter-label{ font-size:0.75rem; opacity:0.9; margin-bottom:2px; font-weight:500;}
-  .counter-value{ font-size:1.4rem; font-weight:700; line-height:1; }
-  .counter-subtitle{ font-size:0.65rem; opacity:0.8; margin-top:1px; }
-  .controls {
-    padding: 15px; background: #f8f9fa; border-bottom:1px solid #eaeaea;
-    display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; flex-shrink:0;
-  }
-  .btn { padding:10px 15px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all .3s; display:flex; align-items:center; gap:6px; font-size:clamp(.8rem,2vw,1rem); flex:1; min-width:140px; justify-content:center;}
-  .btn-primary{ background: linear-gradient(135deg,#3498db 0%,#2c3e50 100%); color:white;}
-  .btn-success{ background: linear-gradient(135deg,#2ecc71 0%,#27ae60 100%); color:white;}
-  .btn-danger{ background: linear-gradient(135deg,#e74c3c 0%,#c0392b 100%); color:white;}
-  .btn-warning{ background: linear-gradient(135deg,#f39c12 0%,#e67e22 100%); color:white;}
-  .btn-info{ background: linear-gradient(135deg,#17a2b8 0%,#138496 100%); color:white;}
-  .btn-purple{ background: linear-gradient(135deg,#9b59b6 0%,#8e44ad 100%); color:white;}
-  .btn:hover{ transform: translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.1); }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Escala de Plantões</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --primary-dark: #1e40af;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --info-color: #06b6d4;
+      --purple-color: #8b5cf6;
+      --bg-primary: #f9fafb;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f3f4f6;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --border-color: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
 
-  .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index:1003; align-items:center; justify-content:center; padding:15px; overflow-y:auto;}
-  .modal.show { display:flex; }
-  .modal-content { background:white; border-radius:12px; padding:20px; width:100%; max-width:800px; box-shadow:0 10px 30px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
-  .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:2px solid #eaeaea; position:sticky; top:0; background:white; z-index:1; }
-  .modal-title { font-size:1.3rem; font-weight:700; color:#1a5276; }
-  .close-modal { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#6c757d; transition:color .3s; flex-shrink:0;}
-  .close-modal:hover{ color:#e74c3c; }
-  .form-group { margin-bottom:18px; }
-  .form-group label { display:block; margin-bottom:8px; font-weight:600; color:#2c3e50; font-size:.95rem; }
-  .form-group select, .form-group input { width:100%; padding:12px 14px; border:2px solid #eaeaea; border-radius:8px; font-size:1rem; transition:border-color .3s; }
-  .form-group select:focus, .form-group input:focus{ outline:none; border-color:#3498db; box-shadow:0 0 0 3px rgba(52,152,219,.1); }
-  .form-row { display:flex; gap:12px; }
-  .form-row .form-group { flex:1; }
-  .data-fields { background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #eaeaea; margin-bottom:15px; }
-  .data-field-full { display:flex; gap:12px; }
-  .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:25px; padding-top:20px; border-top:1px solid #eaeaea; position:sticky; bottom:0; background:white; padding-bottom:5px; }
-  .btn-cancel{ background:#6c757d; color:white; flex:1; }
-  .btn-confirm{ background:#27ae60; color:white; flex:1; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .legend { display:flex; flex-wrap:wrap; gap:12px; margin:15px; padding:12px; background:#f9f9f9; border-radius:8px; justify-content:center; flex-shrink:0; }
-  .legend-item { display:flex; align-items:center; gap:6px; font-weight:500; font-size:clamp(.8rem,2vw,1rem); }
-  .legend-color { width:16px; height:16px; border-radius:4px; flex-shrink:0; }
-  .huse-day{ background: linear-gradient(135deg,#3498db 0%,#2c3e50 100%); }
-  .huse-night{ background: linear-gradient(135deg,#1a5276 0%,#2c3e50 100%); }
-  .hrp-day{ background: linear-gradient(135deg,#e74c3c 0%,#c0392b 100%); }
-  .hrp-night{ background: linear-gradient(135deg,#8e44ad 0%,#6c3483 100%); }
-  .conflito{ background: linear-gradient(135deg,#e74c3c 0%,#e67e22 100%); }
-  .alerta-carro{ background: linear-gradient(135deg,#ffd93d 0%,#ff9a3d 100%); }
-  .troca-realizada{ background: linear-gradient(135deg,#9b59b6 0%,#8e44ad 100%); color:white; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 12px;
+      min-height: 100vh;
+    }
 
-  .content { padding:15px; overflow:auto; flex:1; display:flex; flex-direction:column; gap:20px; }
-  .table-container { overflow-x:auto; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.05); background:white; max-height:100%; }
-  .editable-table { width:100%; border-collapse:collapse; margin:0; background:white; min-width:800px; }
-  .editable-table thead tr { background: linear-gradient(135deg,#1a5276 0%,#2c3e50 100%); color:white; position:sticky; top:0; z-index:10; }
-  .editable-table th { padding:12px 8px; font-weight:600; text-align:center; border:1px solid #1a5276; font-size:clamp(.75rem,1.5vw,.9rem); white-space:nowrap; position:relative; }
-  .editable-table tbody tr { border-bottom:1px solid #eaeaea; transition:background-color .2s; }
-  .editable-table tbody tr:nth-child(even){ background:#f8f9fa; }
-  .editable-table tbody tr:hover{ background:#e8f4fc; }
-  .editable-table td { padding:10px 6px; text-align:center; border:1px solid #eaeaea; transition:all .2s; font-size:clamp(.7rem,1.5vw,.8rem); white-space:nowrap; position:relative; }
-  .editable-table .hospital-name { text-align:left; padding-left:12px; font-weight:600; background:#f1f8ff; width:140px; font-size:clamp(.75rem,1.5vw,.9rem); position:sticky; left:0; z-index:5; }
-  .plantao-cell { border-radius:6px; padding:6px 4px; font-weight:600; cursor:pointer; transition:all .2s; min-width:32px; font-size:clamp(.7rem,1.5vw,.8rem); position:relative; }
-  .plantao-cell:hover { transform:scale(1.05); }
-  .plantao { background: linear-gradient(135deg,#2ecc71 0%,#27ae60 100%); color:white; }
-  .conflito-cell { background: linear-gradient(135deg,#e74c3c 0%,#e67e22 100%); color:white; animation:pulse 2s infinite; }
-  .alerta-carro-cell { background: linear-gradient(135deg,#ffd93d 0%,#ff9a3d 100%); color:#333; font-weight:bold; animation:bounce 2s infinite; }
-  @keyframes pulse { 0%{ box-shadow:0 0 0 0 rgba(231,76,60,0.7);} 70%{ box-shadow:0 0 0 8px rgba(231,76,60,0);} 100%{ box-shadow:0 0 0 0 rgba(231,76,60,0);} }
-  @keyframes bounce { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
-  .empty-cell{ background:#f8f9fa; color:#6c757d; cursor:pointer; border-radius:6px; padding:6px 4px; transition:all .2s; font-size:clamp(.7rem,1.5vw,.8rem); }
-  .empty-cell:hover{ background:#e9ecef; transform:scale(1.05); }
-  .weekend{ background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); color:#6c757d; }
-  .sunday{ background: linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%); color:#6c757d; }
-  .folga-cell { background: linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 100%); color:#2e7d32; font-style:italic; font-weight:500; border-radius:6px; padding:6px 4px; cursor:pointer; transition:all .2s; font-size:clamp(.7rem,1.5vw,.8rem); }
-  .folga-cell:hover { background: linear-gradient(135deg,#dcedc8 0%,#c5e1a5 100%); transform:scale(1.05); }
-  .day-header { display:flex; flex-direction:column; align-items:center; position:relative; }
-  .day-number { font-size:1.1em; font-weight:bold; }
-  .day-name { font-size:.8em; opacity:0.9; }
-  .carro-indicator { position:absolute; top:-5px; right:-5px; font-size:.9em; animation:drive 3s infinite; z-index:2; }
-  @keyframes drive { 0%,100%{ transform:translateX(0) rotate(0deg);} 25%{ transform:translateX(3px) rotate(5deg);} 50%{ transform:translateX(0) rotate(0deg);} 75%{ transform:translateX(-3px) rotate(-5deg);} }
-  .footer { text-align:center; padding:15px; background:#f8f9fa; border-top:1px solid #eaeaea; color:#6c757d; font-size:clamp(.8rem,2vw,.9rem); flex-shrink:0; }
-  .notification { position:fixed; top:20px; right:20px; padding:12px 20px; background:#2ecc71; color:white; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.2); transform:translateX(150%); transition:transform .3s ease; z-index:1001; max-width:300px; font-size:clamp(.8rem,2vw,1rem); }
-  .notification.show { transform:translateX(0); }
-  .notification.error{ background:#e74c3c; }
-  .notification.warning{ background:#f39c12; }
-  .loading { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index:1002; align-items:center; justify-content:center; flex-direction:column; color:white; }
-  .loading.show{ display:flex; }
-  .spinner { border:5px solid #f3f3f3; border-top:5px solid #3498db; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin-bottom:15px; }
-  @keyframes spin { 0%{ transform:rotate(0deg);} 100%{ transform:rotate(360deg);} }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 24px);
+    }
 
-  .filters { display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap; }
-  .filters .form-group { flex:1; min-width:120px; margin-bottom:0; }
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      flex-shrink: 0;
+      position: relative;
+    }
 
-  @media (max-width:768px){
-    .modal { padding:10px; align-items:flex-start; }
-    .modal-content { padding:15px; max-height:95vh; margin-top:20px; margin-bottom:20px; }
-    .modal-header { position:sticky; top:0; background:white; padding:10px 0; margin-bottom:15px; }
-    .modal-title{ font-size:1.2rem; }
-    .close-modal{ font-size:1.4rem; }
-    .form-group{ margin-bottom:15px; }
-    .form-group label{ font-size:.9rem; }
-    .form-group select, .form-group input{ padding:10px 12px; font-size:.95rem; }
-    .form-row{ flex-direction:column; gap:10px; }
-    .data-field-full{ flex-direction:column; gap:10px; }
-    .data-fields{ padding:12px; }
-    .modal-actions{ flex-direction:column; gap:8px; margin-top:20px; padding-top:15px; }
-    .btn-cancel, .btn-confirm{ width:100%; }
-    .filters{ flex-direction:column; }
-    .filters .form-group{ min-width:100%; }
-  }
-  @media (max-width:576px){
-    body{ padding:10px; }
-    .container { height: calc(100vh - 20px); border-radius:8px; }
-    header { padding:15px 10px; }
-    .header-counter { position:relative; top:auto; right:auto; margin:10px auto 0; max-width:120px; }
-    .controls { padding:10px; gap:8px; }
-    .btn { min-width:120px; padding:8px 10px; }
-    .modal { padding:5px; }
-    .modal-content { padding:12px; border-radius:10px; }
-    .modal-header { margin-bottom:12px; padding-bottom:10px; }
-    .modal-title{ font-size:1.1rem; }
-    .form-group select, .form-group input { padding:8px 10px; font-size:.9rem; }
-    .legend { margin:10px; padding:10px; gap:8px; }
-    .content { padding:10px; }
-    .carro-indicator { font-size:.7em; top:-3px; right:-3px; }
-    .editable-table { min-width:700px; }
-    .editable-table td, .editable-table th { padding:8px 4px; font-size:.7rem; }
-  }
-  @media (min-width:1200px){ .container { max-width:1400px; } .editable-table { min-width:1000px; } }
-  @media (max-height:500px) and (orientation:landscape) {
-    .container { height:auto; min-height:100vh; }
-    header, .controls, .legend { flex-shrink:0; }
-    .content { flex:1; min-height:300px; }
-    .modal { align-items:flex-start; padding-top:10px; }
-    .modal-content { max-height:95vh; }
-  }
-</style>
+    h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-bottom: 8px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .subtitle {
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      opacity: 0.95;
+    }
+
+    .month-selector {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .month-selector select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .month-selector select:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .header-counter {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 10px 15px;
+      text-align: center;
+      min-width: 110px;
+      transition: var(--transition);
+    }
+
+    .counter-label {
+      font-size: 0.75rem;
+      opacity: 0.9;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .counter-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .counter-subtitle {
+      font-size: 0.65rem;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    /* ===== CONTROLS ===== */
+    .controls {
+      padding: 15px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: clamp(0.8rem, 2vw, 0.95rem);
+      flex: 1;
+      min-width: 140px;
+      justify-content: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+    }
+
+    .btn-success {
+      background: var(--success-color);
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: #059669;
+    }
+
+    .btn-danger {
+      background: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #dc2626;
+    }
+
+    .btn-warning {
+      background: var(--warning-color);
+      color: white;
+    }
+
+    .btn-warning:hover:not(:disabled) {
+      background: #d97706;
+    }
+
+    .btn-info {
+      background: var(--info-color);
+      color: white;
+    }
+
+    .btn-info:hover:not(:disabled) {
+      background: #0891b2;
+    }
+
+    .btn-purple {
+      background: var(--purple-color);
+      color: white;
+    }
+
+    .btn-purple:hover:not(:disabled) {
+      background: #7c3aed;
+    }
+
+    /* ===== LEGEND ===== */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 12px;
+      padding: 12px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .huse-day { background: #3b82f6; }
+    .huse-night { background: #1e3a8a; }
+    .hrp-day { background: #ef4444; }
+    .hrp-night { background: #7c3aed; }
+    .conflito { background: linear-gradient(135deg, #ef4444, #f59e0b); }
+    .alerta-carro { background: #fbbf24; }
+    .troca-realizada { background: #10b981; }
+    .folga { background: #d1fae5; }
+
+    /* ===== CONTENT ===== */
+    .content {
+      padding: 15px;
+      overflow: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+      background: var(--bg-secondary);
+    }
+
+    .editable-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      background: var(--bg-secondary);
+      min-width: 900px;
+    }
+
+    .editable-table thead tr {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .editable-table th {
+      padding: 12px 8px;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid var(--primary-dark);
+      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+      white-space: nowrap;
+    }
+
+    .editable-table tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.2s;
+    }
+
+    .editable-table tbody tr:nth-child(even) {
+      background: var(--bg-tertiary);
+    }
+
+    .editable-table tbody tr:hover {
+      background: #e0e7ff;
+    }
+
+    .editable-table td {
+      padding: 10px 6px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+      white-space: nowrap;
+    }
+
+    .hospital-name {
+      text-align: left;
+      padding-left: 12px;
+      font-weight: 600;
+      background: #f0f9ff;
+      width: 140px;
+      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+      position: sticky;
+      left: 0;
+      z-index: 5;
+    }
+
+    .plantao-cell {
+      border-radius: 6px;
+      padding: 6px 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      min-width: 32px;
+      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+    }
+
+    .plantao-cell:hover {
+      transform: scale(1.05);
+    }
+
+    .plantao {
+      background: var(--success-color);
+      color: white;
+    }
+
+    .conflito-cell {
+      background: linear-gradient(135deg, #ef4444, #f59e0b);
+      color: white;
+      border: 2px solid var(--danger-color);
+      animation: pulse-danger 2s infinite;
+    }
+
+    .alerta-carro-cell {
+      background: var(--warning-color);
+      color: #333;
+      font-weight: bold;
+      animation: bounce-warning 2s infinite;
+    }
+
+    .empty-cell {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 6px 4px;
+      transition: var(--transition);
+      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+    }
+
+    .empty-cell:hover {
+      background: #e5e7eb;
+      transform: scale(1.05);
+    }
+
+    .weekend, .sunday {
+      background: #f9fafb;
+      color: var(--text-secondary);
+    }
+
+    .folga-cell {
+      background: #d1fae5;
+      color: #065f46;
+      font-style: italic;
+      font-weight: 500;
+      border-radius: 6px;
+      padding: 6px 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+    }
+
+    .folga-cell:hover {
+      background: #a7f3d0;
+      transform: scale(1.05);
+    }
+
+    .day-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .day-number {
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+
+    .day-name {
+      font-size: 0.8em;
+      opacity: 0.9;
+    }
+
+    .carro-indicator {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      font-size: 0.9em;
+      animation: drive 3s infinite;
+      z-index: 2;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes pulse-danger {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    }
+
+    @keyframes bounce-warning {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes drive {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(2px) rotate(5deg); }
+      75% { transform: translateX(-2px) rotate(-5deg); }
+    }
+
+    /* ===== MODAL ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      background: var(--bg-secondary);
+      z-index: 1;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: var(--transition);
+      flex-shrink: 0;
+      padding: 0;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .close-modal:hover {
+      color: var(--danger-color);
+      background: var(--bg-tertiary);
+    }
+
+    /* ===== FORMS ===== */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: var(--transition);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .data-fields {
+      background: var(--bg-tertiary);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 15px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border-color);
+      position: sticky;
+      bottom: 0;
+      background: var(--bg-secondary);
+      padding-bottom: 5px;
+    }
+
+    .btn-cancel {
+      background: var(--text-secondary);
+      color: white;
+      flex: 0.5;
+    }
+
+    .btn-cancel:hover:not(:disabled) {
+      background: #4b5563;
+    }
+
+    .btn-confirm {
+      background: var(--success-color);
+      color: white;
+      flex: 0.5;
+    }
+
+    .btn-confirm:hover:not(:disabled) {
+      background: #059669;
+    }
+
+    /* ===== NOTIFICATION ===== */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: var(--success-color);
+      color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+      z-index: 1001;
+      max-width: 300px;
+      font-size: clamp(0.8rem, 2vw, 0.95rem);
+      font-weight: 500;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.error {
+      background: var(--danger-color);
+    }
+
+    .notification.warning {
+      background: var(--warning-color);
+      color: #333;
+    }
+
+    /* ===== LOADING ===== */
+    .loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: white;
+    }
+
+    .loading.show {
+      display: flex;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 15px;
+      background: var(--bg-tertiary);
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: clamp(0.8rem, 2vw, 0.85rem);
+      flex-shrink: 0;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .month-selector { gap: 8px; }
+      .controls { gap: 8px; padding: 12px; }
+      .btn { min-width: 120px; padding: 8px 12px; }
+      .modal-content { padding: 15px; max-height: 95vh; margin-top: 20px; margin-bottom: 20px; }
+      .form-row { flex-direction: column; gap: 10px; }
+      .legend { margin: 10px; padding: 10px; gap: 8px; }
+      .hospital-name { width: 120px; }
+    }
+
+    @media (max-width: 576px) {
+      body { padding: 8px; }
+      .container { height: calc(100vh - 16px); }
+      header { padding: 15px 10px; }
+      .header-counter { position: relative; top: auto; right: auto; margin: 10px auto 0; max-width: 120px; }
+      .month-selector select { padding: 6px 10px; font-size: 0.9rem; }
+      .controls { padding: 10px; gap: 6px; }
+      .btn { min-width: 100px; padding: 6px 8px; font-size: 0.75rem; }
+      .editable-table { min-width: 650px; }
+      .editable-table td, .editable-table th { padding: 6px 3px; font-size: 0.65rem; }
+      .hospital-name { width: 100px; }
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      .container { height: auto; min-height: 100vh; }
+      header, .controls, .legend { flex-shrink: 0; }
+      .content { flex: 1; min-height: 300px; }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1><i class="fas fa-calendar-alt"></i> Gerador de Escala de Plantões</h1>
-      <p class="subtitle">Gerencie e exporte suas escalas de plantão</p>
+      <h1><i class="fas fa-calendar-alt"></i> Gerador de Escala</h1>
+      <p class="subtitle">Gerencie escalas de plantão com inteligência</p>
       <div class="header-counter">
-        <div class="counter-label">TROCAS HRP</div>
+        <div class="counter-label">Trocas HRP</div>
         <div class="counter-value" id="hrp-trocas-count">0</div>
         <div class="counter-subtitle">este mês</div>
       </div>
@@ -191,24 +739,22 @@
     </header>
 
     <div class="controls">
-      <button class="btn btn-primary" id="save-data"><i class="fas fa-save"></i> Salvar Dados</button>
-      <button class="btn btn-info" id="load-data"><i class="fas fa-folder-open"></i> Carregar Dados</button>
-      <button class="btn btn-danger" id="reset-data"><i class="fas fa-redo"></i> Redefinir Dados</button>
-      <button class="btn btn-purple" id="gerar-trocas"><i class="fas fa-lightbulb"></i> Gerar Possíveis Trocas</button>
-      <button class="btn btn-success" id="export-pdf"><i class="fas fa-file-pdf"></i> Exportar para PDF</button>
+      <button class="btn btn-primary" id="save-data"><i class="fas fa-save"></i> Salvar</button>
+      <button class="btn btn-info" id="load-data"><i class="fas fa-folder-open"></i> Carregar</button>
+      <button class="btn btn-danger" id="reset-data"><i class="fas fa-redo"></i> Redefinir</button>
+      <button class="btn btn-purple" id="gerar-trocas"><i class="fas fa-lightbulb"></i> Sugerir Trocas</button>
+      <button class="btn btn-success" id="export-pdf"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
       <button class="btn btn-warning" id="nova-troca"><i class="fas fa-exchange-alt"></i> Nova Troca</button>
       <button class="btn btn-info" id="ver-trocas"><i class="fas fa-list"></i> Ver Trocas</button>
     </div>
 
     <div class="legend">
-      <div class="legend-item"><div class="legend-color huse-day"></div><span>HUSE Diurno</span></div>
-      <div class="legend-item"><div class="legend-color huse-night"></div><span>HUSE Noturno</span></div>
-      <div class="legend-item"><div class="legend-color hrp-day"></div><span>HRP Diurno</span></div>
-      <div class="legend-item"><div class="legend-color hrp-night"></div><span>HRP Noturno</span></div>
-      <div class="legend-item"><div class="legend-color conflito"></div><span>Conflito de Horários</span></div>
+      <div class="legend-item"><div class="legend-color huse-day"></div><span>HUSE Dia</span></div>
+      <div class="legend-item"><div class="legend-color huse-night"></div><span>HUSE Noite</span></div>
+      <div class="legend-item"><div class="legend-color hrp-day"></div><span>HRP Dia</span></div>
+      <div class="legend-item"><div class="legend-color hrp-night"></div><span>HRP Noite</span></div>
+      <div class="legend-item"><div class="legend-color conflito"></div><span>Conflito</span></div>
       <div class="legend-item"><div class="legend-color alerta-carro"></div><span>🚗 Deslocamento</span></div>
-      <div class="legend-item"><div class="legend-color troca-realizada"></div><span>Troca Realizada</span></div>
-      <div class="legend-item"><div class="legend-color" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);"></div><span>Folga</span></div>
     </div>
 
     <div class="content">
@@ -221,11 +767,11 @@
     </div>
 
     <div class="footer">
-      <p>Escala de Plantões - Sistema de Gerenciamento | Desenvolvido para facilitar o controle de escalas</p>
+      <p><strong>Escala de Plantões</strong> • Sistema de Gerenciamento Inteligente</p>
     </div>
   </div>
 
-  <!-- Modal de Troca -->
+  <!-- Modal: Nova Troca -->
   <div class="modal" id="troca-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -233,38 +779,10 @@
         <button class="close-modal" id="close-modal">&times;</button>
       </div>
 
-      <div class="data-fields">
-        <div class="form-group">
-          <label for="origem-data">Data de Origem:</label>
-          <input type="date" id="origem-data">
-        </div>
-
-        <div class="form-group">
-          <label for="origem-mes">Mês/Ano de Origem:</label>
-          <div class="form-row">
-            <select id="origem-mes"></select>
-            <select id="origem-ano"></select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="destino-data">Data de Destino:</label>
-          <input type="date" id="destino-data">
-        </div>
-
-        <div class="form-group">
-          <label for="destino-mes">Mês/Ano de Destino:</label>
-          <div class="form-row">
-            <select id="destino-mes"></select>
-            <select id="destino-ano"></select>
-          </div>
-        </div>
-      </div>
-
       <div class="form-group">
-        <label for="origem-hospital">Plantão de Origem:</label>
+        <label for="origem-hospital">Plantão Origem:</label>
         <select id="origem-hospital">
-          <option value="">Selecione o plantão de origem</option>
+          <option value="">-- Selecione --</option>
           <option value="HUSE Diurno">HUSE Diurno</option>
           <option value="HUSE Noturno">HUSE Noturno</option>
           <option value="HRP Diurno">HRP Diurno</option>
@@ -273,47 +791,57 @@
       </div>
 
       <div class="form-group">
-        <label for="destino-hospital">Plantão de Destino:</label>
+        <label for="origem-data">Data de Origem:</label>
+        <input type="date" id="origem-data">
+      </div>
+
+      <div class="form-group">
+        <label for="destino-hospital">Plantão Destino:</label>
         <select id="destino-hospital">
-          <option value="">Selecione o plantão de destino</option>
+          <option value="">-- Selecione --</option>
           <option value="HUSE Diurno">HUSE Diurno</option>
           <option value="HUSE Noturno">HUSE Noturno</option>
           <option value="HRP Diurno">HRP Diurno</option>
           <option value="HRP Noturno">HRP Noturno</option>
         </select>
+      </div>
+
+      <div class="form-group">
+        <label for="destino-data">Data de Destino:</label>
+        <input type="date" id="destino-data">
       </div>
 
       <div class="form-group">
         <label for="nome-troca">Nome:</label>
-        <input type="text" id="nome-troca" placeholder="Digite seu nome">
+        <input type="text" id="nome-troca" placeholder="Seu nome">
       </div>
 
       <div class="form-group">
-        <label for="obs-troca">Observação:</label>
-        <input type="text" id="obs-troca" placeholder="Digite uma observação (opcional)">
+        <label for="obs-troca">Observação (opcional):</label>
+        <input type="text" id="obs-troca" placeholder="Motivo da troca">
       </div>
 
       <div class="modal-actions">
         <button class="btn btn-cancel" id="cancelar-troca">Cancelar</button>
-        <button class="btn btn-confirm" id="confirmar-troca">Confirmar Troca</button>
+        <button class="btn btn-confirm" id="confirmar-troca">Confirmar</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal para Visualizar Trocas -->
+  <!-- Modal: Ver Trocas -->
   <div class="modal" id="trocas-modal">
-    <div class="modal-content" style="max-width:95%;">
+    <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title"><i class="fas fa-list"></i> Trocas Registradas - <span id="trocas-count">0</span> trocas</h3>
+        <h3 class="modal-title"><i class="fas fa-list"></i> Trocas Registradas</h3>
         <button class="close-modal" id="close-trocas-modal">&times;</button>
       </div>
 
-      <div class="filters">
-        <div class="form-group">
+      <div style="display: flex; gap: 12px; margin-bottom: 15px;">
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
           <label for="filter-month">Mês:</label>
           <select id="filter-month"></select>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
           <label for="filter-year">Ano:</label>
           <select id="filter-year"></select>
         </div>
@@ -325,10 +853,10 @@
             <tr>
               <th>Hospital</th>
               <th>Data Origem</th>
-              <th>Data Troca</th>
+              <th>Data Destino</th>
               <th>Nome</th>
               <th>Observação</th>
-              <th>Ações</th>
+              <th>Ação</th>
             </tr>
           </thead>
           <tbody id="trocas-body"></tbody>
@@ -342,998 +870,847 @@
   </div>
 
   <div class="notification" id="notification"></div>
-  <div class="loading" id="loading"><div class="spinner"></div><p>Gerando PDF...</p></div>
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Gerando PDF...</p>
+  </div>
 
-<script>
-// ============================
-// Dados iniciais / variáveis
-// ============================
-let allEscalas = {};
-let observacoes = [];
-
-const monthNames = [
-  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-];
-
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-
-const diasDaSemana = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
-
-function getStorageKey(){ return `escala_plantoes_data`; }
-
-// ============================
-// Funções auxiliares de data (CORRIGIDAS)
-// ============================
-function parseDate(dateString) {
-  if (!dateString) return null;
-  const parts = dateString.split('-');
-  if (parts.length !== 3) return null;
-  
-  const year = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) - 1;
-  const day = parseInt(parts[2], 10);
-  
-  // Criar data sem problemas de fuso horário
-  return new Date(year, month, day);
-}
-
-function formatDateBR(date) {
-  if (!date || isNaN(date.getTime())) return '';
-  
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  
-  return `${day}/${month}/${year}`;
-}
-
-function getDaysInMonth(month, year) {
-  return new Date(year, month + 1, 0).getDate();
-}
-
-// ============================
-// Inicialização UI (meses/anos)
-// ============================
-function popularSelectsMesAno() {
-  const monthSelect = document.getElementById('month-select');
-  const yearSelect = document.getElementById('year-select');
-
-  monthSelect.innerHTML = '';
-  monthNames.forEach((m,i) => {
-    const opt = document.createElement('option'); 
-    opt.value = i; 
-    opt.textContent = m;
-    monthSelect.appendChild(opt);
-  });
-  monthSelect.value = currentMonth;
-
-  // anos (de -2 a +2 anos)
-  yearSelect.innerHTML = '';
-  for (let y = currentYear - 2; y <= currentYear + 2; y++) {
-    const opt = document.createElement('option'); 
-    opt.value = y; 
-    opt.textContent = y;
-    yearSelect.appendChild(opt);
-  }
-  yearSelect.value = currentYear;
-
-  // preencher selects de origem/destino no modal
-  ['origem-mes','destino-mes','filter-month'].forEach(id => {
-    const s = document.getElementById(id);
-    if (!s) return;
-    s.innerHTML = '<option value="">Todos</option>';
-    monthNames.forEach((m,i) => {
-      const opt = document.createElement('option'); 
-      opt.value = i; 
-      opt.textContent = m;
-      s.appendChild(opt);
-    });
-    if (id === 'filter-month') {
-      s.value = currentMonth;
-    } else {
-      s.value = currentMonth;
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    @media print {
+      body { margin: 0; padding: 0; }
+      .editable-table { width: 100%; }
+      .editable-table td, .editable-table th { padding: 6px 3px; font-size: 0.75rem; }
     }
-  });
+  </style>
 
-  ['origem-ano','destino-ano','filter-year'].forEach(id => {
-    const s = document.getElementById(id);
-    if (!s) return;
-    s.innerHTML = '';
-    for (let y = currentYear - 2; y <= currentYear + 2; y++){
-      const opt = document.createElement('option'); 
-      opt.value = y; 
-      opt.textContent = y;
-      s.appendChild(opt);
-    }
-    if (id === 'filter-year') s.value = currentYear;
-    else s.value = currentYear;
-  });
-}
+  <script>
+    // ============================================
+    // STORAGE SERVICE
+    // ============================================
+    const StorageService = {
+      STORAGE_KEY: 'escala_plantoes_data',
+      
+      get() {
+        try {
+          const raw = localStorage.getItem(this.STORAGE_KEY);
+          return raw ? JSON.parse(raw) : { allEscalas: {}, observacoes: [], dataSalvamento: null };
+        } catch (err) {
+          console.error('Erro ao carregar dados:', err);
+          return { allEscalas: {}, observacoes: [], dataSalvamento: null };
+        }
+      },
 
-// ============================
-// Escalas: obter/montar
-// ============================
-function getEscalas(month, year) {
-  const key = `${year}_${month}`;
-  if (!allEscalas[key]) {
-    allEscalas[key] = {
-      "HUSE Diurno": [],
-      "HUSE Noturno": [],
-      "HRP Diurno": [],
-      "HRP Noturno": []
+      set(data) {
+        try {
+          data.dataSalvamento = new Date().toISOString();
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+          return true;
+        } catch (err) {
+          console.error('Erro ao salvar dados:', err);
+          return false;
+        }
+      },
+
+      reset() {
+        try {
+          localStorage.removeItem(this.STORAGE_KEY);
+          return true;
+        } catch (err) {
+          console.error('Erro ao resetar dados:', err);
+          return false;
+        }
+      }
     };
-  }
-  return allEscalas[key];
-}
 
-function getCurrentEscalas(){ 
-  return getEscalas(currentMonth, currentYear); 
-}
+    // ============================================
+    // APP STATE
+    // ============================================
+    const AppState = {
+      allEscalas: {},
+      observacoes: [],
+      currentMonth: new Date().getMonth(),
+      currentYear: new Date().getFullYear(),
+      monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+      diasDaSemana: ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'],
+      hospitais: ['HUSE Diurno', 'HUSE Noturno', 'HRP Diurno', 'HRP Noturno'],
 
-// ============================
-// Contadores / notificações
-// ============================
-function mostrarNotificacao(mensagem, isError=false, isWarning=false) {
-  const notification = document.getElementById('notification');
-  notification.textContent = mensagem;
-  notification.className = 'notification';
-  if (isError) notification.classList.add('error');
-  if (isWarning) notification.classList.add('warning');
-  notification.classList.add('show');
-  setTimeout(()=> notification.classList.remove('show'), 5000);
-}
+      load() {
+        const data = StorageService.get();
+        this.allEscalas = data.allEscalas;
+        this.observacoes = data.observacoes;
+      },
 
-function mostrarLoading(mostrar){
-  const l = document.getElementById('loading');
-  if (mostrar) l.classList.add('show'); 
-  else l.classList.remove('show');
-}
+      save() {
+        return StorageService.set({ allEscalas: this.allEscalas, observacoes: this.observacoes });
+      },
 
-// ============================
-// Salvar / Carregar / Reset
-// ============================
-function salvarDados() {
-  try {
-    const dados = { allEscalas, observacoes, dataSalvamento: new Date().toISOString() };
-    localStorage.setItem(getStorageKey(), JSON.stringify(dados));
-    atualizarContadores();
-    mostrarNotificacao('Dados salvos com sucesso!');
-  } catch(err){
-    console.error(err);
-    mostrarNotificacao('Erro ao salvar dados!', true);
-  }
-}
+      getCurrentEscalas() {
+        return this.getEscalas(this.currentMonth, this.currentYear);
+      },
 
-function carregarDados() {
-  try {
-    const raw = localStorage.getItem(getStorageKey());
-    if (raw) {
-      const dados = JSON.parse(raw);
-      allEscalas = dados.allEscalas || {};
-      observacoes = dados.observacoes || [];
-      criarTabela();
-      atualizarContadores();
-      mostrarNotificacao('Dados carregados com sucesso!');
-    } else {
-      allEscalas = {};
-      observacoes = [];
-      criarTabela();
-      atualizarContadores();
-      mostrarNotificacao('Nenhum dado salvo encontrado', true);
-    }
-  } catch(err){
-    console.error(err);
-    mostrarNotificacao('Erro ao carregar dados!', true);
-  }
-}
-
-function redefinirDados() {
-  if (!confirm('Tem certeza que deseja redefinir todos os dados para este mês/ano?')) return;
-  const key = `${currentYear}_${currentMonth}`;
-  allEscalas[key] = { 
-    "HUSE Diurno": [], 
-    "HUSE Noturno": [], 
-    "HRP Diurno": [], 
-    "HRP Noturno": [] 
-  };
-  // remover observações deste mês/ano
-  observacoes = observacoes.filter(obs => {
-    const dt = parseDate(obs.data);
-    return !(dt && dt.getMonth() === currentMonth && dt.getFullYear() === currentYear);
-  });
-  criarTabela();
-  salvarDados();
-  mostrarNotificacao('Dados redefinidos com sucesso!');
-}
-
-// ============================
-// Contar trocas HRP (filtradas pelo mês/ano visualizado)
-// ============================
-function contarTrocasHRP() {
-  let c = 0;
-  observacoes.forEach(o => {
-    const dataOrigem = parseDate(o.data);
-    const dataTroca = parseDate(o.dataTroca);
-    
-    const matches = (dataOrigem && dataOrigem.getMonth() === currentMonth && dataOrigem.getFullYear() === currentYear) || 
-                   (dataTroca && dataTroca.getMonth() === currentMonth && dataTroca.getFullYear() === currentYear);
-    
-    if (matches) {
-      if ((o.hospital && o.hospital.includes('HRP')) || 
-          (o.hospitalTroca && o.hospitalTroca.includes('HRP'))) {
-        c++;
+      getEscalas(month, year) {
+        const key = `${year}_${month}`;
+        if (!this.allEscalas[key]) {
+          this.allEscalas[key] = {
+            'HUSE Diurno': [],
+            'HUSE Noturno': [],
+            'HRP Diurno': [],
+            'HRP Noturno': []
+          };
+        }
+        return this.allEscalas[key];
       }
-    }
-  });
-  return c;
-}
+    };
 
-function atualizarContadores(){
-  document.getElementById('hrp-trocas-count').textContent = contarTrocasHRP();
-}
+    // ============================================
+    // DATE SERVICE
+    // ============================================
+    const DateService = {
+      parseDate(dateString) {
+        if (!dateString) return null;
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return null;
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+      },
 
-// ============================
-// Detectar conflitos / transições
-// ============================
-function detectarConflitos() {
-  const escalas = getCurrentEscalas();
-  const conflitos = {};
-  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-  
-  for (let dia = 1; dia <= daysInMonth; dia++) {
-    const plantoes = [];
-    Object.keys(escalas).forEach(h => { 
-      if (escalas[h].includes(dia)) plantoes.push(h); 
-    });
-    if (plantoes.length > 1) conflitos[dia] = plantoes;
-  }
-  return conflitos;
-}
+      formatDateBR(date) {
+        if (!date || isNaN(date.getTime())) return '';
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
 
-function obterDiasComTransicaoDeslocamento() {
-  const escalas = getCurrentEscalas();
-  const dias = new Set();
-  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-  const noturnos = ["HUSE Noturno","HRP Noturno"];
-  const diurnos = ["HUSE Diurno","HRP Diurno"];
+      formatDateForInput(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      },
 
-  for (let d = 1; d <= daysInMonth; d++){
-    const diaAnterior = d - 1;
-    if (diaAnterior >= 1) {
-      const temNoturnoAnterior = noturnos.some(n => escalas[n].includes(diaAnterior));
-      const temDiurnoAtual = diurnos.some(di => escalas[di].includes(d));
-      if (temNoturnoAnterior && temDiurnoAtual) { 
-        dias.add(diaAnterior); 
-        dias.add(d); 
+      getDaysInMonth(month, year) {
+        return new Date(year, month + 1, 0).getDate();
+      },
+
+      getDateDay(year, month, day) {
+        return new Date(year, month, day).getDay();
       }
-    }
-  }
-  
-  for (let d = 1; d <= daysInMonth; d++){
-    const temDiurno = diurnos.some(di => escalas[di].includes(d));
-    const temNoturno = noturnos.some(no => escalas[no].includes(d));
-    if (temDiurno && temNoturno) dias.add(d);
-  }
-  return Array.from(dias);
-}
+    };
 
-// ============================
-// Criar tabela principal
-// ============================
-function criarTabela() {
-  const tabelaHead = document.querySelector('#table-header');
-  const tabelaBody = document.querySelector('#table-body');
-  const conflitos = detectarConflitos();
-  const diasComTransicao = obterDiasComTransicaoDeslocamento();
-  const escalas = getCurrentEscalas();
+    // ============================================
+    // UI SERVICE
+    // ============================================
+    const UIService = {
+      showNotification(message, type = 'success') {
+        const notif = document.getElementById('notification');
+        notif.textContent = message;
+        notif.className = `notification ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
+        notif.classList.add('show');
+        setTimeout(() => notif.classList.remove('show'), 4000);
+      },
 
-  tabelaHead.innerHTML = '<th>Hospitais & Dias</th>';
-  tabelaBody.innerHTML = '';
+      showLoading(show) {
+        const loading = document.getElementById('loading');
+        if (show) loading.classList.add('show');
+        else loading.classList.remove('show');
+      },
 
-  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+      openModal(modalId) {
+        document.getElementById(modalId).classList.add('show');
+      },
 
-  for (let dia = 1; dia <= daysInMonth; dia++){
-    const data = new Date(currentYear, currentMonth, dia);
-    const diaSemana = data.getDay();
-
-    const th = document.createElement('th');
-    if (diaSemana === 0 || diaSemana === 6) {
-      th.className = diaSemana === 0 ? 'sunday' : 'weekend';
-    }
-
-    const dayHeader = document.createElement('div'); 
-    dayHeader.className = 'day-header';
-    const dayNumber = document.createElement('div'); 
-    dayNumber.className = 'day-number'; 
-    dayNumber.textContent = dia;
-    const dayName = document.createElement('div'); 
-    dayName.className = 'day-name'; 
-    dayName.textContent = diasDaSemana[diaSemana];
-
-    if (diasComTransicao.includes(dia)) {
-      const carroIndicator = document.createElement('div'); 
-      carroIndicator.className = 'carro-indicator'; 
-      carroIndicator.textContent = '🚗';
-      carroIndicator.title = 'Deslocamento necessário entre hospitais';
-      dayHeader.appendChild(carroIndicator);
-    }
-    
-    dayHeader.appendChild(dayNumber); 
-    dayHeader.appendChild(dayName); 
-    th.appendChild(dayHeader);
-    th.setAttribute('data-day', dia);
-    tabelaHead.appendChild(th);
-  }
-
-  const hospitaisOrdenados = ["HUSE Diurno","HUSE Noturno","HRP Diurno","HRP Noturno"];
-  hospitaisOrdenados.forEach(hospital => {
-    const tr = document.createElement('tr');
-    const tdNome = document.createElement('td'); 
-    tdNome.className = 'hospital-name'; 
-    tdNome.textContent = hospital; 
-    tr.appendChild(tdNome);
-
-    for (let dia = 1; dia <= daysInMonth; dia++){
-      const data = new Date(currentYear, currentMonth, dia);
-      const diaSemana = data.getDay();
-      const td = document.createElement('td');
-      if (diaSemana === 0 || diaSemana === 6) {
-        td.className = diaSemana === 0 ? 'sunday' : 'weekend';
+      closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
       }
-      td.setAttribute('data-hospital', hospital);
-      td.setAttribute('data-day', dia);
+    };
 
-      if (escalas[hospital].includes(dia)) {
-        const div = document.createElement('div');
-        if (conflitos[dia] && conflitos[dia].includes(hospital)) {
-          div.className = 'plantao-cell conflito-cell'; 
-          div.textContent = 'S'; 
-          div.title = 'Conflito de horário!';
-        } else if (diasComTransicao.includes(dia)) {
-          div.className = 'plantao-cell alerta-carro-cell'; 
-          div.textContent = 'S 🚗'; 
-          div.title = 'Plantão com deslocamento necessário';
+    // ============================================
+    // ESCALA SERVICE
+    // ============================================
+    const EscalaService = {
+      togglePlantao(hospital, dia) {
+        const escalas = AppState.getCurrentEscalas();
+        const idx = escalas[hospital].indexOf(dia);
+        if (idx === -1) {
+          escalas[hospital].push(dia);
+          escalas[hospital].sort((a, b) => a - b);
         } else {
-          div.className = 'plantao-cell plantao'; 
-          div.textContent = 'S'; 
-          div.title = 'Plantão confirmado';
+          escalas[hospital].splice(idx, 1);
         }
-        div.addEventListener('click', () => togglePlantao(hospital, dia));
-        td.appendChild(div);
-      } else {
-        const div = document.createElement('div'); 
-        div.className = 'folga-cell'; 
-        div.textContent = 'Folga'; 
-        div.title = 'Dia de folga - Clique para adicionar plantão';
-        div.addEventListener('click', () => togglePlantao(hospital, dia));
-        td.appendChild(div);
-      }
-      tr.appendChild(td);
-    }
+        AppState.save();
+      },
 
-    tabelaBody.appendChild(tr);
-  });
-}
-
-// ============================
-// Adicionar/remover plantão
-// ============================
-function togglePlantao(hospital, dia) {
-  const escalas = getCurrentEscalas();
-  const idx = escalas[hospital].indexOf(dia);
-  if (idx === -1) {
-    escalas[hospital].push(dia); 
-    escalas[hospital].sort((a,b) => a-b);
-  } else {
-    escalas[hospital].splice(idx,1);
-  }
-  salvarDados();
-  criarTabela();
-}
-
-// ============================
-// MODAIS: abrir/fechar
-// ============================
-function abrirModalTroca() {
-  const modal = document.getElementById('troca-modal');
-  modal.classList.add('show');
-
-  // limpar campos e preencher datas sugeridas no mês/ano atual
-  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-  const diaSugerido1 = Math.min(15, daysInMonth);
-  const diaSugerido2 = Math.min(20, daysInMonth);
-
-  const hoje = new Date();
-  const dataOrig = new Date(currentYear, currentMonth, diaSugerido1);
-  const dataDest = new Date(currentYear, currentMonth, diaSugerido2);
-
-  // Formatar datas para o input type="date" (YYYY-MM-DD)
-  document.getElementById('origem-data').value = formatDateForInput(dataOrig);
-  document.getElementById('destino-data').value = formatDateForInput(dataDest);
-  
-  document.getElementById('origem-mes').value = currentMonth;
-  document.getElementById('origem-ano').value = currentYear;
-  document.getElementById('destino-mes').value = currentMonth;
-  document.getElementById('destino-ano').value = currentYear;
-
-  document.getElementById('origem-hospital').value = '';
-  document.getElementById('destino-hospital').value = '';
-  document.getElementById('nome-troca').value = '';
-  document.getElementById('obs-troca').value = '';
-}
-
-function formatDateForInput(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function fecharModalTroca(){ 
-  document.getElementById('troca-modal').classList.remove('show'); 
-}
-
-function abrirModalTrocas() {
-  const modal = document.getElementById('trocas-modal');
-  document.getElementById('filter-month').value = currentMonth;
-  document.getElementById('filter-year').value = currentYear;
-  popularTabelaTrocas();
-  modal.classList.add('show');
-}
-
-function fecharModalTrocas(){ 
-  document.getElementById('trocas-modal').classList.remove('show'); 
-}
-
-// ============================
-// Realizar troca entre meses (CORRIGIDA)
-// ============================
-function realizarTroca() {
-  const origemHospital = document.getElementById('origem-hospital').value;
-  const destinoHospital = document.getElementById('destino-hospital').value;
-  const nome = document.getElementById('nome-troca').value.trim();
-  const observacao = document.getElementById('obs-troca').value.trim();
-
-  const origemDataInput = document.getElementById('origem-data').value;
-  const origemMes = parseInt(document.getElementById('origem-mes').value,10);
-  const origemAno = parseInt(document.getElementById('origem-ano').value,10);
-
-  const destinoDataInput = document.getElementById('destino-data').value;
-  const destinoMes = parseInt(document.getElementById('destino-mes').value,10);
-  const destinoAno = parseInt(document.getElementById('destino-ano').value,10);
-
-  if (!origemHospital || !destinoHospital || !nome || !origemDataInput || !destinoDataInput) {
-    mostrarNotificacao('Preencha todos os campos obrigatórios!', true);
-    return;
-  }
-
-  // Usar a função parseDate corrigida
-  const dataOrigem = parseDate(origemDataInput);
-  const dataDestino = parseDate(destinoDataInput);
-  
-  if (!dataOrigem || !dataDestino || isNaN(dataOrigem.getTime()) || isNaN(dataDestino.getTime())) {
-    mostrarNotificacao('Datas inválidas!', true); 
-    return;
-  }
-
-  // VERIFICAÇÃO CRÍTICA: As datas devem corresponder aos meses/anos selecionados
-  if (dataOrigem.getMonth() !== origemMes || dataOrigem.getFullYear() !== origemAno) {
-    mostrarNotificacao('A data de origem não corresponde ao mês/ano selecionado!', true);
-    return;
-  }
-
-  if (dataDestino.getMonth() !== destinoMes || dataDestino.getFullYear() !== destinoAno) {
-    mostrarNotificacao('A data de destino não corresponde ao mês/ano selecionado!', true);
-    return;
-  }
-
-  // Extrair o dia corretamente - ESTA ERA A CAUSA DO PROBLEMA
-  const diaOrigNum = dataOrigem.getDate();
-  const diaDestNum = dataDestino.getDate();
-
-  console.log("Troca sendo processada:");
-  console.log("Origem:", origemHospital, "Data:", origemDataInput, "Dia:", diaOrigNum, "Mês:", origemMes, "Ano:", origemAno);
-  console.log("Destino:", destinoHospital, "Data:", destinoDataInput, "Dia:", diaDestNum, "Mês:", destinoMes, "Ano:", destinoAno);
-
-  const escalasOrigem = getEscalas(origemMes, origemAno);
-  const escalasDestino = getEscalas(destinoMes, destinoAno);
-
-  if (!escalasOrigem[origemHospital].includes(diaOrigNum)) {
-    mostrarNotificacao(`Não existe plantão de ${origemHospital} no dia ${formatDateBR(dataOrigem)}!`, true);
-    return;
-  }
-  
-  if (escalasDestino[destinoHospital].includes(diaDestNum)) {
-    mostrarNotificacao(`Já existe plantão de ${destinoHospital} no dia ${formatDateBR(dataDestino)}!`, true);
-    return;
-  }
-
-  // Remover origem
-  const idx = escalasOrigem[origemHospital].indexOf(diaOrigNum);
-  if (idx > -1) escalasOrigem[origemHospital].splice(idx,1);
-
-  // Adicionar destino
-  escalasDestino[destinoHospital].push(diaDestNum);
-  escalasDestino[destinoHospital].sort((a,b)=>a-b);
-
-  // Registrar observação/troca
-  const novaObservacao = {
-    hospital: origemHospital,
-    hospitalTroca: destinoHospital,
-    data: origemDataInput,
-    dataTroca: destinoDataInput,
-    nome: nome,
-    observacao: observacao || `Troca: ${origemHospital} → ${destinoHospital}`
-  };
-  observacoes.push(novaObservacao);
-
-  fecharModalTroca();
-  salvarDados();
-  
-  // Atualizar tabela se mês atual foi afetado
-  if ((origemMes === currentMonth && origemAno === currentYear) || 
-      (destinoMes === currentMonth && destinoAno === currentYear)) {
-    criarTabela();
-  }
-
-  // Usar a função formatDateBR corrigida
-  mostrarNotificacao(`Troca realizada: ${novaObservacao.hospital} ${formatDateBR(dataOrigem)} → ${novaObservacao.hospitalTroca} ${formatDateBR(dataDestino)}`);
-}
-
-// ============================
-// Popular tabela de trocas (com filtros)
-// ============================
-function popularTabelaTrocas() {
-  const tbody = document.getElementById('trocas-body');
-  tbody.innerHTML = '';
-
-  const fMonthVal = document.getElementById('filter-month').value;
-  const fYearVal = document.getElementById('filter-year').value;
-
-  const hasFilterMonth = fMonthVal !== '';
-  const hasFilterYear = fYearVal !== '';
-  const fMonth = hasFilterMonth ? parseInt(fMonthVal,10) : null;
-  const fYear = hasFilterYear ? parseInt(fYearVal,10) : null;
-
-  const filtradas = observacoes.filter(o => {
-    if (!hasFilterMonth && !hasFilterYear) return true;
-    
-    const dataOrigem = parseDate(o.data);
-    const dataTroca = parseDate(o.dataTroca);
-    
-    let ok = false;
-    if (dataOrigem) { 
-      if ((!hasFilterMonth || dataOrigem.getMonth() === fMonth) && 
-          (!hasFilterYear || dataOrigem.getFullYear() === fYear)) {
-        ok = true; 
-      }
-    }
-    if (dataTroca && !ok) { 
-      if ((!hasFilterMonth || dataTroca.getMonth() === fMonth) && 
-          (!hasFilterYear || dataTroca.getFullYear() === fYear)) {
-        ok = true; 
-      }
-    }
-    return ok;
-  });
-
-  if (filtradas.length === 0) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="6" style="text-align:center; color:#666;">Nenhuma troca registrada</td>';
-    tbody.appendChild(tr);
-    document.getElementById('trocas-count').textContent = 0;
-    return;
-  }
-
-  filtradas.forEach((o, i) => {
-    const tr = document.createElement('tr');
-
-    // hospital (select)
-    const tdH = document.createElement('td');
-    const selH = document.createElement('select');
-    ['','HUSE Diurno','HUSE Noturno','HRP Diurno','HRP Noturno'].forEach(val => {
-      const opt = document.createElement('option'); 
-      opt.value = val; 
-      opt.textContent = val || '-- selecione --';
-      if (val === o.hospital) opt.selected = true;
-      selH.appendChild(opt);
-    });
-    selH.addEventListener('change', e => { 
-      o.hospital = e.target.value; 
-      salvarDados(); 
-      popularTabelaTrocas(); 
-    });
-    tdH.appendChild(selH); 
-    tr.appendChild(tdH);
-
-    // data origem
-    const tdD = document.createElement('td');
-    const inpD = document.createElement('input'); 
-    inpD.type = 'date'; 
-    inpD.value = o.data || '';
-    inpD.addEventListener('change', e => { 
-      o.data = e.target.value; 
-      salvarDados(); 
-      popularTabelaTrocas(); 
-    });
-    tdD.appendChild(inpD); 
-    tr.appendChild(tdD);
-
-    // data troca
-    const tdDT = document.createElement('td');
-    const inpDT = document.createElement('input'); 
-    inpDT.type = 'date'; 
-    inpDT.value = o.dataTroca || '';
-    inpDT.addEventListener('change', e => { 
-      o.dataTroca = e.target.value; 
-      salvarDados(); 
-      popularTabelaTrocas(); 
-    });
-    tdDT.appendChild(inpDT); 
-    tr.appendChild(tdDT);
-
-    // nome
-    const tdN = document.createElement('td');
-    const inpN = document.createElement('input'); 
-    inpN.type='text'; 
-    inpN.value = o.nome || ''; 
-    inpN.placeholder='Nome';
-    inpN.addEventListener('change', e => { 
-      o.nome = e.target.value; 
-      salvarDados(); 
-    });
-    tdN.appendChild(inpN); 
-    tr.appendChild(tdN);
-
-    // obs
-    const tdO = document.createElement('td');
-    const inpO = document.createElement('input'); 
-    inpO.type='text'; 
-    inpO.value = o.observacao || ''; 
-    inpO.placeholder='Observação';
-    inpO.addEventListener('change', e => { 
-      o.observacao = e.target.value; 
-      salvarDados(); 
-    });
-    tdO.appendChild(inpO); 
-    tr.appendChild(tdO);
-
-    // ações
-    const tdA = document.createElement('td');
-    const btnDel = document.createElement('button'); 
-    btnDel.className='btn btn-danger'; 
-    btnDel.innerHTML='<i class="fas fa-trash"></i>'; 
-    btnDel.title='Excluir troca';
-    btnDel.addEventListener('click', ()=> {
-      if (confirm('Tem certeza que deseja excluir esta troca?')) {
-        const idx = observacoes.indexOf(o);
-        if (idx>-1) { 
-          observacoes.splice(idx,1); 
-          salvarDados(); 
-          popularTabelaTrocas(); 
-          criarTabela(); 
-          mostrarNotificacao('Troca excluída com sucesso!'); 
-        }
-      }
-    });
-    tdA.appendChild(btnDel); 
-    tr.appendChild(tdA);
-
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById('trocas-count').textContent = filtradas.length;
-}
-
-// ============================
-// Gerar sugestões de trocas
-// ============================
-function gerarSugestoesTrocas() {
-  const escalas = getCurrentEscalas();
-  const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-  const conflitos = detectarConflitos();
-  const sugestoes = [];
-  const trocasHRP = contarTrocasHRP();
-  const maxTrocasHRP = 6;
-
-  // Prioridade 1: resolver conflitos
-  Object.keys(conflitos).forEach(dia => {
-    const diaNum = parseInt(dia,10);
-    const hospitaisConflito = conflitos[dia];
-    hospitaisConflito.forEach(hospitalConflito => {
-      for (let diaDestino = 1; diaDestino <= daysInMonth; diaDestino++) {
-        if (!escalas[hospitalConflito].includes(diaDestino)) {
-          let conflitoNovo = false;
-          Object.keys(escalas).forEach(outro => {
-            if (outro !== hospitalConflito && escalas[outro].includes(diaDestino)) conflitoNovo = true;
+      detectarConflitos() {
+        const escalas = AppState.getCurrentEscalas();
+        const conflitos = {};
+        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
+        for (let dia = 1; dia <= daysInMonth; dia++) {
+          const plantoes = [];
+          AppState.hospitais.forEach(h => {
+            if (escalas[h].includes(dia)) plantoes.push(h);
           });
-          if (!conflitoNovo) {
-            if (hospitalConflito.includes('HRP') && trocasHRP >= maxTrocasHRP) continue;
-            sugestoes.push({ 
-              origem: hospitalConflito, 
-              diaOrigem: diaNum, 
-              destino: hospitalConflito, 
-              diaDestino: diaDestino, 
-              beneficio: 'Resolver conflito de horários', 
-              complexidade: 'Baixa' 
-            });
-            break;
-          }
+          if (plantoes.length > 1) conflitos[dia] = plantoes;
         }
-      }
-    });
-  });
+        return conflitos;
+      },
 
-  // Prioridade 2: melhorar distribuição (evitar consecutivos)
-  Object.keys(escalas).forEach(hospital => {
-    const plantoes = escalas[hospital];
-    for (let i = 0; i < plantoes.length - 3; i++) {
-      if (plantoes[i+3] - plantoes[i] <= 4) {
-        for (let diaDestino = 1; diaDestino <= daysInMonth; diaDestino++) {
-          if (!plantoes.includes(diaDestino) && Math.abs(diaDestino - plantoes[i]) > 2) {
-            let conflitoNovo = false;
-            Object.keys(escalas).forEach(outro => {
-              if (outro !== hospital && escalas[outro].includes(diaDestino)) conflitoNovo = true;
-            });
-            if (!conflitoNovo) {
-              sugestoes.push({ 
-                origem: hospital, 
-                diaOrigem: plantoes[i], 
-                destino: hospital, 
-                diaDestino: diaDestino, 
-                beneficio: 'Reduzir sequência de plantões', 
-                complexidade: 'Média' 
-              });
-              break;
+      obterDiasComTransicao() {
+        const escalas = AppState.getCurrentEscalas();
+        const dias = new Set();
+        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
+        const noturnos = ['HUSE Noturno', 'HRP Noturno'];
+        const diurnos = ['HUSE Diurno', 'HRP Diurno'];
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const diaAnterior = d - 1;
+          if (diaAnterior >= 1) {
+            const temNoturnoAnterior = noturnos.some(n => escalas[n].includes(diaAnterior));
+            const temDiurnoAtual = diurnos.some(di => escalas[di].includes(d));
+            if (temNoturnoAnterior && temDiurnoAtual) {
+              dias.add(diaAnterior);
+              dias.add(d);
             }
           }
         }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const temDiurno = diurnos.some(di => escalas[di].includes(d));
+          const temNoturno = noturnos.some(no => escalas[no].includes(d));
+          if (temDiurno && temNoturno) dias.add(d);
+        }
+        return Array.from(dias);
+      },
+
+      contarTrocasHRP() {
+        let count = 0;
+        AppState.observacoes.forEach(obs => {
+          const dataOrigem = DateService.parseDate(obs.data);
+          const dataTroca = DateService.parseDate(obs.dataTroca);
+          const matches = (dataOrigem && dataOrigem.getMonth() === AppState.currentMonth && dataOrigem.getFullYear() === AppState.currentYear) ||
+                          (dataTroca && dataTroca.getMonth() === AppState.currentMonth && dataTroca.getFullYear() === AppState.currentYear);
+          if (matches && ((obs.hospital?.includes('HRP')) || (obs.hospitalTroca?.includes('HRP')))) {
+            count++;
+          }
+        });
+        return count;
       }
-    }
-  });
+    };
 
-  return sugestoes;
-}
+    // ============================================
+    // RENDER SERVICE
+    // ============================================
+    const RenderService = {
+      renderTable() {
+        const header = document.querySelector('#table-header');
+        const body = document.querySelector('#table-body');
+        const conflitos = EscalaService.detectarConflitos();
+        const diasComTransicao = EscalaService.obterDiasComTransicao();
+        const escalas = AppState.getCurrentEscalas();
+        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
 
-// ============================
-// Função para obter trocas do mês atual (CORREÇÃO DO PROBLEMA)
-// ============================
-function getTrocasDoMesAtual() {
-  return observacoes.filter(o => {
-    const dataOrigem = parseDate(o.data);
-    const dataTroca = parseDate(o.dataTroca);
-    
-    // Verifica se pelo menos uma das datas está no mês/ano atual
-    const origemNoMes = dataOrigem && dataOrigem.getMonth() === currentMonth && dataOrigem.getFullYear() === currentYear;
-    const trocaNoMes = dataTroca && dataTroca.getMonth() === currentMonth && dataTroca.getFullYear() === currentYear;
-    
-    return origemNoMes || trocaNoMes;
-  });
-}
+        header.innerHTML = '<th>Hospitais & Dias</th>';
+        body.innerHTML = '';
 
-// ============================
-// Exportar para PDF (CORRIGIDO - apenas trocas do mês atual)
-// ============================
-async function exportarPDFCompleto() {
-  mostrarLoading(true);
-  try {
-    // Montar container temporário otimizado para paisagem
-    const area = document.createElement('div');
-    area.style.width = '1000px';
-    area.style.padding = '15px';
-    area.style.background = 'white';
-    area.style.color = '#333';
-    area.style.fontFamily = 'Arial, sans-serif';
-    area.style.lineHeight = '1.1';
+        for (let dia = 1; dia <= daysInMonth; dia++) {
+          const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
+          const th = document.createElement('th');
+          if (diaSemana === 0 || diaSemana === 6) {
+            th.className = diaSemana === 0 ? 'sunday' : 'weekend';
+          }
 
-    // Cabeçalho compacto
-    const cab = document.createElement('div');
-    cab.innerHTML = `<h2 style="text-align:center; color:#1a5276; margin-bottom:5px; font-size:18px;">Escala de Plantões - ${monthNames[currentMonth]} ${currentYear}</h2>
-                     <p style="text-align:center; font-size:10px; color:#666; margin-top:0;">Gerado em: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}</p>
-                     <hr style="margin:5px 0 10px 0;">`;
-    area.appendChild(cab);
+          const dayHeader = document.createElement('div');
+          dayHeader.className = 'day-header';
 
-    // Tabela de escala otimizada
-    const tabelaEscalaOriginal = document.querySelector('#escala-table');
-    const tabelaClonada = tabelaEscalaOriginal.cloneNode(true);
-    tabelaClonada.style.width = '100%';
-    tabelaClonada.style.borderCollapse = 'collapse';
-    tabelaClonada.style.fontSize = '8px';
-    
-    // Ajustar células para melhor visualização em paisagem
-    tabelaClonada.querySelectorAll('th, td').forEach(cell => {
-      cell.style.padding = '4px 2px';
-      cell.style.fontSize = '8px';
-      cell.style.border = '1px solid #ddd';
-      if (cell.classList.contains('hospital-name')) {
-        cell.style.width = '100px';
+          if (diasComTransicao.includes(dia)) {
+            const carro = document.createElement('div');
+            carro.className = 'carro-indicator';
+            carro.textContent = '🚗';
+            carro.title = 'Deslocamento necessário';
+            dayHeader.appendChild(carro);
+          }
+
+          const dayNum = document.createElement('div');
+          dayNum.className = 'day-number';
+          dayNum.textContent = dia;
+          dayHeader.appendChild(dayNum);
+
+          const dayName = document.createElement('div');
+          dayName.className = 'day-name';
+          dayName.textContent = AppState.diasDaSemana[diaSemana];
+          dayHeader.appendChild(dayName);
+
+          th.appendChild(dayHeader);
+          th.setAttribute('data-day', dia);
+          header.appendChild(th);
+        }
+
+        AppState.hospitais.forEach(hospital => {
+          const tr = document.createElement('tr');
+          const tdNome = document.createElement('td');
+          tdNome.className = 'hospital-name';
+          tdNome.textContent = hospital;
+          tr.appendChild(tdNome);
+
+          for (let dia = 1; dia <= daysInMonth; dia++) {
+            const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
+            const td = document.createElement('td');
+            if (diaSemana === 0 || diaSemana === 6) {
+              td.className = diaSemana === 0 ? 'sunday' : 'weekend';
+            }
+
+            if (escalas[hospital].includes(dia)) {
+              const div = document.createElement('div');
+              if (conflitos[dia]?.includes(hospital)) {
+                div.className = 'plantao-cell conflito-cell';
+                div.textContent = '⚠️';
+                div.title = 'Conflito de horário!';
+              } else if (diasComTransicao.includes(dia)) {
+                div.className = 'plantao-cell alerta-carro-cell';
+                div.textContent = 'S 🚗';
+                div.title = 'Plantão com deslocamento';
+              } else {
+                div.className = 'plantao-cell plantao';
+                div.textContent = 'S';
+                div.title = 'Plantão confirmado';
+              }
+              div.addEventListener('click', () => {
+                EscalaService.togglePlantao(hospital, dia);
+                this.renderTable();
+                this.updateCounter();
+              });
+              td.appendChild(div);
+            } else {
+              const div = document.createElement('div');
+              div.className = 'folga-cell';
+              div.textContent = 'F';
+              div.title = 'Folga';
+              div.addEventListener('click', () => {
+                EscalaService.togglePlantao(hospital, dia);
+                this.renderTable();
+                this.updateCounter();
+              });
+              td.appendChild(div);
+            }
+            tr.appendChild(td);
+          }
+          body.appendChild(tr);
+        });
+      },
+
+      updateCounter() {
+        const count = EscalaService.contarTrocasHRP();
+        document.getElementById('hrp-trocas-count').textContent = count;
+      },
+
+      populateSelects() {
+        ['month-select', 'filter-month'].forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.innerHTML = id.includes('filter') ? '<option value="">Todos</option>' : '';
+          AppState.monthNames.forEach((m, i) => {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = m;
+            el.appendChild(opt);
+          });
+          el.value = AppState.currentMonth;
+        });
+
+        ['year-select', 'filter-year'].forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.innerHTML = '';
+          for (let y = AppState.currentYear - 2; y <= AppState.currentYear + 2; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            el.appendChild(opt);
+          }
+          el.value = AppState.currentYear;
+        });
+      },
+
+      renderTrocasTable() {
+        const tbody = document.getElementById('trocas-body');
+        tbody.innerHTML = '';
+
+        const filterMonth = document.getElementById('filter-month').value;
+        const filterYear = document.getElementById('filter-year').value;
+        const hasFilterMonth = filterMonth !== '';
+        const hasFilterYear = filterYear !== '';
+
+        const filtradas = AppState.observacoes.filter(obs => {
+          if (!hasFilterMonth && !hasFilterYear) return true;
+          const dataOrigem = DateService.parseDate(obs.data);
+          const dataTroca = DateService.parseDate(obs.dataTroca);
+          if (hasFilterMonth || hasFilterYear) {
+            if (dataOrigem && (!hasFilterMonth || dataOrigem.getMonth() == filterMonth) && (!hasFilterYear || dataOrigem.getFullYear() == filterYear)) {
+              return true;
+            }
+            if (dataTroca && (!hasFilterMonth || dataTroca.getMonth() == filterMonth) && (!hasFilterYear || dataTroca.getFullYear() == filterYear)) {
+              return true;
+            }
+          }
+          return false;
+        });
+
+        if (filtradas.length === 0) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td colspan="6" style="text-align:center; color:#999;">Nenhuma troca registrada</td>';
+          tbody.appendChild(tr);
+          return;
+        }
+
+        filtradas.forEach((obs) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${obs.hospital || '--'}</td>
+            <td>${DateService.formatDateBR(DateService.parseDate(obs.data)) || '--'}</td>
+            <td>${DateService.formatDateBR(DateService.parseDate(obs.dataTroca)) || '--'}</td>
+            <td>${obs.nome || '--'}</td>
+            <td>${obs.observacao || '--'}</td>
+            <td><button class="btn btn-danger" style="font-size: 0.7rem; padding: 4px 8px; margin-bottom: 0;" onclick="const idx = AppState.observacoes.indexOf(${AppState.observacoes.indexOf(obs)}); if(idx > -1) AppState.observacoes.splice(idx, 1); AppState.save(); RenderService.renderTrocasTable();">Remover</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
       }
-    });
+    };
 
-    // Ajustar células de plantão
-    tabelaClonada.querySelectorAll('.plantao-cell, .folga-cell, .empty-cell').forEach(cell => {
-      cell.style.padding = '3px 1px';
-      cell.style.fontSize = '7px';
-      cell.style.minWidth = '20px';
-    });
-
-    area.appendChild(tabelaClonada);
-
-    // Separador e Tabela de trocas (se houver trocas do mês atual)
-    const trocasDoMes = getTrocasDoMesAtual();
-    
-    if (trocasDoMes.length > 0) {
-      const hr = document.createElement('hr'); 
-      hr.style.margin = '8px 0 8px 0'; 
-      area.appendChild(hr);
+    // ============================================
+    // SUGESTÃO SERVICE
+    // ============================================
+    const SuggestaoService = {
+      gerarSugestoes() {
+        const escalas = AppState.getCurrentEscalas();
+        const sugestoes = [];
+        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
+        
+        for (let dia = 1; dia <= daysInMonth; dia++) {
+          const plantoes = [];
+          AppState.hospitais.forEach(h => {
+            if (escalas[h].includes(dia)) plantoes.push(h);
+          });
+          
+          if (plantoes.length > 1) {
+            for (let i = 0; i < plantoes.length - 1; i++) {
+              const h1 = plantoes[i];
+              const h2 = plantoes[i + 1];
+              
+              for (let dia2 = 1; dia2 <= daysInMonth; dia2++) {
+                if (!escalas[h1].includes(dia2) && !escalas[h2].includes(dia2) && dia !== dia2) {
+                  sugestoes.push({
+                    conflito: `${h1} e ${h2} no dia ${dia}`,
+                    sugestao: `Mover ${h2} do dia ${dia} para o dia ${dia2}`,
+                    diaOrigem: dia,
+                    diaDestino: dia2,
+                    hospitalOrigem: h2,
+                    hospitalDestino: h2
+                  });
+                  
+                  if (sugestoes.length >= 5) break;
+                }
+              }
+              if (sugestoes.length >= 5) break;
+            }
+          }
+        }
+        
+        if (sugestoes.length === 0) {
+          UIService.showNotification('Nenhuma sugestão de troca disponível. Escalas bem balanceadas!', 'info');
+          return;
+        }
+        
+        this.mostrarModalSugestoes(sugestoes);
+      },
       
-      const tituloTrocas = document.createElement('h3'); 
-      tituloTrocas.textContent = `Trocas Registradas - ${monthNames[currentMonth]} ${currentYear}`; 
-      tituloTrocas.style.color = '#1a5276'; 
-      tituloTrocas.style.marginBottom = '5px';
-      tituloTrocas.style.fontSize = '12px';
-      area.appendChild(tituloTrocas);
+      mostrarModalSugestoes(sugestoes) {
+        const html = `
+          <div class="modal" id="sugestoes-modal" style="display: flex;">
+            <div class="modal-content" style="max-width: 800px;">
+              <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-lightbulb"></i> Sugestões de Trocas (${sugestoes.length})</h3>
+                <button class="close-modal" onclick="document.getElementById('sugestoes-modal').remove()">&times;</button>
+              </div>
+              
+              <div style="max-height: 400px; overflow-y: auto;">
+                ${sugestoes.map((s, i) => `
+                  <div style="background: #f9fafb; padding: 12px; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb;">
+                    <div style="font-weight: 600; color: #ef4444; margin-bottom: 6px;">⚠️ Conflito: ${s.conflito}</div>
+                    <div style="color: #6b7280; font-size: 0.9rem; margin-bottom: 8px;">✅ ${s.sugestao}</div>
+                    <button class="btn btn-success" style="padding: 6px 12px; font-size: 0.8rem;" onclick="SuggestaoService.aplicarSugestao({
+                      diaOrigem: ${s.diaOrigem},
+                      diaDestino: ${s.diaDestino},
+                      hospitalOrigem: '${s.hospitalOrigem}',
+                      hospitalDestino: '${s.hospitalDestino}'
+                    }); document.getElementById('sugestoes-modal').remove();">Aplicar</button>
+                  </div>
+                `).join('')}
+              </div>
+              
+              <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="document.getElementById('sugestoes-modal').remove()">Fechar</button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', html);
+      },
+      
+      aplicarSugestao(dados) {
+        const { diaOrigem, diaDestino, hospitalOrigem, hospitalDestino } = dados;
+        const escalas = AppState.getCurrentEscalas();
+        
+        const idx = escalas[hospitalOrigem].indexOf(diaOrigem);
+        if (idx > -1) escalas[hospitalOrigem].splice(idx, 1);
+        
+        if (!escalas[hospitalDestino].includes(diaDestino)) {
+          escalas[hospitalDestino].push(diaDestino);
+          escalas[hospitalDestino].sort((a, b) => a - b);
+        }
+        
+        const dataAtual = new Date();
+        const novaObs = {
+          hospital: hospitalOrigem,
+          hospitalTroca: hospitalDestino,
+          data: `${AppState.currentYear}-${String(AppState.currentMonth + 1).padStart(2, '0')}-${String(diaOrigem).padStart(2, '0')}`,
+          dataTroca: `${AppState.currentYear}-${String(AppState.currentMonth + 1).padStart(2, '0')}-${String(diaDestino).padStart(2, '0')}`,
+          nome: 'Sistema',
+          observacao: 'Sugestão automática - Resolução de conflito'
+        };
+        AppState.observacoes.push(novaObs);
+        
+        AppState.save();
+        RenderService.renderTable();
+        RenderService.updateCounter();
+        UIService.showNotification('✅ Sugestão aplicada com sucesso!');
+      }
+    };
 
-      // Tabela de trocas compacta
-      const tabelaTrocas = document.createElement('table');
-      tabelaTrocas.style.width = '100%';
-      tabelaTrocas.style.borderCollapse = 'collapse';
-      tabelaTrocas.style.fontSize = '7px';
-      tabelaTrocas.innerHTML = `<thead>
-        <tr>
-          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Hospital</th>
-          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Data Origem</th>
-          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Data Troca</th>
-          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Nome</th>
-          <th style="border:1px solid #ddd; padding:4px; font-size:8px;">Observação</th>
-        </tr></thead>`;
-      const tbody = document.createElement('tbody');
+    // ============================================
+    // TROCA SERVICE
+    // ============================================
+    const TrocaService = {
+      abrirModal() {
+        const hoje = new Date();
+        document.getElementById('origem-data').value = DateService.formatDateForInput(hoje);
+        document.getElementById('destino-data').value = DateService.formatDateForInput(hoje);
+        document.getElementById('origem-hospital').value = '';
+        document.getElementById('destino-hospital').value = '';
+        document.getElementById('nome-troca').value = '';
+        document.getElementById('obs-troca').value = '';
+        UIService.openModal('troca-modal');
+      },
 
-      trocasDoMes.forEach(o => {
-        const tr = document.createElement('tr');
-        const hosp = o.hospital || '';
-        // Usar as funções corrigidas de data
-        const dOrig = o.data ? formatDateBR(parseDate(o.data)) : '';
-        const dTroca = o.dataTroca ? formatDateBR(parseDate(o.dataTroca)) : '';
-        const nome = o.nome || '';
-        const obs = o.observacao || '';
-        tr.innerHTML = `<td style="border:1px solid #ddd; padding:3px; font-size:7px;">${hosp}</td>
-                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${dOrig}</td>
-                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${dTroca}</td>
-                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${nome}</td>
-                        <td style="border:1px solid #ddd; padding:3px; font-size:7px;">${obs}</td>`;
-        tbody.appendChild(tr);
+      realizar() {
+        const origemHospital = document.getElementById('origem-hospital').value.trim();
+        const destinoHospital = document.getElementById('destino-hospital').value.trim();
+        const nome = document.getElementById('nome-troca').value.trim();
+        const observacao = document.getElementById('obs-troca').value.trim();
+        const origemDataInput = document.getElementById('origem-data').value;
+        const destinoDataInput = document.getElementById('destino-data').value;
+
+        if (!origemHospital || !destinoHospital || !nome || !origemDataInput || !destinoDataInput) {
+          UIService.showNotification('Preencha todos os campos obrigatórios!', 'error');
+          return;
+        }
+
+        const dataOrigem = DateService.parseDate(origemDataInput);
+        const dataDestino = DateService.parseDate(destinoDataInput);
+
+        if (!dataOrigem || !dataDestino) {
+          UIService.showNotification('Datas inválidas!', 'error');
+          return;
+        }
+
+        const origemMes = dataOrigem.getMonth();
+        const origemAno = dataOrigem.getFullYear();
+        const destinoMes = dataDestino.getMonth();
+        const destinoAno = dataDestino.getFullYear();
+        const diaOrigNum = dataOrigem.getDate();
+        const diaDestNum = dataDestino.getDate();
+
+        const escalasOrigem = AppState.getEscalas(origemMes, origemAno);
+        const escalasDestino = AppState.getEscalas(destinoMes, destinoAno);
+
+        if (!escalasOrigem[origemHospital].includes(diaOrigNum)) {
+          UIService.showNotification(`Não existe plantão de ${origemHospital} no dia ${DateService.formatDateBR(dataOrigem)}!`, 'error');
+          return;
+        }
+
+        if (escalasDestino[destinoHospital].includes(diaDestNum)) {
+          UIService.showNotification(`Já existe plantão de ${destinoHospital} no dia ${DateService.formatDateBR(dataDestino)}!`, 'error');
+          return;
+        }
+
+        const idx = escalasOrigem[origemHospital].indexOf(diaOrigNum);
+        if (idx > -1) escalasOrigem[origemHospital].splice(idx, 1);
+
+        escalasDestino[destinoHospital].push(diaDestNum);
+        escalasDestino[destinoHospital].sort((a, b) => a - b);
+
+        const novaObservacao = {
+          hospital: origemHospital,
+          hospitalTroca: destinoHospital,
+          data: origemDataInput,
+          dataTroca: destinoDataInput,
+          nome: nome,
+          observacao: observacao || `${origemHospital} → ${destinoHospital}`
+        };
+        AppState.observacoes.push(novaObservacao);
+
+        UIService.closeModal('troca-modal');
+        AppState.save();
+
+        if ((origemMes === AppState.currentMonth && origemAno === AppState.currentYear) ||
+            (destinoMes === AppState.currentMonth && destinoAno === AppState.currentYear)) {
+          RenderService.renderTable();
+        }
+
+        RenderService.updateCounter();
+        UIService.showNotification(`✅ Troca realizada: ${origemHospital} (${DateService.formatDateBR(dataOrigem)}) → ${destinoHospital} (${DateService.formatDateBR(dataDestino)})`);
+      }
+    };
+
+    // ============================================
+    // PDF SERVICE
+    // ============================================
+    const PDFService = {
+      exportarPDF() {
+        UIService.showLoading(true);
+        
+        const mes = AppState.monthNames[AppState.currentMonth];
+        const ano = AppState.currentYear;
+        
+        // Container principal
+        const container = document.createElement('div');
+        container.style.padding = '15px';
+        container.style.fontFamily = 'Arial, sans-serif';
+        
+        // Título
+        const titulo = document.createElement('h2');
+        titulo.textContent = `ESCALA DE PLANTÕES - ${mes.toUpperCase()}/${ano}`;
+        titulo.style.textAlign = 'center';
+        titulo.style.marginBottom = '10px';
+        titulo.style.fontSize = '16px';
+        titulo.style.fontWeight = 'bold';
+        container.appendChild(titulo);
+        
+        // Data de geração
+        const dataGeracao = document.createElement('p');
+        dataGeracao.textContent = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
+        dataGeracao.style.textAlign = 'center';
+        dataGeracao.style.fontSize = '11px';
+        dataGeracao.style.color = '#666';
+        dataGeracao.style.marginBottom = '15px';
+        container.appendChild(dataGeracao);
+        
+        // Tabela de escala
+        const table = document.getElementById('escala-table').cloneNode(true);
+        table.style.marginBottom = '20px';
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+        
+        // Ajustar tamanho da fonte e padding da tabela
+        const allCells = table.querySelectorAll('td, th');
+        allCells.forEach(cell => {
+          cell.style.padding = '4px 2px';
+          cell.style.fontSize = '9px';
+          cell.style.border = '0.5px solid #ddd';
+        });
+        
+        container.appendChild(table);
+        
+        // Seção de Trocas
+        const trocasDoMes = AppState.observacoes.filter(obs => {
+          const dataOrigem = DateService.parseDate(obs.data);
+          const dataTroca = DateService.parseDate(obs.dataTroca);
+          return (dataOrigem && dataOrigem.getMonth() === AppState.currentMonth && dataOrigem.getFullYear() === AppState.currentYear) ||
+                 (dataTroca && dataTroca.getMonth() === AppState.currentMonth && dataTroca.getFullYear() === AppState.currentYear);
+        });
+        
+        if (trocasDoMes.length > 0) {
+          const tituloTrocas = document.createElement('h3');
+          tituloTrocas.textContent = 'TROCAS REGISTRADAS';
+          tituloTrocas.style.fontSize = '13px';
+          tituloTrocas.style.marginTop = '20px';
+          tituloTrocas.style.marginBottom = '10px';
+          tituloTrocas.style.borderBottom = '2px solid #2563eb';
+          tituloTrocas.style.paddingBottom = '5px';
+          container.appendChild(tituloTrocas);
+          
+          const tabelaTrocas = document.createElement('table');
+          tabelaTrocas.style.width = '100%';
+          tabelaTrocas.style.borderCollapse = 'collapse';
+          tabelaTrocas.style.marginBottom = '15px';
+          
+          // Header da tabela de trocas
+          const headerTrocas = document.createElement('tr');
+          headerTrocas.style.background = '#f3f4f6';
+          headerTrocas.style.fontWeight = 'bold';
+          ['Hospital', 'Data Origem', 'Data Destino', 'Nome', 'Observação'].forEach(col => {
+            const th = document.createElement('th');
+            th.textContent = col;
+            th.style.padding = '6px 4px';
+            th.style.fontSize = '10px';
+            th.style.border = '0.5px solid #ddd';
+            th.style.textAlign = 'left';
+            headerTrocas.appendChild(th);
+          });
+          tabelaTrocas.appendChild(headerTrocas);
+          
+          // Linhas de trocas
+          trocasDoMes.forEach((obs, idx) => {
+            const tr = document.createElement('tr');
+            tr.style.background = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
+            
+            const dados = [
+              obs.hospital || '--',
+              DateService.formatDateBR(DateService.parseDate(obs.data)) || '--',
+              DateService.formatDateBR(DateService.parseDate(obs.dataTroca)) || '--',
+              obs.nome || '--',
+              obs.observacao || '--'
+            ];
+            
+            dados.forEach(dado => {
+              const td = document.createElement('td');
+              td.textContent = dado;
+              td.style.padding = '5px 4px';
+              td.style.fontSize = '9px';
+              td.style.border = '0.5px solid #ddd';
+              tr.appendChild(td);
+            });
+            
+            tabelaTrocas.appendChild(tr);
+          });
+          
+          container.appendChild(tabelaTrocas);
+        }
+        
+        // Resumo
+        const resumo = document.createElement('div');
+        resumo.style.marginTop = '20px';
+        resumo.style.padding = '10px';
+        resumo.style.background = '#f0f9ff';
+        resumo.style.borderLeft = '4px solid #2563eb';
+        resumo.style.fontSize = '10px';
+        
+        const totalTrocas = trocasDoMes.length;
+        const totalTrocasHRP = trocasDoMes.filter(obs => obs.hospital?.includes('HRP') || obs.hospitalTroca?.includes('HRP')).length;
+        
+        resumo.innerHTML = `
+          <strong>RESUMO DO MÊS:</strong><br/>
+          • Total de Trocas: ${totalTrocas}<br/>
+          • Trocas HRP: ${totalTrocasHRP}<br/>
+          • Período: ${mes}/${ano}
+        `;
+        container.appendChild(resumo);
+
+        const opt = {
+          margin: 8,
+          filename: `escala_${AppState.currentMonth + 1}_${AppState.currentYear}.pdf`,
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: { scale: 1.5, useCORS: true },
+          jsPDF: { orientation: 'l', unit: 'mm', format: 'a4' }
+        };
+
+        setTimeout(() => {
+          html2pdf().set(opt).from(container).save().then(() => {
+            UIService.showLoading(false);
+            UIService.showNotification('✅ PDF exportado com sucesso!');
+          }).catch(err => {
+            UIService.showLoading(false);
+            UIService.showNotification('❌ Erro ao exportar PDF: ' + err.message, 'error');
+            console.error(err);
+          });
+        }, 300);
+      }
+    };
+
+    // ============================================
+    // INIT
+    // ============================================
+    function initApp() {
+      AppState.load();
+      RenderService.populateSelects();
+      RenderService.renderTable();
+      RenderService.updateCounter();
+      bindEvents();
+    }
+
+    // ============================================
+    // EVENT HANDLERS
+    // ============================================
+    function bindEvents() {
+      document.getElementById('month-select').addEventListener('change', e => {
+        AppState.currentMonth = parseInt(e.target.value, 10);
+        RenderService.renderTable();
+        RenderService.updateCounter();
       });
-      tabelaTrocas.appendChild(tbody);
-      area.appendChild(tabelaTrocas);
+
+      document.getElementById('year-select').addEventListener('change', e => {
+        AppState.currentYear = parseInt(e.target.value, 10);
+        RenderService.renderTable();
+        RenderService.updateCounter();
+      });
+
+      document.getElementById('save-data').addEventListener('click', () => {
+        AppState.save();
+        UIService.showNotification('✅ Dados salvos com sucesso!');
+      });
+
+      document.getElementById('load-data').addEventListener('click', () => {
+        AppState.load();
+        RenderService.renderTable();
+        RenderService.updateCounter();
+        UIService.showNotification('✅ Dados carregados com sucesso!');
+      });
+
+      document.getElementById('reset-data').addEventListener('click', () => {
+        if (confirm('Tem certeza que deseja redefinir todos os dados deste mês/ano?')) {
+          const key = `${AppState.currentYear}_${AppState.currentMonth}`;
+          AppState.allEscalas[key] = {
+            'HUSE Diurno': [],
+            'HUSE Noturno': [],
+            'HRP Diurno': [],
+            'HRP Noturno': []
+          };
+          AppState.observacoes = AppState.observacoes.filter(obs => {
+            const dt = DateService.parseDate(obs.data);
+            return !(dt && dt.getMonth() === AppState.currentMonth && dt.getFullYear() === AppState.currentYear);
+          });
+          AppState.save();
+          RenderService.renderTable();
+          RenderService.updateCounter();
+          UIService.showNotification('✅ Dados redefinidos!');
+        }
+      });
+
+      document.getElementById('export-pdf').addEventListener('click', () => PDFService.exportarPDF());
+      document.getElementById('nova-troca').addEventListener('click', () => TrocaService.abrirModal());
+      document.getElementById('ver-trocas').addEventListener('click', () => {
+        RenderService.renderTrocasTable();
+        UIService.openModal('trocas-modal');
+      });
+
+      document.getElementById('close-modal').addEventListener('click', () => UIService.closeModal('troca-modal'));
+      document.getElementById('cancelar-troca').addEventListener('click', () => UIService.closeModal('troca-modal'));
+      document.getElementById('confirmar-troca').addEventListener('click', () => TrocaService.realizar());
+
+      document.getElementById('close-trocas-modal').addEventListener('click', () => UIService.closeModal('trocas-modal'));
+      document.getElementById('fechar-trocas-modal').addEventListener('click', () => UIService.closeModal('trocas-modal'));
+
+      document.getElementById('filter-month').addEventListener('change', () => RenderService.renderTrocasTable());
+      document.getElementById('filter-year').addEventListener('change', () => RenderService.renderTrocasTable());
+
+      document.getElementById('gerar-trocas').addEventListener('click', () => SuggestaoService.gerarSugestoes());
     }
 
-    // Observação final
-    const footerNote = document.createElement('p');
-    footerNote.style.fontSize = '8px';
-    footerNote.style.color = '#666';
-    footerNote.style.marginTop = '8px';
-    footerNote.textContent = 'Todas as trocas devem ser registradas no sistema para controle e aprovação.';
-    area.appendChild(footerNote);
-
-    document.body.appendChild(area);
-
-    // Capturar com html2canvas
-    const canvas = await html2canvas(area, { 
-      scale: 2, 
-      useCORS: true, 
-      allowTaint: true,
-      scrollX: 0,
-      scrollY: 0,
-      windowWidth: area.scrollWidth,
-      windowHeight: area.scrollHeight
-    });
-    const imgData = canvas.toDataURL('image/png');
-
-    // Criar jsPDF em PAISAGEM A4
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const margin = 8;
-    const imgWidth = pageWidth - margin * 2;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    // Adicionar primeira página
-    pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
-    
-    let heightLeft = imgHeight + margin;
-    let position = 0;
-
-    // Se a imagem for maior que uma página, adicionar páginas adicionais em PAISAGEM
-    while (heightLeft > pageHeight) {
-      position = heightLeft - pageHeight;
-      pdf.addPage('l', 'a4');
-      pdf.addImage(imgData, 'PNG', margin, -position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-
-    pdf.save(`Escala_${monthNames[currentMonth]}_${currentYear}.pdf`);
-    area.remove();
-    mostrarLoading(false);
-    mostrarNotificacao('PDF gerado com sucesso!');
-  } catch (err) {
-    console.error('Erro ao gerar PDF:', err);
-    mostrarLoading(false);
-    mostrarNotificacao('Erro ao gerar PDF!', true);
-  }
-}
-
-// ============================
-// Gatilhos / evento de botões
-// ============================
-document.addEventListener('DOMContentLoaded', () => {
-  popularSelectsMesAno();
-
-  // inicializa mês/ano nos selects
-  document.getElementById('month-select').value = currentMonth;
-  document.getElementById('year-select').value = currentYear;
-
-  // listeners para mudança de mês/ano
-  document.getElementById('month-select').addEventListener('change', (e) => {
-    currentMonth = parseInt(e.target.value,10);
-    criarTabela(); 
-    atualizarContadores();
-  });
-  
-  document.getElementById('year-select').addEventListener('change', (e) => {
-    currentYear = parseInt(e.target.value,10);
-    criarTabela(); 
-    atualizarContadores();
-  });
-
-  // botões principais
-  document.getElementById('save-data').addEventListener('click', salvarDados);
-  document.getElementById('load-data').addEventListener('click', carregarDados);
-  document.getElementById('reset-data').addEventListener('click', redefinirDados);
-  document.getElementById('nova-troca').addEventListener('click', abrirModalTroca);
-  document.getElementById('ver-trocas').addEventListener('click', abrirModalTrocas);
-
-  // modal troca
-  document.getElementById('close-modal').addEventListener('click', fecharModalTroca);
-  document.getElementById('cancelar-troca').addEventListener('click', fecharModalTroca);
-  document.getElementById('confirmar-troca').addEventListener('click', realizarTroca);
-
-  // modal trocas
-  document.getElementById('close-trocas-modal').addEventListener('click', fecharModalTrocas);
-  document.getElementById('fechar-trocas-modal').addEventListener('click', fecharModalTrocas);
-  document.getElementById('filter-month').addEventListener('change', popularTabelaTrocas);
-  document.getElementById('filter-year').addEventListener('change', popularTabelaTrocas);
-
-  // gerar sugestões
-  document.getElementById('gerar-trocas').addEventListener('click', () => {
-    const sugestoes = gerarSugestoesTrocas();
-    if (sugestoes.length === 0) {
-      mostrarNotificacao('Nenhuma sugestão de troca encontrada para este mês.', true);
-    } else {
-      let msg = `${sugestoes.length} sugestão(ões) gerada(s). Ver console para detalhes.`;
-      console.log('Sugestões:', sugestoes);
-      mostrarNotificacao(msg);
-    }
-  });
-
-  // Exportar PDF
-  document.getElementById('export-pdf').addEventListener('click', () => {
-    exportarPDFCompleto();
-  });
-
-  // Carregar dados ao iniciar
-  carregarDados();
-});
-
-// ============================
-// Inicializar tabela e contadores
-// ============================
-criarTabela();
-atualizarContadores();
-</script>
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
 </body>
 </html>
