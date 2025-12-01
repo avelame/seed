@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Escala de Plantões - 36h Semanais</title>
+  <title>Gerador de Escala de Plantões - Sistema Flexível</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -804,13 +804,13 @@
       <h1><i class="fas fa-calendar-alt"></i> Gerador de Escala</h1>
       <p class="subtitle">Gerencie escalas de plantão com inteligência</p>
       <div class="jornada-info">
-        <p><i class="fas fa-clock"></i> Jornada de Trabalho: <strong>36 horas semanais</strong> | Escala: <strong>12x36</strong></p>
+        <p><i class="fas fa-clock"></i> Jornada de Trabalho: <strong>Escala 12x36</strong></p>
       </div>
       <div class="prioridades-info">
         <p><i class="fas fa-star"></i> Prioridades: <strong>HUSE Noturno</strong> e <strong>HRP Diurno</strong></p>
       </div>
       <div class="soma-info">
-        <p><i class="fas fa-calculator"></i> Soma de períodos: <strong>HUSE (Noturno + Diurno)</strong> e <strong>HRP (Diurno + Noturno)</strong> ≤ 36h semanais</p>
+        <p><i class="fas fa-calculator"></i> Distribuição flexível de plantões</p>
       </div>
       <div class="header-counter">
         <div class="counter-label">Trocas HRP</div>
@@ -854,7 +854,7 @@
     </div>
 
     <div class="footer">
-      <p><strong>Escala de Plantões</strong> • Jornada de 36 horas semanais • Sistema de Gerenciamento Inteligente</p>
+      <p><strong>Escala de Plantões</strong> • Sistema de Gerenciamento Flexível • Sistema de Gerenciamento Inteligente</p>
     </div>
   </div>
 
@@ -1134,17 +1134,17 @@
           escalas[hospital] = [];
         });
         
-        // Distribuição inteligente respeitando 36h semanais e prioridades
+        // Distribuição inteligente respeitando prioridades (sem limite de horas)
         const semanas = this.calcularSemanasNoMes(AppState.currentMonth, AppState.currentYear);
         
         semanas.forEach(semana => {
-          // Prioridade 1: HUSE Noturno (máximo 3 plantões por semana para HUSE)
-          this.distribuirPlantoesPrioritarios(semana, 'HUSE Noturno', 'HUSE', escalas);
+          // Prioridade 1: HUSE Noturno
+          this.distribuirPlantoesPrioritarios(semana, 'HUSE Noturno', escalas);
           
-          // Prioridade 2: HRP Diurno (máximo 3 plantões por semana para HRP)
-          this.distribuirPlantoesPrioritarios(semana, 'HRP Diurno', 'HRP', escalas);
+          // Prioridade 2: HRP Diurno
+          this.distribuirPlantoesPrioritarios(semana, 'HRP Diurno', escalas);
           
-          // Distribuir plantões restantes para outros hospitais respeitando o limite
+          // Distribuir plantões restantes para outros hospitais
           this.distribuirPlantoesRestantes(semana, escalas);
         });
         
@@ -1170,59 +1170,31 @@
         return semanas;
       },
       
-      distribuirPlantoesPrioritarios(semana, plantaoPrioritario, hospital, escalas) {
+      distribuirPlantoesPrioritarios(semana, plantaoPrioritario, escalas) {
         const diasUteis = semana.filter(dia => {
           const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
           return data.getDay() >= 1 && data.getDay() <= 5;
         });
         
-        // Distribuir plantões prioritários nos dias úteis
+        // Distribuir plantões prioritários nos dias úteis (até 3 por semana)
         diasUteis.slice(0, 3).forEach(dia => {
-          if (this.podeAlocarPlantao(hospital, dia, semana, escalas)) {
-            escalas[plantaoPrioritario].push(dia);
-          }
+          escalas[plantaoPrioritario].push(dia);
         });
       },
       
       distribuirPlantoesRestantes(semana, escalas) {
-        // Distribuir plantões para os demais turnos respeitando o limite de 36h
+        // Distribuir plantões para os demais turnos
         semana.forEach(dia => {
           // Verificar se pode alocar HUSE Diurno
-          if (this.podeAlocarPlantao('HUSE', dia, semana, escalas) && 
-              !escalas['HUSE Diurno'].includes(dia)) {
+          if (!escalas['HUSE Diurno'].includes(dia)) {
             escalas['HUSE Diurno'].push(dia);
           }
           
           // Verificar se pode alocar HRP Noturno
-          if (this.podeAlocarPlantao('HRP', dia, semana, escalas) && 
-              !escalas['HRP Noturno'].includes(dia)) {
+          if (!escalas['HRP Noturno'].includes(dia)) {
             escalas['HRP Noturno'].push(dia);
           }
         });
-      },
-      
-      podeAlocarPlantao(hospital, dia, semana, escalas) {
-        // Verificar se o hospital já tem 3 plantões nesta semana
-        const plantoesNaSemana = this.contarPlantoesHospitalNaSemana(hospital, semana, escalas);
-        return plantoesNaSemana < 3;
-      },
-      
-      contarPlantoesHospitalNaSemana(hospital, semana, escalas) {
-        let total = 0;
-        
-        if (hospital === 'HUSE') {
-          total += this.contarPlantoesNaSemana(escalas['HUSE Diurno'], semana);
-          total += this.contarPlantoesNaSemana(escalas['HUSE Noturno'], semana);
-        } else if (hospital === 'HRP') {
-          total += this.contarPlantoesNaSemana(escalas['HRP Diurno'], semana);
-          total += this.contarPlantoesNaSemana(escalas['HRP Noturno'], semana);
-        }
-        
-        return total;
-      },
-      
-      contarPlantoesNaSemana(plantoes, semana) {
-        return plantoes.filter(dia => semana.includes(dia)).length;
       }
     };
 
@@ -1234,17 +1206,7 @@
         const escalas = AppState.getCurrentEscalas();
         const idx = escalas[hospital].indexOf(dia);
         
-        // Verificar limite de horas semanais antes de adicionar
         if (idx === -1) {
-          const semana = this.obterSemanaDoDia(dia);
-          const hospitalBase = this.obterHospitalBase(hospital);
-          const plantoesNaSemana = this.contarPlantoesHospitalNaSemana(hospitalBase, semana);
-          
-          if (plantoesNaSemana >= 3) {
-            UIService.showNotification(`Limite de 36h semanais atingido para ${hospitalBase}!`, 'warning');
-            return;
-          }
-          
           escalas[hospital].push(dia);
           escalas[hospital].sort((a, b) => a - b);
         } else {
@@ -1785,21 +1747,21 @@
         
         // Informações da jornada
         const jornadaInfo = document.createElement('p');
-        jornadaInfo.textContent = 'Jornada de Trabalho: 36 horas semanais | Escala 12x36 | Prioridades: HUSE Noturno e HRP Diurno';
+        jornadaInfo.textContent = 'Escala 12x36 | Prioridades: HUSE Noturno e HRP Diurno';
         jornadaInfo.style.textAlign = 'center';
         jornadaInfo.style.fontSize = '11px';
         jornadaInfo.style.color = '#666';
         jornadaInfo.style.marginBottom = '5px';
         container.appendChild(jornadaInfo);
         
-        // Informações de soma
-        const somaInfo = document.createElement('p');
-        somaInfo.textContent = 'Soma de períodos: HUSE (Noturno + Diurno) e HRP (Diurno + Noturno) ≤ 36h semanais';
-        somaInfo.style.textAlign = 'center';
-        somaInfo.style.fontSize = '10px';
-        somaInfo.style.color = '#666';
-        somaInfo.style.marginBottom = '5px';
-        container.appendChild(somaInfo);
+        // Informações de distribuição
+        const distribInfo = document.createElement('p');
+        distribInfo.textContent = 'Distribuição flexível de plantões';
+        distribInfo.style.textAlign = 'center';
+        distribInfo.style.fontSize = '10px';
+        distribInfo.style.color = '#666';
+        distribInfo.style.marginBottom = '5px';
+        container.appendChild(distribInfo);
         
         // Data de geração
         const dataGeracao = document.createElement('p');
@@ -1911,8 +1873,7 @@
           • Trocas HRP: ${totalTrocasHRP}<br/>
           • Dobras: ${totalDobras}<br/>
           • Período: ${mes}/${ano}<br/>
-          • Jornada: 36 horas semanais<br/>
-          • Soma de períodos: HUSE (Noturno + Diurno) e HRP (Diurno + Noturno)
+          • Distribuição flexível de plantões
         `;
         container.appendChild(resumo);
 
@@ -2028,7 +1989,7 @@
       document.getElementById('gerar-trocas').addEventListener('click', () => SuggestaoService.gerarSugestoes());
 
       document.getElementById('aplicar-padrao').addEventListener('click', () => {
-        if (confirm('Deseja distribuir os plantões respeitando 36h semanais (soma de períodos) e priorizando HUSE Noturno e HRP Diurno? Isso substituirá as escalas atuais.')) {
+        if (confirm('Deseja distribuir os plantões respeitando as prioridades (HUSE Noturno e HRP Diurno)? Isso substituirá as escalas atuais.')) {
           EscalaDistribuicaoService.aplicarDistribuicaoInteligente();
           RenderService.renderTable();
           UIService.showNotification('✅ Plantões distribuídos com sucesso!');
