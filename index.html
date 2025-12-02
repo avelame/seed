@@ -1260,6 +1260,30 @@
         return total * 12; // 12 horas por plantão
       },
 
+      obterHorasPorGrupoPorSemana() {
+        const escalas = AppState.getCurrentEscalas();
+        const semanas = this.obterSemanasDoMes();
+        
+        const resultado = {
+          HUSE: [],
+          HRP: []
+        };
+        
+        semanas.forEach((semana, index) => {
+          resultado.HUSE.push({
+            semana: index + 1,
+            horas: this.calcularHorasGrupoNaSemana('HUSE', semana, escalas)
+          });
+          
+          resultado.HRP.push({
+            semana: index + 1,
+            horas: this.calcularHorasGrupoNaSemana('HRP', semana, escalas)
+          });
+        });
+        
+        return resultado;
+      },
+
       renderizarContadoresHoras() {
         const container = document.getElementById('horas-info-container');
         if (!container) return;
@@ -1929,7 +1953,7 @@
     };
 
     // ============================================
-    // PDF SERVICE - MODIFICADO PARA A3
+    // PDF SERVICE - MODIFICADO PARA INCLUIR CONTADOR DE HORAS
     // ============================================
     const PDFService = {
       exportarPDF() {
@@ -1937,6 +1961,7 @@
         
         const mes = AppState.monthNames[AppState.currentMonth];
         const ano = AppState.currentYear;
+        const escalas = AppState.getCurrentEscalas();
         
         // Container principal
         const container = document.createElement('div');
@@ -1956,6 +1981,18 @@
         titulo.style.borderBottom = '3px solid #2563eb';
         titulo.style.paddingBottom = '10px';
         container.appendChild(titulo);
+        
+        // Código da escala
+        const codigoElement = document.createElement('div');
+        codigoElement.textContent = `Código: ${escalas.codigo || AppState.gerarCodigoUnico(AppState.currentMonth, AppState.currentYear)}`;
+        codigoElement.style.textAlign = 'center';
+        codigoElement.style.fontSize = '12px';
+        codigoElement.style.color = '#6b7280';
+        codigoElement.style.marginBottom = '15px';
+        codigoElement.style.fontFamily = 'monospace';
+        codigoElement.style.fontWeight = '600';
+        codigoElement.style.letterSpacing = '1px';
+        container.appendChild(codigoElement);
         
         // Informações da jornada
         const infoContainer = document.createElement('div');
@@ -2007,6 +2044,201 @@
         infoContainer.appendChild(infoBox('DOBRAS', Object.keys(dobras).length.toString(), '#f59e0b'));
         
         container.appendChild(infoContainer);
+        
+        // CONTADOR DE HORAS POR HOSPITAL POR SEMANA (NO PDF)
+        const horasPorSemana = HorasService.obterHorasPorGrupoPorSemana();
+        
+        const horasSection = document.createElement('div');
+        horasSection.style.marginTop = '15px';
+        horasSection.style.marginBottom = '20px';
+        horasSection.style.padding = '15px';
+        horasSection.style.background = '#f8fafc';
+        horasSection.style.borderRadius = '8px';
+        horasSection.style.border = '1px solid #e5e7eb';
+        
+        const horasTitle = document.createElement('h3');
+        horasTitle.textContent = 'DISTRIBUIÇÃO DE HORAS POR SEMANA';
+        horasTitle.style.fontSize = '16px';
+        horasTitle.style.fontWeight = 'bold';
+        horasTitle.style.color = '#1e40af';
+        horasTitle.style.marginBottom = '15px';
+        horasTitle.style.paddingBottom = '8px';
+        horasTitle.style.borderBottom = '2px solid #dbeafe';
+        horasSection.appendChild(horasTitle);
+        
+        // Container para os dois hospitais lado a lado
+        const horasGrid = document.createElement('div');
+        horasGrid.style.display = 'flex';
+        horasGrid.style.justifyContent = 'space-between';
+        horasGrid.style.gap = '20px';
+        horasGrid.style.flexWrap = 'wrap';
+        
+        // HUSE
+        const huseCard = document.createElement('div');
+        huseCard.style.flex = '1';
+        huseCard.style.minWidth = '250px';
+        huseCard.style.padding = '12px';
+        huseCard.style.background = 'white';
+        huseCard.style.borderRadius = '6px';
+        huseCard.style.border = '1px solid #dbeafe';
+        huseCard.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.1)';
+        
+        const huseTitle = document.createElement('div');
+        huseTitle.textContent = 'HUSE';
+        huseTitle.style.fontSize = '14px';
+        huseTitle.style.fontWeight = 'bold';
+        huseTitle.style.color = '#1e40af';
+        huseTitle.style.marginBottom = '10px';
+        huseTitle.style.display = 'flex';
+        huseTitle.style.alignItems = 'center';
+        huseTitle.style.gap = '8px';
+        
+        const huseIcon = document.createElement('i');
+        huseIcon.className = 'fas fa-hospital';
+        huseIcon.style.color = '#3b82f6';
+        huseTitle.prepend(huseIcon);
+        huseCard.appendChild(huseTitle);
+        
+        // Total HUSE
+        let totalHUSE = 0;
+        horasPorSemana.HUSE.forEach(semana => {
+          totalHUSE += semana.horas;
+        });
+        
+        const huseTotal = document.createElement('div');
+        huseTotal.textContent = `Total do mês: ${totalHUSE}h`;
+        huseTotal.style.fontSize = '13px';
+        huseTotal.style.fontWeight = '600';
+        huseTotal.style.color = '#4b5563';
+        huseTotal.style.marginBottom = '12px';
+        huseTotal.style.padding = '6px';
+        huseTotal.style.background = '#eff6ff';
+        huseTotal.style.borderRadius = '4px';
+        huseTotal.style.textAlign = 'center';
+        huseCard.appendChild(huseTotal);
+        
+        // Semanas HUSE
+        const huseSemanas = document.createElement('div');
+        huseSemanas.style.display = 'flex';
+        huseSemanas.style.flexWrap = 'wrap';
+        huseSemanas.style.gap = '8px';
+        huseSemanas.style.justifyContent = 'center';
+        
+        horasPorSemana.HUSE.forEach(semana => {
+          const semanaDiv = document.createElement('div');
+          semanaDiv.style.display = 'flex';
+          semanaDiv.style.flexDirection = 'column';
+          semanaDiv.style.alignItems = 'center';
+          semanaDiv.style.padding = '6px 10px';
+          semanaDiv.style.background = '#dbeafe';
+          semanaDiv.style.borderRadius = '4px';
+          semanaDiv.style.minWidth = '70px';
+          
+          const semanaLabel = document.createElement('div');
+          semanaLabel.textContent = `Semana ${semana.semana}`;
+          semanaLabel.style.fontSize = '11px';
+          semanaLabel.style.fontWeight = '500';
+          semanaLabel.style.color = '#1e40af';
+          semanaLabel.style.marginBottom = '2px';
+          
+          const semanaValor = document.createElement('div');
+          semanaValor.textContent = `${semana.horas}h`;
+          semanaValor.style.fontSize = '14px';
+          semanaValor.style.fontWeight = 'bold';
+          semanaValor.style.color = '#1e3a8a';
+          
+          semanaDiv.appendChild(semanaLabel);
+          semanaDiv.appendChild(semanaValor);
+          huseSemanas.appendChild(semanaDiv);
+        });
+        
+        huseCard.appendChild(huseSemanas);
+        
+        // HRP
+        const hrpCard = document.createElement('div');
+        hrpCard.style.flex = '1';
+        hrpCard.style.minWidth = '250px';
+        hrpCard.style.padding = '12px';
+        hrpCard.style.background = 'white';
+        hrpCard.style.borderRadius = '6px';
+        hrpCard.style.border = '1px solid #fee2e2';
+        hrpCard.style.boxShadow = '0 2px 4px rgba(239, 68, 68, 0.1)';
+        
+        const hrpTitle = document.createElement('div');
+        hrpTitle.textContent = 'HRP';
+        hrpTitle.style.fontSize = '14px';
+        hrpTitle.style.fontWeight = 'bold';
+        hrpTitle.style.color = '#991b1b';
+        hrpTitle.style.marginBottom = '10px';
+        hrpTitle.style.display = 'flex';
+        hrpTitle.style.alignItems = 'center';
+        hrpTitle.style.gap = '8px';
+        
+        const hrpIcon = document.createElement('i');
+        hrpIcon.className = 'fas fa-hospital';
+        hrpIcon.style.color = '#ef4444';
+        hrpTitle.prepend(hrpIcon);
+        hrpCard.appendChild(hrpTitle);
+        
+        // Total HRP
+        let totalHRP = 0;
+        horasPorSemana.HRP.forEach(semana => {
+          totalHRP += semana.horas;
+        });
+        
+        const hrpTotal = document.createElement('div');
+        hrpTotal.textContent = `Total do mês: ${totalHRP}h`;
+        hrpTotal.style.fontSize = '13px';
+        hrpTotal.style.fontWeight = '600';
+        hrpTotal.style.color = '#4b5563';
+        hrpTotal.style.marginBottom = '12px';
+        hrpTotal.style.padding = '6px';
+        hrpTotal.style.background = '#fef2f2';
+        hrpTotal.style.borderRadius = '4px';
+        hrpTotal.style.textAlign = 'center';
+        hrpCard.appendChild(hrpTotal);
+        
+        // Semanas HRP
+        const hrpSemanas = document.createElement('div');
+        hrpSemanas.style.display = 'flex';
+        hrpSemanas.style.flexWrap = 'wrap';
+        hrpSemanas.style.gap = '8px';
+        hrpSemanas.style.justifyContent = 'center';
+        
+        horasPorSemana.HRP.forEach(semana => {
+          const semanaDiv = document.createElement('div');
+          semanaDiv.style.display = 'flex';
+          semanaDiv.style.flexDirection = 'column';
+          semanaDiv.style.alignItems = 'center';
+          semanaDiv.style.padding = '6px 10px';
+          semanaDiv.style.background = '#fee2e2';
+          semanaDiv.style.borderRadius = '4px';
+          semanaDiv.style.minWidth = '70px';
+          
+          const semanaLabel = document.createElement('div');
+          semanaLabel.textContent = `Semana ${semana.semana}`;
+          semanaLabel.style.fontSize = '11px';
+          semanaLabel.style.fontWeight = '500';
+          semanaLabel.style.color = '#991b1b';
+          semanaLabel.style.marginBottom = '2px';
+          
+          const semanaValor = document.createElement('div');
+          semanaValor.textContent = `${semana.horas}h`;
+          semanaValor.style.fontSize = '14px';
+          semanaValor.style.fontWeight = 'bold';
+          semanaValor.style.color = '#7f1d1d';
+          
+          semanaDiv.appendChild(semanaLabel);
+          semanaDiv.appendChild(semanaValor);
+          hrpSemanas.appendChild(semanaDiv);
+        });
+        
+        hrpCard.appendChild(hrpSemanas);
+        
+        horasGrid.appendChild(huseCard);
+        horasGrid.appendChild(hrpCard);
+        horasSection.appendChild(horasGrid);
+        container.appendChild(horasSection);
         
         // Data de geração
         const dataGeracao = document.createElement('div');
