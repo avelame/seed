@@ -73,6 +73,17 @@
       gap: 12px;
     }
 
+    .codigo-escala {
+      font-size: 0.7rem;
+      opacity: 0.9;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 3px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+
     .subtitle {
       font-size: clamp(0.9rem, 2.5vw, 1rem);
       opacity: 0.95;
@@ -98,39 +109,88 @@
       gap: 8px;
     }
 
-    .prioridades-info {
+    .horas-info-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 15px auto 5px;
+      padding: 10px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      padding: 6px 12px;
-      margin: 8px auto;
-      max-width: 400px;
-      font-size: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 800px;
+      width: 100%;
     }
 
-    .prioridades-info p {
-      margin: 0;
+    .horas-hospital-linha {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-    }
-
-    .soma-info {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
+      flex-wrap: wrap;
+      gap: 8px;
       padding: 6px 12px;
-      margin: 8px auto;
-      max-width: 500px;
-      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: var(--transition);
+      min-width: 300px;
+      max-width: 600px;
+      width: 100%;
     }
 
-    .soma-info p {
-      margin: 0;
+    .horas-hospital-linha:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .horas-hospital-nome {
+      font-size: 0.9rem;
+      font-weight: 700;
+      min-width: 80px;
+      text-align: left;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
-      text-align: center;
+    }
+
+    .horas-semanas-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .horas-semana-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      min-width: 70px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .horas-semana-label {
+      font-size: 0.7rem;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .horas-semana-valor {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .huse-icon {
+      color: #3b82f6;
+    }
+
+    .hrp-icon {
+      color: #ef4444;
     }
 
     .month-selector {
@@ -770,8 +830,9 @@
       .hospital-name { width: 120px; }
       .jornada-info { padding: 6px 10px; }
       .jornada-info p { font-size: 0.8rem; }
-      .prioridades-info { padding: 5px 10px; font-size: 0.75rem; }
-      .soma-info { padding: 5px 10px; font-size: 0.7rem; }
+      .horas-info-container { padding: 8px; }
+      .horas-hospital-linha { padding: 5px 8px; }
+      .horas-semana-item { min-width: 60px; padding: 3px 6px; }
     }
 
     @media (max-width: 576px) {
@@ -787,8 +848,11 @@
       .hospital-name { width: 100px; }
       .jornada-info { padding: 5px 8px; margin: 8px auto; }
       .jornada-info p { font-size: 0.75rem; flex-direction: column; gap: 2px; }
-      .prioridades-info { padding: 4px 8px; font-size: 0.7rem; }
-      .soma-info { padding: 4px 8px; font-size: 0.65rem; }
+      .horas-hospital-linha { flex-direction: column; align-items: flex-start; gap: 5px; }
+      .horas-hospital-nome { min-width: 60px; }
+      .horas-semanas-container { width: 100%; justify-content: flex-start; }
+      .horas-semana-item { min-width: 55px; }
+      .codigo-escala { font-size: 0.6rem; }
     }
 
     @media (max-height: 500px) and (orientation: landscape) {
@@ -801,17 +865,19 @@
 <body>
   <div class="container">
     <header>
-      <h1><i class="fas fa-calendar-alt"></i> Gerador de Escala</h1>
+      <h1>
+        <i class="fas fa-calendar-alt"></i> Gerador de Escala 
+        <span class="codigo-escala" id="codigo-escala">ESC-0000-00-0000</span>
+      </h1>
       <p class="subtitle">Gerencie escalas de plantão com inteligência</p>
       <div class="jornada-info">
         <p><i class="fas fa-clock"></i> Jornada de Trabalho: <strong>Escala 12x36</strong></p>
       </div>
-      <div class="prioridades-info">
-        <p><i class="fas fa-star"></i> Prioridades: <strong>HUSE Noturno</strong> e <strong>HRP Diurno</strong></p>
+      
+      <div class="horas-info-container" id="horas-info-container">
+        <!-- Contadores de horas por hospital por semana serão injetados aqui -->
       </div>
-      <div class="soma-info">
-        <p><i class="fas fa-calculator"></i> Distribuição flexível de plantões</p>
-      </div>
+      
       <div class="header-counter">
         <div class="counter-label">Trocas HRP</div>
         <div class="counter-value" id="hrp-trocas-count">0</div>
@@ -1021,6 +1087,7 @@
       monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
       diasDaSemana: ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'],
       hospitais: ['HUSE Diurno', 'HUSE Noturno', 'HRP Diurno', 'HRP Noturno'],
+      codigoUnico: '',
 
       load() {
         const data = StorageService.get();
@@ -1039,7 +1106,10 @@
       getEscalas(month, year) {
         const key = `${year}_${month}`;
         if (!this.allEscalas[key]) {
+          // Gerar código único para a escala do mês
+          const codigo = this.gerarCodigoUnico(month, year);
           this.allEscalas[key] = {
+            codigo: codigo,
             'HUSE Diurno': [],
             'HUSE Noturno': [],
             'HRP Diurno': [],
@@ -1047,6 +1117,21 @@
           };
         }
         return this.allEscalas[key];
+      },
+
+      gerarCodigoUnico(month, year) {
+        // Formato: ESC-YYYY-MM-XXXX (ex: ESC-2024-05-ABC1)
+        const timestamp = Date.now().toString(36).slice(-4).toUpperCase();
+        const mesStr = String(month + 1).padStart(2, '0');
+        return `ESC-${year}-${mesStr}-${timestamp}`;
+      },
+
+      atualizarCodigoExibicao() {
+        const escalas = this.getCurrentEscalas();
+        const codigoElement = document.getElementById('codigo-escala');
+        if (codigoElement) {
+          codigoElement.textContent = escalas.codigo || this.gerarCodigoUnico(this.currentMonth, this.currentYear);
+        }
       }
     };
 
@@ -1118,6 +1203,121 @@
 
       closeModal(modalId) {
         document.getElementById(modalId).classList.remove('show');
+      }
+    };
+
+    // ============================================
+    // HORAS SERVICE - MODIFICADO PARA AGRUPAR HUSE E HRP
+    // ============================================
+    const HorasService = {
+      calcularHorasHospitalGrupo(grupo, escalas) {
+        // Cada plantão tem 12 horas
+        let total = 0;
+        if (grupo === 'HUSE') {
+          total += escalas['HUSE Diurno'].length * 12;
+          total += escalas['HUSE Noturno'].length * 12;
+        } else if (grupo === 'HRP') {
+          total += escalas['HRP Diurno'].length * 12;
+          total += escalas['HRP Noturno'].length * 12;
+        }
+        return total;
+      },
+
+      obterSemanasDoMes() {
+        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
+        const semanas = [];
+        let semanaAtual = [];
+        
+        for (let dia = 1; dia <= daysInMonth; dia++) {
+          const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
+          semanaAtual.push(dia);
+          
+          // Se é sábado ou último dia do mês, finaliza a semana
+          if (data.getDay() === 6 || dia === daysInMonth) {
+            semanas.push([...semanaAtual]);
+            semanaAtual = [];
+          }
+        }
+        
+        return semanas;
+      },
+
+      calcularHorasGrupoNaSemana(grupo, semana, escalas) {
+        let total = 0;
+        
+        if (grupo === 'HUSE') {
+          semana.forEach(dia => {
+            if (escalas['HUSE Diurno'].includes(dia)) total++;
+            if (escalas['HUSE Noturno'].includes(dia)) total++;
+          });
+        } else if (grupo === 'HRP') {
+          semana.forEach(dia => {
+            if (escalas['HRP Diurno'].includes(dia)) total++;
+            if (escalas['HRP Noturno'].includes(dia)) total++;
+          });
+        }
+        
+        return total * 12; // 12 horas por plantão
+      },
+
+      renderizarContadoresHoras() {
+        const container = document.getElementById('horas-info-container');
+        if (!container) return;
+        
+        const escalas = AppState.getCurrentEscalas();
+        const semanas = this.obterSemanasDoMes();
+        
+        let html = '';
+        
+        // HUSE
+        html += `
+          <div class="horas-hospital-linha">
+            <div class="horas-hospital-nome">
+              <i class="fas fa-hospital huse-icon"></i> HUSE
+            </div>
+            <div class="horas-semanas-container">
+        `;
+        
+        semanas.forEach((semana, index) => {
+          const horas = this.calcularHorasGrupoNaSemana('HUSE', semana, escalas);
+          html += `
+            <div class="horas-semana-item">
+              <div class="horas-semana-label">Semana ${index + 1}</div>
+              <div class="horas-semana-valor">${horas}h</div>
+            </div>
+          `;
+        });
+        
+        html += `
+            </div>
+          </div>
+        `;
+        
+        // HRP
+        html += `
+          <div class="horas-hospital-linha">
+            <div class="horas-hospital-nome">
+              <i class="fas fa-hospital hrp-icon"></i> HRP
+            </div>
+            <div class="horas-semanas-container">
+        `;
+        
+        semanas.forEach((semana, index) => {
+          const horas = this.calcularHorasGrupoNaSemana('HRP', semana, escalas);
+          html += `
+            <div class="horas-semana-item">
+              <div class="horas-semana-label">Semana ${index + 1}</div>
+              <div class="horas-semana-valor">${horas}h</div>
+            </div>
+          `;
+        });
+        
+        html += `
+            </div>
+          </div>
+        `;
+        
+        container.innerHTML = html;
       }
     };
 
@@ -1426,6 +1626,7 @@
                 EscalaService.togglePlantao(hospital, dia);
                 this.renderTable();
                 this.updateCounter();
+                HorasService.renderizarContadoresHoras();
               });
               td.appendChild(div);
             } else {
@@ -1437,6 +1638,7 @@
                 EscalaService.togglePlantao(hospital, dia);
                 this.renderTable();
                 this.updateCounter();
+                HorasService.renderizarContadoresHoras();
               });
               td.appendChild(div);
             }
@@ -1444,6 +1646,9 @@
           }
           body.appendChild(tr);
         });
+        
+        // Atualizar código único
+        AppState.atualizarCodigoExibicao();
       },
 
       updateCounter() {
@@ -1632,6 +1837,7 @@
         AppState.save();
         RenderService.renderTable();
         RenderService.updateCounter();
+        HorasService.renderizarContadoresHoras();
         UIService.showNotification('✅ Sugestão aplicada com sucesso!');
       }
     };
@@ -1714,6 +1920,7 @@
         if ((origemMes === AppState.currentMonth && origemAno === AppState.currentYear) ||
             (destinoMes === AppState.currentMonth && destinoAno === AppState.currentYear)) {
           RenderService.renderTable();
+          HorasService.renderizarContadoresHoras();
         }
 
         RenderService.updateCounter();
@@ -1786,7 +1993,6 @@
         };
         
         infoContainer.appendChild(infoBox('JORNADA', 'Escala 12x36', '#10b981'));
-        infoContainer.appendChild(infoBox('PRIORIDADES', 'HUSE Noturno • HRP Diurno', '#ef4444'));
         
         const totalTrocas = AppState.observacoes.filter(obs => {
           const dataOrigem = DateService.parseDate(obs.data);
@@ -2042,6 +2248,8 @@
       
       RenderService.renderTable();
       RenderService.updateCounter();
+      HorasService.renderizarContadoresHoras();
+      AppState.atualizarCodigoExibicao();
       bindEvents();
     }
 
@@ -2053,12 +2261,16 @@
         AppState.currentMonth = parseInt(e.target.value, 10);
         RenderService.renderTable();
         RenderService.updateCounter();
+        HorasService.renderizarContadoresHoras();
+        AppState.atualizarCodigoExibicao();
       });
 
       document.getElementById('year-select').addEventListener('change', e => {
         AppState.currentYear = parseInt(e.target.value, 10);
         RenderService.renderTable();
         RenderService.updateCounter();
+        HorasService.renderizarContadoresHoras();
+        AppState.atualizarCodigoExibicao();
       });
 
       document.getElementById('save-data').addEventListener('click', () => {
@@ -2070,6 +2282,8 @@
         AppState.load();
         RenderService.renderTable();
         RenderService.updateCounter();
+        HorasService.renderizarContadoresHoras();
+        AppState.atualizarCodigoExibicao();
         UIService.showNotification('✅ Dados carregados com sucesso!');
       });
 
@@ -2077,6 +2291,7 @@
         if (confirm('Tem certeza que deseja redefinir todos os dados deste mês/ano?')) {
           const key = `${AppState.currentYear}_${AppState.currentMonth}`;
           AppState.allEscalas[key] = {
+            codigo: AppState.gerarCodigoUnico(AppState.currentMonth, AppState.currentYear),
             'HUSE Diurno': [],
             'HUSE Noturno': [],
             'HRP Diurno': [],
@@ -2089,6 +2304,8 @@
           AppState.save();
           RenderService.renderTable();
           RenderService.updateCounter();
+          HorasService.renderizarContadoresHoras();
+          AppState.atualizarCodigoExibicao();
           UIService.showNotification('✅ Dados redefinidos!');
         }
       });
@@ -2116,6 +2333,8 @@
         if (confirm('Deseja distribuir os plantões respeitando as prioridades (HUSE Noturno e HRP Diurno)? Isso substituirá as escalas atuais.')) {
           EscalaDistribuicaoService.aplicarDistribuicaoInteligente();
           RenderService.renderTable();
+          HorasService.renderizarContadoresHoras();
+          AppState.atualizarCodigoExibicao();
           UIService.showNotification('✅ Plantões distribuídos com sucesso!');
         }
       });
