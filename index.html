@@ -1722,7 +1722,7 @@
     };
 
     // ============================================
-    // PDF SERVICE
+    // PDF SERVICE - MODIFICADO PARA A3
     // ============================================
     const PDFService = {
       exportarPDF() {
@@ -1733,58 +1733,161 @@
         
         // Container principal
         const container = document.createElement('div');
-        container.style.padding = '15px';
+        container.style.padding = '20px';
         container.style.fontFamily = 'Arial, sans-serif';
+        container.style.width = '297mm'; // Largura A3
+        container.style.minHeight = '420mm'; // Altura A3
         
-        // Título
-        const titulo = document.createElement('h2');
+        // Título principal
+        const titulo = document.createElement('h1');
         titulo.textContent = `ESCALA DE PLANTÕES - ${mes.toUpperCase()}/${ano}`;
         titulo.style.textAlign = 'center';
-        titulo.style.marginBottom = '10px';
-        titulo.style.fontSize = '16px';
+        titulo.style.marginBottom = '15px';
+        titulo.style.fontSize = '24px';
         titulo.style.fontWeight = 'bold';
+        titulo.style.color = '#2563eb';
+        titulo.style.borderBottom = '3px solid #2563eb';
+        titulo.style.paddingBottom = '10px';
         container.appendChild(titulo);
         
         // Informações da jornada
-        const jornadaInfo = document.createElement('p');
-        jornadaInfo.textContent = 'Escala 12x36 | Prioridades: HUSE Noturno e HRP Diurno';
-        jornadaInfo.style.textAlign = 'center';
-        jornadaInfo.style.fontSize = '11px';
-        jornadaInfo.style.color = '#666';
-        jornadaInfo.style.marginBottom = '5px';
-        container.appendChild(jornadaInfo);
+        const infoContainer = document.createElement('div');
+        infoContainer.style.display = 'flex';
+        infoContainer.style.justifyContent = 'space-between';
+        infoContainer.style.marginBottom = '20px';
+        infoContainer.style.flexWrap = 'wrap';
+        infoContainer.style.gap = '10px';
         
-        // Informações de distribuição
-        const distribInfo = document.createElement('p');
-        distribInfo.textContent = 'Distribuição flexível de plantões';
-        distribInfo.style.textAlign = 'center';
-        distribInfo.style.fontSize = '10px';
-        distribInfo.style.color = '#666';
-        distribInfo.style.marginBottom = '5px';
-        container.appendChild(distribInfo);
+        const infoBox = (titulo, conteudo, cor = '#2563eb') => {
+          const box = document.createElement('div');
+          box.style.flex = '1';
+          box.style.minWidth = '200px';
+          box.style.padding = '10px';
+          box.style.background = '#f8fafc';
+          box.style.borderRadius = '8px';
+          box.style.borderLeft = `4px solid ${cor}`;
+          
+          const tit = document.createElement('div');
+          tit.textContent = titulo;
+          tit.style.fontSize = '12px';
+          tit.style.fontWeight = '600';
+          tit.style.color = '#4b5563';
+          tit.style.marginBottom = '5px';
+          
+          const cont = document.createElement('div');
+          cont.textContent = conteudo;
+          cont.style.fontSize = '14px';
+          cont.style.fontWeight = '600';
+          cont.style.color = '#1f2937';
+          
+          box.appendChild(tit);
+          box.appendChild(cont);
+          return box;
+        };
+        
+        infoContainer.appendChild(infoBox('JORNADA', 'Escala 12x36', '#10b981'));
+        infoContainer.appendChild(infoBox('PRIORIDADES', 'HUSE Noturno • HRP Diurno', '#ef4444'));
+        
+        const totalTrocas = AppState.observacoes.filter(obs => {
+          const dataOrigem = DateService.parseDate(obs.data);
+          const dataTroca = DateService.parseDate(obs.dataTroca);
+          return (dataOrigem && dataOrigem.getMonth() === AppState.currentMonth && dataOrigem.getFullYear() === AppState.currentYear) ||
+                 (dataTroca && dataTroca.getMonth() === AppState.currentMonth && dataTroca.getFullYear() === AppState.currentYear);
+        }).length;
+        
+        infoContainer.appendChild(infoBox('TROCAS ESTE MÊS', totalTrocas.toString(), '#8b5cf6'));
+        
+        const dobras = EscalaService.verificarDobras();
+        infoContainer.appendChild(infoBox('DOBRAS', Object.keys(dobras).length.toString(), '#f59e0b'));
+        
+        container.appendChild(infoContainer);
         
         // Data de geração
-        const dataGeracao = document.createElement('p');
-        dataGeracao.textContent = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
-        dataGeracao.style.textAlign = 'center';
+        const dataGeracao = document.createElement('div');
+        dataGeracao.textContent = `Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+        dataGeracao.style.textAlign = 'right';
         dataGeracao.style.fontSize = '11px';
-        dataGeracao.style.color = '#666';
-        dataGeracao.style.marginBottom = '15px';
+        dataGeracao.style.color = '#6b7280';
+        dataGeracao.style.marginBottom = '20px';
+        dataGeracao.style.fontStyle = 'italic';
         container.appendChild(dataGeracao);
         
         // Tabela de escala
         const table = document.getElementById('escala-table').cloneNode(true);
-        table.style.marginBottom = '20px';
+        table.style.marginBottom = '30px';
         table.style.width = '100%';
         table.style.borderCollapse = 'collapse';
+        table.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
         
-        // Ajustar tamanho da fonte e padding da tabela
+        // Ajustar tamanho da fonte e padding da tabela para A3
         const allCells = table.querySelectorAll('td, th');
         allCells.forEach(cell => {
-          cell.style.padding = '4px 2px';
-          cell.style.fontSize = '9px';
-          cell.style.border = '0.5px solid #ddd';
+          cell.style.padding = '8px 4px';
+          cell.style.fontSize = '11px';
+          cell.style.border = '1px solid #d1d5db';
+          cell.style.verticalAlign = 'middle';
         });
+        
+        // Aumentar largura da coluna do hospital
+        const hospitalCells = table.querySelectorAll('.hospital-name');
+        hospitalCells.forEach(cell => {
+          cell.style.width = '180px';
+          cell.style.fontSize = '12px';
+          cell.style.fontWeight = 'bold';
+          cell.style.background = '#f0f9ff';
+          cell.style.position = 'sticky';
+          cell.style.left = '0';
+          cell.style.zIndex = '2';
+        });
+        
+        // Destacar cabeçalho
+        const headerCells = table.querySelectorAll('th');
+        headerCells.forEach(cell => {
+          if (!cell.classList.contains('hospital-name')) {
+            cell.style.background = 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)';
+            cell.style.color = 'white';
+            cell.style.fontWeight = 'bold';
+            cell.style.fontSize = '12px';
+            cell.style.border = '1px solid #1e40af';
+          }
+        });
+        
+        // Adicionar legendas na tabela
+        const caption = document.createElement('caption');
+        caption.style.captionSide = 'bottom';
+        caption.style.padding = '10px';
+        caption.style.fontSize = '10px';
+        caption.style.color = '#6b7280';
+        caption.style.textAlign = 'center';
+        caption.innerHTML = `
+          <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 3px;"></div>
+              <span>HUSE Dia</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #1e3a8a; border-radius: 3px;"></div>
+              <span>HUSE Noite</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 3px;"></div>
+              <span>HRP Dia</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 3px;"></div>
+              <span>HRP Noite</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f59e0b, #eab308); border-radius: 3px;"></div>
+              <span>Dobra</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #ef4444, #f59e0b); border-radius: 3px;"></div>
+              <span>Conflito</span>
+            </div>
+          </div>
+        `;
+        table.appendChild(caption);
         
         container.appendChild(table);
         
@@ -1797,39 +1900,45 @@
         });
         
         if (trocasDoMes.length > 0) {
-          const tituloTrocas = document.createElement('h3');
+          const trocasSection = document.createElement('div');
+          trocasSection.style.marginTop = '40px';
+          trocasSection.style.pageBreakInside = 'avoid';
+          
+          const tituloTrocas = document.createElement('h2');
           tituloTrocas.textContent = 'TROCAS REGISTRADAS';
-          tituloTrocas.style.fontSize = '13px';
-          tituloTrocas.style.marginTop = '20px';
-          tituloTrocas.style.marginBottom = '10px';
+          tituloTrocas.style.fontSize = '18px';
+          tituloTrocas.style.marginBottom = '15px';
+          tituloTrocas.style.paddingBottom = '8px';
           tituloTrocas.style.borderBottom = '2px solid #2563eb';
-          tituloTrocas.style.paddingBottom = '5px';
-          container.appendChild(tituloTrocas);
+          tituloTrocas.style.color = '#1e40af';
+          trocasSection.appendChild(tituloTrocas);
           
           const tabelaTrocas = document.createElement('table');
           tabelaTrocas.style.width = '100%';
           tabelaTrocas.style.borderCollapse = 'collapse';
-          tabelaTrocas.style.marginBottom = '15px';
+          tabelaTrocas.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+          tabelaTrocas.style.marginBottom = '20px';
           
           // Header da tabela de trocas
-          const headerTrocas = document.createElement('tr');
-          headerTrocas.style.background = '#f3f4f6';
-          headerTrocas.style.fontWeight = 'bold';
-          ['Hospital', 'Data Origem', 'Data Destino', 'Nome', 'Observação'].forEach(col => {
-            const th = document.createElement('th');
-            th.textContent = col;
-            th.style.padding = '6px 4px';
-            th.style.fontSize = '10px';
-            th.style.border = '0.5px solid #ddd';
-            th.style.textAlign = 'left';
-            headerTrocas.appendChild(th);
-          });
+          const headerTrocas = document.createElement('thead');
+          headerTrocas.innerHTML = `
+            <tr style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
+              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Hospital</th>
+              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Data Origem</th>
+              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Data Destino</th>
+              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Nome</th>
+              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Observação</th>
+            </tr>
+          `;
           tabelaTrocas.appendChild(headerTrocas);
           
-          // Linhas de trocas
+          // Corpo da tabela de trocas
+          const bodyTrocas = document.createElement('tbody');
+          
           trocasDoMes.forEach((obs, idx) => {
             const tr = document.createElement('tr');
             tr.style.background = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
+            tr.style.borderBottom = '1px solid #e5e7eb';
             
             const dados = [
               obs.hospital || '--',
@@ -1842,59 +1951,74 @@
             dados.forEach(dado => {
               const td = document.createElement('td');
               td.textContent = dado;
-              td.style.padding = '5px 4px';
-              td.style.fontSize = '9px';
-              td.style.border = '0.5px solid #ddd';
+              td.style.padding = '10px 8px';
+              td.style.fontSize = '11px';
+              td.style.border = '1px solid #e5e7eb';
               tr.appendChild(td);
             });
             
-            tabelaTrocas.appendChild(tr);
+            bodyTrocas.appendChild(tr);
           });
           
-          container.appendChild(tabelaTrocas);
+          tabelaTrocas.appendChild(bodyTrocas);
+          trocasSection.appendChild(tabelaTrocas);
+          container.appendChild(trocasSection);
         }
         
-        // Resumo
-        const resumo = document.createElement('div');
-        resumo.style.marginTop = '20px';
-        resumo.style.padding = '10px';
-        resumo.style.background = '#f0f9ff';
-        resumo.style.borderLeft = '4px solid #2563eb';
-        resumo.style.fontSize = '10px';
-        
-        const totalTrocas = trocasDoMes.length;
-        const totalTrocasHRP = trocasDoMes.filter(obs => obs.hospital?.includes('HRP') || obs.hospitalTroca?.includes('HRP')).length;
-        const dobras = EscalaService.verificarDobras();
-        const totalDobras = Object.keys(dobras).length;
-        
-        resumo.innerHTML = `
-          <strong>RESUMO DO MÊS:</strong><br/>
-          • Total de Trocas: ${totalTrocas}<br/>
-          • Trocas HRP: ${totalTrocasHRP}<br/>
-          • Dobras: ${totalDobras}<br/>
-          • Período: ${mes}/${ano}<br/>
-          • Distribuição flexível de plantões
+        // Rodapé
+        const footer = document.createElement('div');
+        footer.style.marginTop = '40px';
+        footer.style.paddingTop = '20px';
+        footer.style.borderTop = '1px solid #e5e7eb';
+        footer.style.fontSize = '10px';
+        footer.style.color = '#6b7280';
+        footer.style.textAlign = 'center';
+        footer.innerHTML = `
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div style="text-align: left;">
+              <strong>Sistema de Gerenciamento de Escalas</strong><br/>
+              Versão 2.0 • Gerador Inteligente
+            </div>
+            <div style="text-align: right;">
+              <strong>Documento oficial</strong><br/>
+              Página 1 de 1
+            </div>
+          </div>
+          <div style="font-style: italic;">
+            Este documento foi gerado automaticamente pelo sistema. Distribuição flexível de plantões.
+          </div>
         `;
-        container.appendChild(resumo);
+        container.appendChild(footer);
 
         const opt = {
-          margin: 8,
-          filename: `escala_${AppState.currentMonth + 1}_${AppState.currentYear}.pdf`,
-          image: { type: 'jpeg', quality: 0.95 },
-          html2canvas: { scale: 1.5, useCORS: true },
-          jsPDF: { orientation: 'l', unit: 'mm', format: 'a4' }
+          margin: [10, 10, 10, 10], // [top, left, bottom, right]
+          filename: `escala_${mes.toLowerCase()}_${ano}_A3.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2, // Maior qualidade para A3
+            useCORS: true,
+            logging: false,
+            windowWidth: 1123, // Largura A3 em pixels (297mm * 3.78)
+            windowHeight: 1587 // Altura A3 em pixels (420mm * 3.78)
+          },
+          jsPDF: { 
+            orientation: 'landscape', 
+            unit: 'mm', 
+            format: 'a3',
+            compress: true
+          }
         };
 
         setTimeout(() => {
           html2pdf().set(opt).from(container).save().then(() => {
             UIService.showLoading(false);
-            UIService.showNotification('✅ PDF exportado com sucesso!');
+            UIService.showNotification('✅ PDF A3 exportado com sucesso!');
           }).catch(err => {
             UIService.showLoading(false);
             UIService.showNotification('❌ Erro ao exportar PDF: ' + err.message, 'error');
-            console.error(err);
+            console.error('Erro PDF:', err);
           });
-        }, 300);
+        }, 500);
       }
     };
 
