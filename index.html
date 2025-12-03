@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Escala de Plantões - Sistema Flexível</title>
+  <title>Plantões - Mª de Fatima Velame</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -57,110 +57,45 @@
     header {
       background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
       color: white;
-      padding: 15px 20px 10px 20px;
+      padding: 15px 20px;
       text-align: center;
       flex-shrink: 0;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    h1 {
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      margin-bottom: 5px;
+    .main-title {
+      font-size: 1.8rem;
       font-weight: 700;
+      margin: 0;
+      text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
+      padding: 8px 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      letter-spacing: 0.5px;
+      position: relative;
     }
 
-    .codigo-escala {
-      font-size: 0.7rem;
-      opacity: 0.9;
-      background: rgba(255, 255, 255, 0.15);
-      padding: 3px 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      font-family: monospace;
-      letter-spacing: 1px;
+    .main-title i {
+      color: #fbbf24;
+      font-size: 1.6rem;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
     }
 
-    .horas-totais-container {
+    .header-content {
       display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 10px auto 5px;
-      padding: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      max-width: 400px;
-      width: 100%;
-    }
-
-    .horas-total-item {
-      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      padding: 5px 12px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      min-width: 120px;
-    }
-
-    .horas-total-icon {
-      font-size: 1rem;
-    }
-
-    .horas-total-label {
-      font-size: 0.9rem;
-      font-weight: 600;
-      min-width: 40px;
-      text-align: left;
-    }
-
-    .horas-total-valor {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-left: auto;
-    }
-
-    .huse-icon {
-      color: #3b82f6;
-    }
-
-    .hrp-icon {
-      color: #ef4444;
-    }
-
-    .month-selector {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin-top: 10px;
       flex-wrap: wrap;
-    }
-
-    .month-selector select {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .month-selector select:hover {
-      background: rgba(255, 255, 255, 0.2);
+      gap: 10px;
     }
 
     .header-counter {
-      position: absolute;
-      top: 15px;
-      right: 20px;
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -169,12 +104,13 @@
       text-align: center;
       min-width: 100px;
       transition: var(--transition);
+      order: 2;
     }
 
     .counter-label {
       font-size: 0.7rem;
       opacity: 0.9;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
       font-weight: 500;
     }
 
@@ -190,21 +126,51 @@
       margin-top: 2px;
     }
 
+    .month-selector {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      order: 1;
+      margin: 0 auto;
+    }
+
+    .month-selector select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      min-width: 120px;
+    }
+
+    .month-selector select:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .horas-info-container {
+      display: none;
+    }
+
     /* ===== CONTROLS ===== */
     .controls {
-      padding: 15px;
+      padding: 12px 15px;
       background: var(--bg-tertiary);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
     .btn {
-      padding: 10px 16px;
+      padding: 8px 12px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -213,9 +179,9 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: clamp(0.8rem, 2vw, 0.95rem);
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
       flex: 1;
-      min-width: 140px;
+      min-width: 120px;
       justify-content: center;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -289,44 +255,6 @@
       background: #7c3aed;
     }
 
-    /* ===== LEGEND ===== */
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 12px;
-      padding: 12px;
-      background: var(--bg-tertiary);
-      border-radius: 8px;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-      font-size: clamp(0.8rem, 2vw, 0.9rem);
-    }
-
-    .legend-color {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .huse-day { background: #3b82f6; }
-    .huse-night { background: #1e3a8a; }
-    .hrp-day { background: #ef4444; }
-    .hrp-night { background: #7c3aed; }
-    .conflito { background: linear-gradient(135deg, #ef4444, #f59e0b); }
-    .alerta-carro { background: #fbbf24; }
-    .troca-realizada { background: #10b981; }
-    .folga { background: #d1fae5; }
-    .dobra { background: linear-gradient(135deg, #f59e0b, #eab308); }
-
     /* ===== CONTENT ===== */
     .content {
       padding: 15px;
@@ -360,11 +288,11 @@
     }
 
     .editable-table th {
-      padding: 12px 8px;
+      padding: 10px 6px;
       font-weight: 600;
       text-align: center;
       border: 1px solid var(--primary-dark);
-      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+      font-size: clamp(0.7rem, 1.5vw, 0.85rem);
       white-space: nowrap;
     }
 
@@ -382,21 +310,21 @@
     }
 
     .editable-table td {
-      padding: 10px 6px;
+      padding: 8px 4px;
       text-align: center;
       border: 1px solid var(--border-color);
       transition: var(--transition);
-      font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+      font-size: clamp(0.65rem, 1.5vw, 0.8rem);
       white-space: nowrap;
     }
 
     .hospital-name {
       text-align: left;
-      padding-left: 12px;
+      padding-left: 10px;
       font-weight: 600;
       background: #f0f9ff;
-      width: 140px;
-      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+      width: 130px;
+      font-size: clamp(0.7rem, 1.5vw, 0.85rem);
       position: sticky;
       left: 0;
       z-index: 5;
@@ -404,12 +332,12 @@
 
     .plantao-cell {
       border-radius: 6px;
-      padding: 6px 4px;
+      padding: 5px 3px;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
-      min-width: 32px;
-      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+      min-width: 28px;
+      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     }
 
     .plantao-cell:hover {
@@ -447,9 +375,9 @@
       color: var(--text-secondary);
       cursor: pointer;
       border-radius: 6px;
-      padding: 6px 4px;
+      padding: 5px 3px;
       transition: var(--transition);
-      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     }
 
     .empty-cell:hover {
@@ -468,10 +396,10 @@
       font-style: italic;
       font-weight: 500;
       border-radius: 6px;
-      padding: 6px 4px;
+      padding: 5px 3px;
       cursor: pointer;
       transition: var(--transition);
-      font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     }
 
     .folga-cell:hover {
@@ -487,12 +415,12 @@
     }
 
     .day-number {
-      font-size: 1.1em;
+      font-size: 1em;
       font-weight: bold;
     }
 
     .day-name {
-      font-size: 0.8em;
+      font-size: 0.7em;
       opacity: 0.9;
     }
 
@@ -500,9 +428,88 @@
       position: absolute;
       top: -5px;
       right: -5px;
-      font-size: 0.9em;
+      font-size: 0.8em;
       animation: drive 3s infinite;
       z-index: 2;
+    }
+
+    /* ===== HORAS FOOTER CONTAINER ===== */
+    .horas-footer-container {
+      padding: 12px 15px;
+      background: var(--bg-tertiary);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .horas-hospital-linha {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 5px 10px;
+      background: rgba(37, 99, 235, 0.05);
+      border-radius: 6px;
+      border: 1px solid rgba(37, 99, 235, 0.1);
+      transition: var(--transition);
+      min-width: 280px;
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .horas-hospital-nome {
+      font-size: 0.85rem;
+      font-weight: 700;
+      min-width: 70px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .horas-semanas-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .horas-semana-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3px 6px;
+      background: rgba(37, 99, 235, 0.05);
+      border-radius: 4px;
+      min-width: 60px;
+      border: 1px solid rgba(37, 99, 235, 0.1);
+    }
+
+    .horas-semana-label {
+      font-size: 0.65rem;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+
+    .horas-semana-valor {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .huse-icon {
+      color: #3b82f6;
+    }
+
+    .hrp-icon {
+      color: #ef4444;
     }
 
     /* ===== ANIMATIONS ===== */
@@ -751,93 +758,105 @@
     /* ===== FOOTER ===== */
     .footer {
       text-align: center;
-      padding: 15px;
+      padding: 12px 15px;
       background: var(--bg-tertiary);
       border-top: 1px solid var(--border-color);
       color: var(--text-secondary);
-      font-size: clamp(0.8rem, 2vw, 0.85rem);
+      font-size: clamp(0.75rem, 2vw, 0.8rem);
       flex-shrink: 0;
     }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       .month-selector { gap: 8px; }
-      .controls { gap: 8px; padding: 12px; }
-      .btn { min-width: 120px; padding: 8px 12px; }
+      .controls { gap: 6px; padding: 10px; }
+      .btn { min-width: 100px; padding: 6px 8px; font-size: 0.7rem; }
       .modal-content { padding: 15px; max-height: 95vh; margin-top: 20px; margin-bottom: 20px; }
       .form-row { flex-direction: column; gap: 10px; }
-      .legend { margin: 10px; padding: 10px; gap: 8px; }
-      .hospital-name { width: 120px; }
-      .horas-totais-container { max-width: 350px; padding: 6px; }
-      .horas-total-item { min-width: 100px; padding: 4px 8px; }
-      .horas-total-valor { font-size: 1rem; }
+      .hospital-name { width: 110px; }
+      .horas-footer-container { padding: 10px; gap: 10px; }
+      .horas-hospital-linha { padding: 4px 8px; min-width: 250px; }
+      .horas-semana-item { min-width: 55px; padding: 2px 5px; }
+      .header-counter { padding: 6px 10px; min-width: 90px; }
+      .counter-value { font-size: 1.2rem; }
+      .month-selector select { padding: 5px 8px; font-size: 0.85rem; min-width: 100px; }
+      .main-title { font-size: 1.4rem; }
     }
 
     @media (max-width: 576px) {
       body { padding: 8px; }
       .container { height: calc(100vh - 16px); }
-      header { padding: 12px 10px 8px 10px; }
-      .header-counter { position: relative; top: auto; right: auto; margin: 10px auto 0; max-width: 120px; }
-      .month-selector select { padding: 5px 8px; font-size: 0.85rem; }
-      .controls { padding: 10px; gap: 6px; }
-      .btn { min-width: 100px; padding: 6px 8px; font-size: 0.75rem; }
+      header { padding: 10px 12px; gap: 8px; }
+      .header-content { flex-direction: column; gap: 8px; }
+      .header-counter { order: 1; margin: 0 auto; }
+      .month-selector { order: 2; }
+      .controls { padding: 8px; gap: 5px; }
+      .btn { min-width: 80px; padding: 5px 6px; font-size: 0.65rem; }
       .editable-table { min-width: 650px; }
-      .editable-table td, .editable-table th { padding: 6px 3px; font-size: 0.65rem; }
-      .hospital-name { width: 100px; }
-      .horas-totais-container { flex-direction: column; gap: 8px; max-width: 200px; }
-      .horas-total-item { justify-content: center; }
-      .codigo-escala { font-size: 0.6rem; }
+      .editable-table td, .editable-table th { padding: 5px 2px; font-size: 0.6rem; }
+      .hospital-name { width: 90px; }
+      .horas-footer-container { padding: 8px; gap: 8px; }
+      .horas-hospital-linha { flex-direction: column; align-items: flex-start; gap: 5px; padding: 8px; }
+      .horas-hospital-nome { min-width: 60px; }
+      .horas-semanas-container { width: 100%; justify-content: flex-start; }
+      .horas-semana-item { min-width: 50px; }
+      .footer { padding: 10px; font-size: 0.7rem; }
+      .main-title { font-size: 1.2rem; flex-direction: column; gap: 4px; }
+      .main-title i { font-size: 1.3rem; }
     }
 
     @media (max-height: 500px) and (orientation: landscape) {
       .container { height: auto; min-height: 100vh; }
-      header, .controls, .legend { flex-shrink: 0; }
+      header, .controls, .horas-footer-container { flex-shrink: 0; }
       .content { flex: 1; min-height: 300px; }
+    }
+
+    /* ===== PRINT STYLES ===== */
+    @media print {
+      body { margin: 0; padding: 0; }
+      .editable-table { width: 100%; }
+      .editable-table td, .editable-table th { padding: 6px 3px; font-size: 0.75rem; }
+      header .horas-info-container {
+        display: flex !important;
+      }
+      .horas-footer-container {
+        display: none !important;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>
-        <i class="fas fa-calendar-alt"></i> Gerador de Escala 
-        <span class="codigo-escala" id="codigo-escala">ESC-0000-00-0000</span>
+      <h1 class="main-title">
+        <i class="fas fa-user-nurse"></i> Plantões de Mª de Fatima Velame
       </h1>
       
-      <div class="horas-totais-container" id="horas-totais-container">
-        <!-- Contadores de horas totais serão injetados aqui -->
+      <div class="header-content">
+        <div class="month-selector">
+          <select id="month-select"></select>
+          <select id="year-select"></select>
+        </div>
+        
+        <div class="header-counter">
+          <div class="counter-label">Trocas HRP</div>
+          <div class="counter-value" id="hrp-trocas-count">0</div>
+          <div class="counter-subtitle">este mês</div>
+        </div>
       </div>
       
-      <div class="header-counter">
-        <div class="counter-label">Trocas HRP</div>
-        <div class="counter-value" id="hrp-trocas-count">0</div>
-        <div class="counter-subtitle">este mês</div>
-      </div>
-      <div class="month-selector">
-        <select id="month-select"></select>
-        <select id="year-select"></select>
+      <div class="horas-info-container" id="horas-info-container">
+        <!-- Contadores de horas por hospital por semana serão injetados aqui -->
       </div>
     </header>
 
     <div class="controls">
       <button class="btn btn-primary" id="save-data"><i class="fas fa-save"></i> Salvar</button>
-      <button class="btn btn-info" id="load-data"><i class="fas fa-folder-open"></i> Carregar</button>
       <button class="btn btn-danger" id="reset-data"><i class="fas fa-redo"></i> Redefinir</button>
       <button class="btn btn-purple" id="gerar-trocas"><i class="fas fa-lightbulb"></i> Sugerir Trocas</button>
       <button class="btn btn-success" id="export-pdf"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
       <button class="btn btn-warning" id="nova-troca"><i class="fas fa-exchange-alt"></i> Nova Troca</button>
       <button class="btn btn-info" id="ver-trocas"><i class="fas fa-list"></i> Ver Trocas</button>
-      <button class="btn btn-info" id="aplicar-padrao"><i class="fas fa-sync-alt"></i> Distribuir Plantões</button>
-    </div>
-
-    <div class="legend">
-      <div class="legend-item"><div class="legend-color huse-day"></div><span>HUSE Dia</span></div>
-      <div class="legend-item"><div class="legend-color huse-night"></div><span>HUSE Noite</span></div>
-      <div class="legend-item"><div class="legend-color hrp-day"></div><span>HRP Dia</span></div>
-      <div class="legend-item"><div class="legend-color hrp-night"></div><span>HRP Noite</span></div>
-      <div class="legend-item"><div class="legend-color dobra"></div><span>Dobra</span></div>
-      <div class="legend-item"><div class="legend-color conflito"></div><span>Conflito</span></div>
-      <div class="legend-item"><div class="legend-color alerta-carro"></div><span>🚗 Deslocamento</span></div>
     </div>
 
     <div class="content">
@@ -847,6 +866,11 @@
           <tbody id="table-body"></tbody>
         </table>
       </div>
+    </div>
+
+    <!-- Contador de horas movido para baixo (visualização normal) -->
+    <div class="horas-footer-container" id="horas-footer-container">
+      <!-- Contadores de horas serão injetados aqui -->
     </div>
 
     <div class="footer">
@@ -959,14 +983,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    @media print {
-      body { margin: 0; padding: 0; }
-      .editable-table { width: 100%; }
-      .editable-table td, .editable-table th { padding: 6px 3px; font-size: 0.75rem; }
-    }
-  </style>
-
+  
   <script>
     // ============================================
     // STORAGE SERVICE
@@ -1057,11 +1074,7 @@
       },
 
       atualizarCodigoExibicao() {
-        const escalas = this.getCurrentEscalas();
-        const codigoElement = document.getElementById('codigo-escala');
-        if (codigoElement) {
-          codigoElement.textContent = escalas.codigo || this.gerarCodigoUnico(this.currentMonth, this.currentYear);
-        }
+        // Não exibir mais o código na interface
       }
     };
 
@@ -1137,7 +1150,7 @@
     };
 
     // ============================================
-    // HORAS SERVICE - SIMPLIFICADO PARA MOSTRAR APENAS TOTAL
+    // HORAS SERVICE - MODIFICADO PARA AGRUPAR HUSE E HRP
     // ============================================
     const HorasService = {
       calcularHorasHospitalGrupo(grupo, escalas) {
@@ -1153,32 +1166,114 @@
         return total;
       },
 
+      obterSemanasDoMes() {
+        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
+        const semanas = [];
+        let semanaAtual = [];
+        
+        for (let dia = 1; dia <= daysInMonth; dia++) {
+          const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
+          semanaAtual.push(dia);
+          
+          // Se é sábado ou último dia do mês, finaliza a semana
+          if (data.getDay() === 6 || dia === daysInMonth) {
+            semanas.push([...semanaAtual]);
+            semanaAtual = [];
+          }
+        }
+        
+        return semanas;
+      },
+
+      calcularHorasGrupoNaSemana(grupo, semana, escalas) {
+        let total = 0;
+        
+        if (grupo === 'HUSE') {
+          semana.forEach(dia => {
+            if (escalas['HUSE Diurno'].includes(dia)) total++;
+            if (escalas['HUSE Noturno'].includes(dia)) total++;
+          });
+        } else if (grupo === 'HRP') {
+          semana.forEach(dia => {
+            if (escalas['HRP Diurno'].includes(dia)) total++;
+            if (escalas['HRP Noturno'].includes(dia)) total++;
+          });
+        }
+        
+        return total * 12; // 12 horas por plantão
+      },
+
       renderizarContadoresHoras() {
-        const container = document.getElementById('horas-totais-container');
-        if (!container) return;
+        const containerNormal = document.getElementById('horas-footer-container');
+        const containerPDF = document.getElementById('horas-info-container');
+        
+        if (!containerNormal && !containerPDF) return;
         
         const escalas = AppState.getCurrentEscalas();
+        const semanas = this.obterSemanasDoMes();
         
-        const horasHUSE = this.calcularHorasHospitalGrupo('HUSE', escalas);
-        const horasHRP = this.calcularHorasHospitalGrupo('HRP', escalas);
+        let html = '';
         
-        container.innerHTML = `
-          <div class="horas-total-item">
-            <i class="fas fa-hospital horas-total-icon huse-icon"></i>
-            <span class="horas-total-label">HUSE</span>
-            <span class="horas-total-valor">${horasHUSE}h</span>
-          </div>
-          <div class="horas-total-item">
-            <i class="fas fa-hospital horas-total-icon hrp-icon"></i>
-            <span class="horas-total-label">HRP</span>
-            <span class="horas-total-valor">${horasHRP}h</span>
+        // HUSE
+        html += `
+          <div class="horas-hospital-linha">
+            <div class="horas-hospital-nome">
+              <i class="fas fa-hospital huse-icon"></i> HUSE
+            </div>
+            <div class="horas-semanas-container">
+        `;
+        
+        semanas.forEach((semana, index) => {
+          const horas = this.calcularHorasGrupoNaSemana('HUSE', semana, escalas);
+          html += `
+            <div class="horas-semana-item">
+              <div class="horas-semana-label">Semana ${index + 1}</div>
+              <div class="horas-semana-valor">${horas}h</div>
+            </div>
+          `;
+        });
+        
+        html += `
+            </div>
           </div>
         `;
+        
+        // HRP
+        html += `
+          <div class="horas-hospital-linha">
+            <div class="horas-hospital-nome">
+              <i class="fas fa-hospital hrp-icon"></i> HRP
+            </div>
+            <div class="horas-semanas-container">
+        `;
+        
+        semanas.forEach((semana, index) => {
+          const horas = this.calcularHorasGrupoNaSemana('HRP', semana, escalas);
+          html += `
+            <div class="horas-semana-item">
+              <div class="horas-semana-label">Semana ${index + 1}</div>
+              <div class="horas-semana-valor">${horas}h</div>
+            </div>
+          `;
+        });
+        
+        html += `
+            </div>
+          </div>
+        `;
+        
+        // Atualizar ambos os containers
+        if (containerNormal) {
+          containerNormal.innerHTML = html;
+        }
+        if (containerPDF) {
+          containerPDF.innerHTML = html;
+        }
       }
     };
 
     // ============================================
-    // ESCALA DISTRIBUIÇÃO SERVICE
+    // ESCALA DISTRIBUIÇÃO SERVICE - MODIFICADO PARA DATAS PARES NO HRP DIURNO
     // ============================================
     const EscalaDistribuicaoService = {
       aplicarDistribuicaoInteligente() {
@@ -1190,15 +1285,15 @@
           escalas[hospital] = [];
         });
         
-        // Distribuição inteligente respeitando prioridades (sem limite de horas)
+        // Distribuição inteligente com regras específicas
         const semanas = this.calcularSemanasNoMes(AppState.currentMonth, AppState.currentYear);
         
         semanas.forEach(semana => {
-          // Prioridade 1: HUSE Noturno
-          this.distribuirPlantoesPrioritarios(semana, 'HUSE Noturno', escalas);
+          // Prioridade 1: HUSE Noturno - dias úteis (segunda a sexta)
+          this.distribuirHUSENoturno(semana, escalas);
           
-          // Prioridade 2: HRP Diurno
-          this.distribuirPlantoesPrioritarios(semana, 'HRP Diurno', escalas);
+          // Prioridade 2: HRP Diurno - DATAS PARES (priorizando dias úteis)
+          this.distribuirHRPDiurnoPares(semana, escalas);
           
           // Distribuir plantões restantes para outros hospitais
           this.distribuirPlantoesRestantes(semana, escalas);
@@ -1226,28 +1321,73 @@
         return semanas;
       },
       
-      distribuirPlantoesPrioritarios(semana, plantaoPrioritario, escalas) {
+      distribuirHUSENoturno(semana, escalas) {
         const diasUteis = semana.filter(dia => {
           const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
           return data.getDay() >= 1 && data.getDay() <= 5;
         });
         
-        // Distribuir plantões prioritários nos dias úteis (até 3 por semana)
+        // Distribuir HUSE Noturno nos dias úteis (até 3 por semana)
         diasUteis.slice(0, 3).forEach(dia => {
-          escalas[plantaoPrioritario].push(dia);
+          escalas['HUSE Noturno'].push(dia);
         });
       },
       
+      distribuirHRPDiurnoPares(semana, escalas) {
+        // Primeiro, pegar dias pares úteis (segunda a sexta)
+        const diasParesUteis = semana.filter(dia => {
+          const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
+          return dia % 2 === 0 && data.getDay() >= 1 && data.getDay() <= 5;
+        });
+        
+        // Se não houver dias pares úteis suficientes, incluir fins de semana pares
+        let diasPares = [...diasParesUteis];
+        if (diasPares.length < 3) {
+          const diasParesFimDeSemana = semana.filter(dia => {
+            const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
+            return dia % 2 === 0 && (data.getDay() === 0 || data.getDay() === 6);
+          });
+          diasPares = [...diasPares, ...diasParesFimDeSemana];
+        }
+        
+        // Distribuir HRP Diurno nas datas pares (até 3 por semana)
+        diasPares.slice(0, 3).forEach(dia => {
+          // Verificar se não há conflito com HUSE Noturno
+          if (!escalas['HUSE Noturno'].includes(dia)) {
+            escalas['HRP Diurno'].push(dia);
+          }
+        });
+        
+        // Se ainda não tiver 3 plantões, completar com dias ímpares úteis
+        if (escalas['HRP Diurno'].length < 3) {
+          const diasUteis = semana.filter(dia => {
+            const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
+            return data.getDay() >= 1 && data.getDay() <= 5;
+          });
+          
+          const diasDisponiveis = diasUteis.filter(dia => {
+            return !escalas['HUSE Noturno'].includes(dia) && !escalas['HRP Diurno'].includes(dia);
+          });
+          
+          diasDisponiveis.slice(0, 3 - escalas['HRP Diurno'].length).forEach(dia => {
+            escalas['HRP Diurno'].push(dia);
+          });
+        }
+      },
+      
       distribuirPlantoesRestantes(semana, escalas) {
-        // Distribuir plantões para os demais turnos
+        // Distribuir HUSE Diurno nos dias restantes
         semana.forEach(dia => {
-          // Verificar se pode alocar HUSE Diurno
-          if (!escalas['HUSE Diurno'].includes(dia)) {
+          // Verificar se pode alocar HUSE Diurno (não pode ter HUSE Noturno no mesmo dia)
+          if (!escalas['HUSE Noturno'].includes(dia) && !escalas['HUSE Diurno'].includes(dia)) {
             escalas['HUSE Diurno'].push(dia);
           }
-          
-          // Verificar se pode alocar HRP Noturno
-          if (!escalas['HRP Noturno'].includes(dia)) {
+        });
+        
+        // Distribuir HRP Noturno nos dias restantes
+        semana.forEach(dia => {
+          // Verificar se pode alocar HRP Noturno (não pode ter HUSE Noturno no mesmo dia)
+          if (!escalas['HUSE Noturno'].includes(dia) && !escalas['HRP Noturno'].includes(dia)) {
             escalas['HRP Noturno'].push(dia);
           }
         });
@@ -1502,9 +1642,6 @@
           }
           body.appendChild(tr);
         });
-        
-        // Atualizar código único
-        AppState.atualizarCodigoExibicao();
       },
 
       updateCounter() {
@@ -1785,7 +1922,7 @@
     };
 
     // ============================================
-    // PDF SERVICE - MODIFICADO PARA INCLUIR CONTADOR DE HORAS
+    // PDF SERVICE - MODIFICADO PARA A3
     // ============================================
     const PDFService = {
       exportarPDF() {
@@ -1793,7 +1930,6 @@
         
         const mes = AppState.monthNames[AppState.currentMonth];
         const ano = AppState.currentYear;
-        const escalas = AppState.getCurrentEscalas();
         
         // Container principal
         const container = document.createElement('div');
@@ -1814,17 +1950,27 @@
         titulo.style.paddingBottom = '10px';
         container.appendChild(titulo);
         
-        // Código da escala
-        const codigoElement = document.createElement('div');
-        codigoElement.textContent = `Código: ${escalas.codigo || AppState.gerarCodigoUnico(AppState.currentMonth, AppState.currentYear)}`;
-        codigoElement.style.textAlign = 'center';
-        codigoElement.style.fontSize = '12px';
-        codigoElement.style.color = '#6b7280';
-        codigoElement.style.marginBottom = '15px';
-        codigoElement.style.fontFamily = 'monospace';
-        codigoElement.style.fontWeight = '600';
-        codigoElement.style.letterSpacing = '1px';
-        container.appendChild(codigoElement);
+        // Sub-título com o nome
+        const subtitulo = document.createElement('h2');
+        subtitulo.textContent = 'Plantões de Mª de Fatima Velame';
+        subtitulo.style.textAlign = 'center';
+        subtitulo.style.marginBottom = '20px';
+        subtitulo.style.fontSize = '18px';
+        subtitulo.style.fontWeight = '600';
+        subtitulo.style.color = '#4b5563';
+        subtitulo.style.fontStyle = 'italic';
+        container.appendChild(subtitulo);
+        
+        // Mostrar contador no topo para PDF
+        const contadorHoras = document.getElementById('horas-info-container').cloneNode(true);
+        contadorHoras.style.display = 'flex';
+        contadorHoras.style.flexDirection = 'column';
+        contadorHoras.style.marginBottom = '20px';
+        contadorHoras.style.padding = '15px';
+        contadorHoras.style.background = '#f8fafc';
+        contadorHoras.style.borderRadius = '8px';
+        contadorHoras.style.border = '1px solid #e5e7eb';
+        container.appendChild(contadorHoras);
         
         // Informações da jornada
         const infoContainer = document.createElement('div');
@@ -1843,12 +1989,12 @@
           box.style.borderRadius = '8px';
           box.style.borderLeft = `4px solid ${cor}`;
           
-          const tit = document.createElement('div');
-          tit.textContent = titulo;
-          tit.style.fontSize = '12px';
-          tit.style.fontWeight = '600';
-          tit.style.color = '#4b5563';
-          tit.style.marginBottom = '5px';
+          const titEl = document.createElement('div');
+          titEl.textContent = titulo;
+          titEl.style.fontSize = '12px';
+          titEl.style.fontWeight = '600';
+          titEl.style.color = '#4b5563';
+          titEl.style.marginBottom = '5px';
           
           const cont = document.createElement('div');
           cont.textContent = conteudo;
@@ -1856,7 +2002,7 @@
           cont.style.fontWeight = '600';
           cont.style.color = '#1f2937';
           
-          box.appendChild(tit);
+          box.appendChild(titEl);
           box.appendChild(cont);
           return box;
         };
@@ -1876,110 +2022,6 @@
         infoContainer.appendChild(infoBox('DOBRAS', Object.keys(dobras).length.toString(), '#f59e0b'));
         
         container.appendChild(infoContainer);
-        
-        // CONTADOR DE HORAS POR HOSPITAL
-        const horasHUSE = HorasService.calcularHorasHospitalGrupo('HUSE', escalas);
-        const horasHRP = HorasService.calcularHorasHospitalGrupo('HRP', escalas);
-        
-        const horasSection = document.createElement('div');
-        horasSection.style.marginTop = '15px';
-        horasSection.style.marginBottom = '20px';
-        horasSection.style.padding = '15px';
-        horasSection.style.background = '#f8fafc';
-        horasSection.style.borderRadius = '8px';
-        horasSection.style.border = '1px solid #e5e7eb';
-        
-        const horasTitle = document.createElement('h3');
-        horasTitle.textContent = 'TOTAL DE HORAS NO MÊS';
-        horasTitle.style.fontSize = '16px';
-        horasTitle.style.fontWeight = 'bold';
-        horasTitle.style.color = '#1e40af';
-        horasTitle.style.marginBottom = '15px';
-        horasTitle.style.paddingBottom = '8px';
-        horasTitle.style.borderBottom = '2px solid #dbeafe';
-        horasSection.appendChild(horasTitle);
-        
-        // Container para os dois hospitais lado a lado
-        const horasGrid = document.createElement('div');
-        horasGrid.style.display = 'flex';
-        horasGrid.style.justifyContent = 'space-between';
-        horasGrid.style.gap = '20px';
-        horasGrid.style.flexWrap = 'wrap';
-        
-        // HUSE
-        const huseCard = document.createElement('div');
-        huseCard.style.flex = '1';
-        huseCard.style.minWidth = '250px';
-        huseCard.style.padding = '12px';
-        huseCard.style.background = 'white';
-        huseCard.style.borderRadius = '6px';
-        huseCard.style.border = '1px solid #dbeafe';
-        huseCard.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.1)';
-        
-        const huseTitle = document.createElement('div');
-        huseTitle.textContent = 'HUSE';
-        huseTitle.style.fontSize = '14px';
-        huseTitle.style.fontWeight = 'bold';
-        huseTitle.style.color = '#1e40af';
-        huseTitle.style.marginBottom = '10px';
-        huseTitle.style.display = 'flex';
-        huseTitle.style.alignItems = 'center';
-        huseTitle.style.gap = '8px';
-        
-        const huseIcon = document.createElement('i');
-        huseIcon.className = 'fas fa-hospital';
-        huseIcon.style.color = '#3b82f6';
-        huseTitle.prepend(huseIcon);
-        huseCard.appendChild(huseTitle);
-        
-        const huseTotal = document.createElement('div');
-        huseTotal.textContent = `${horasHUSE}h`;
-        huseTotal.style.fontSize = '24px';
-        huseTotal.style.fontWeight = 'bold';
-        huseTotal.style.color = '#1e3a8a';
-        huseTotal.style.textAlign = 'center';
-        huseTotal.style.padding = '15px 0';
-        huseCard.appendChild(huseTotal);
-        
-        // HRP
-        const hrpCard = document.createElement('div');
-        hrpCard.style.flex = '1';
-        hrpCard.style.minWidth = '250px';
-        hrpCard.style.padding = '12px';
-        hrpCard.style.background = 'white';
-        hrpCard.style.borderRadius = '6px';
-        hrpCard.style.border = '1px solid #fee2e2';
-        hrpCard.style.boxShadow = '0 2px 4px rgba(239, 68, 68, 0.1)';
-        
-        const hrpTitle = document.createElement('div');
-        hrpTitle.textContent = 'HRP';
-        hrpTitle.style.fontSize = '14px';
-        hrpTitle.style.fontWeight = 'bold';
-        hrpTitle.style.color = '#991b1b';
-        hrpTitle.style.marginBottom = '10px';
-        hrpTitle.style.display = 'flex';
-        hrpTitle.style.alignItems = 'center';
-        hrpTitle.style.gap = '8px';
-        
-        const hrpIcon = document.createElement('i');
-        hrpIcon.className = 'fas fa-hospital';
-        hrpIcon.style.color = '#ef4444';
-        hrpTitle.prepend(hrpIcon);
-        hrpCard.appendChild(hrpTitle);
-        
-        const hrpTotal = document.createElement('div');
-        hrpTotal.textContent = `${horasHRP}h`;
-        hrpTotal.style.fontSize = '24px';
-        hrpTotal.style.fontWeight = 'bold';
-        hrpTotal.style.color = '#7f1d1d';
-        hrpTotal.style.textAlign = 'center';
-        hrpTotal.style.padding = '15px 0';
-        hrpCard.appendChild(hrpTotal);
-        
-        horasGrid.appendChild(huseCard);
-        horasGrid.appendChild(hrpCard);
-        horasSection.appendChild(horasGrid);
-        container.appendChild(horasSection);
         
         // Data de geração
         const dataGeracao = document.createElement('div');
@@ -2019,16 +2061,67 @@
           cell.style.zIndex = '2';
         });
         
-        // Destacar cabeçalho
+        // Destacar sábados e domingos no PDF
+        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
         const headerCells = table.querySelectorAll('th');
-        headerCells.forEach(cell => {
-          if (!cell.classList.contains('hospital-name')) {
-            cell.style.background = 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)';
-            cell.style.color = 'white';
-            cell.style.fontWeight = 'bold';
-            cell.style.fontSize = '12px';
-            cell.style.border = '1px solid #1e40af';
+        const bodyRows = table.querySelectorAll('tbody tr');
+        
+        // Destacar cabeçalhos de fim de semana
+        headerCells.forEach((th, index) => {
+          if (index === 0) return; // Pular coluna do hospital
+          
+          const dia = index;
+          if (dia <= daysInMonth) {
+            const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
+            if (diaSemana === 0) { // Domingo
+              th.style.background = '#fee2e2';
+              th.style.color = '#dc2626';
+              th.style.fontWeight = 'bold';
+              th.style.border = '2px solid #dc2626';
+            } else if (diaSemana === 6) { // Sábado
+              th.style.background = '#dbeafe';
+              th.style.color = '#2563eb';
+              th.style.fontWeight = 'bold';
+              th.style.border = '2px solid #2563eb';
+            } else {
+              // Cabeçalho normal
+              th.style.background = 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)';
+              th.style.color = 'white';
+              th.style.fontWeight = 'bold';
+              th.style.fontSize = '12px';
+              th.style.border = '1px solid #1e40af';
+            }
           }
+        });
+        
+        // Destacar células de fim de semana no corpo
+        bodyRows.forEach(tr => {
+          const cells = tr.querySelectorAll('td');
+          cells.forEach((td, index) => {
+            if (index === 0) return; // Pular coluna do hospital
+            
+            const dia = index;
+            if (dia <= daysInMonth) {
+              const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
+              if (diaSemana === 0) { // Domingo
+                td.style.background = '#fef2f2';
+                td.style.border = '2px solid #fecaca';
+                const contentDiv = td.querySelector('div');
+                if (contentDiv) {
+                  contentDiv.style.color = '#dc2626';
+                  contentDiv.style.fontWeight = 'bold';
+                }
+              } else if (diaSemana === 6) { // Sábado
+                td.style.background = '#eff6ff';
+                td.style.border = '2px solid #bfdbfe';
+                const contentDiv = td.querySelector('div');
+                if (contentDiv) {
+                  contentDiv.style.color = '#2563eb';
+                  contentDiv.style.fontWeight = 'bold';
+                }
+              }
+            }
+          });
         });
         
         // Adicionar legendas na tabela
@@ -2063,6 +2156,14 @@
             <div style="display: flex; align-items: center; gap: 5px;">
               <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #ef4444, #f59e0b); border-radius: 3px;"></div>
               <span>Conflito</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #fee2e2; border: 1px solid #dc2626; border-radius: 3px;"></div>
+              <span style="color: #dc2626;">Domingo</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #eff6ff; border: 1px solid #2563eb; border-radius: 3px;"></div>
+              <span style="color: #2563eb;">Sábado</span>
             </div>
           </div>
         `;
@@ -2222,7 +2323,6 @@
       RenderService.renderTable();
       RenderService.updateCounter();
       HorasService.renderizarContadoresHoras();
-      AppState.atualizarCodigoExibicao();
       bindEvents();
     }
 
@@ -2235,7 +2335,6 @@
         RenderService.renderTable();
         RenderService.updateCounter();
         HorasService.renderizarContadoresHoras();
-        AppState.atualizarCodigoExibicao();
       });
 
       document.getElementById('year-select').addEventListener('change', e => {
@@ -2243,21 +2342,11 @@
         RenderService.renderTable();
         RenderService.updateCounter();
         HorasService.renderizarContadoresHoras();
-        AppState.atualizarCodigoExibicao();
       });
 
       document.getElementById('save-data').addEventListener('click', () => {
         AppState.save();
         UIService.showNotification('✅ Dados salvos com sucesso!');
-      });
-
-      document.getElementById('load-data').addEventListener('click', () => {
-        AppState.load();
-        RenderService.renderTable();
-        RenderService.updateCounter();
-        HorasService.renderizarContadoresHoras();
-        AppState.atualizarCodigoExibicao();
-        UIService.showNotification('✅ Dados carregados com sucesso!');
       });
 
       document.getElementById('reset-data').addEventListener('click', () => {
@@ -2278,7 +2367,6 @@
           RenderService.renderTable();
           RenderService.updateCounter();
           HorasService.renderizarContadoresHoras();
-          AppState.atualizarCodigoExibicao();
           UIService.showNotification('✅ Dados redefinidos!');
         }
       });
@@ -2301,16 +2389,6 @@
       document.getElementById('filter-year').addEventListener('change', () => RenderService.renderTrocasTable());
 
       document.getElementById('gerar-trocas').addEventListener('click', () => SuggestaoService.gerarSugestoes());
-
-      document.getElementById('aplicar-padrao').addEventListener('click', () => {
-        if (confirm('Deseja distribuir os plantões respeitando as prioridades (HUSE Noturno e HRP Diurno)? Isso substituirá as escalas atuais.')) {
-          EscalaDistribuicaoService.aplicarDistribuicaoInteligente();
-          RenderService.renderTable();
-          HorasService.renderizarContadoresHoras();
-          AppState.atualizarCodigoExibicao();
-          UIService.showNotification('✅ Plantões distribuídos com sucesso!');
-        }
-      });
     }
 
     document.addEventListener('DOMContentLoaded', initApp);
