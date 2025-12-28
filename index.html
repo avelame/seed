@@ -689,6 +689,38 @@
       background: #059669;
     }
 
+    /* ===== ACTION BUTTONS ===== */
+    .btn-group {
+      display: flex;
+      gap: 5px;
+      flex-wrap: nowrap;
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      min-width: auto;
+      flex: none;
+    }
+
+    .btn-edit {
+      background: var(--warning-color);
+      color: white;
+    }
+
+    .btn-edit:hover:not(:disabled) {
+      background: #d97706;
+    }
+
+    .btn-reverter {
+      background: var(--info-color);
+      color: white;
+    }
+
+    .btn-reverter:hover:not(:disabled) {
+      background: #0891b2;
+    }
+
     /* ===== NOTIFICATION ===== */
     .notification {
       position: fixed;
@@ -781,6 +813,8 @@
       .counter-value { font-size: 1.2rem; }
       .month-selector select { padding: 5px 8px; font-size: 0.85rem; min-width: 100px; }
       .main-title { font-size: 1.4rem; }
+      .btn-small { padding: 3px 6px; font-size: 0.65rem; }
+      .btn-group { gap: 3px; }
     }
 
     @media (max-width: 576px) {
@@ -803,6 +837,8 @@
       .footer { padding: 10px; font-size: 0.7rem; }
       .main-title { font-size: 1.2rem; flex-direction: column; gap: 4px; }
       .main-title i { font-size: 1.3rem; }
+      .btn-small { padding: 2px 4px; font-size: 0.6rem; }
+      .btn-group { flex-direction: column; gap: 2px; }
     }
 
     @media (max-height: 500px) and (orientation: landscape) {
@@ -935,6 +971,65 @@
     </div>
   </div>
 
+  <!-- Modal: Editar Troca -->
+  <div class="modal" id="editar-troca-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-edit"></i> Editar Troca</h3>
+        <button class="close-modal" id="close-editar-modal">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label for="editar-origem-hospital">Plantão Origem:</label>
+        <select id="editar-origem-hospital">
+          <option value="">-- Selecione --</option>
+          <option value="HUSE Diurno">HUSE Diurno</option>
+          <option value="HUSE Noturno">HUSE Noturno</option>
+          <option value="HRP Diurno">HRP Diurno</option>
+          <option value="HRP Noturno">HRP Noturno</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="editar-origem-data">Data de Origem:</label>
+        <input type="date" id="editar-origem-data">
+      </div>
+
+      <div class="form-group">
+        <label for="editar-destino-hospital">Plantão Destino:</label>
+        <select id="editar-destino-hospital">
+          <option value="">-- Selecione --</option>
+          <option value="HUSE Diurno">HUSE Diurno</option>
+          <option value="HUSE Noturno">HUSE Noturno</option>
+          <option value="HRP Diurno">HRP Diurno</option>
+          <option value="HRP Noturno">HRP Noturno</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="editar-destino-data">Data de Destino:</label>
+        <input type="date" id="editar-destino-data">
+      </div>
+
+      <div class="form-group">
+        <label for="editar-nome-troca">Nome:</label>
+        <input type="text" id="editar-nome-troca" placeholder="Seu nome">
+      </div>
+
+      <div class="form-group">
+        <label for="editar-obs-troca">Observação (opcional):</label>
+        <input type="text" id="editar-obs-troca" placeholder="Motivo da troca">
+      </div>
+
+      <input type="hidden" id="editar-troca-id">
+
+      <div class="modal-actions">
+        <button class="btn btn-cancel" id="cancelar-edicao">Cancelar</button>
+        <button class="btn btn-confirm" id="salvar-edicao">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: Ver Trocas -->
   <div class="modal" id="trocas-modal">
     <div class="modal-content">
@@ -963,7 +1058,7 @@
               <th>Data Destino</th>
               <th>Nome</th>
               <th>Observação</th>
-              <th>Ação</th>
+              <th style="min-width: 160px;">Ações</th>
             </tr>
           </thead>
           <tbody id="trocas-body"></tbody>
@@ -1035,11 +1130,12 @@
       diasDaSemana: ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'],
       hospitais: ['HUSE Diurno', 'HUSE Noturno', 'HRP Diurno', 'HRP Noturno'],
       codigoUnico: '',
+      currentEditId: null,
 
       load() {
         const data = StorageService.get();
         this.allEscalas = data.allEscalas;
-        this.observacoes = data.observacoes;
+        this.observacoes = data.observacoes || [];
       },
 
       save() {
@@ -1053,7 +1149,6 @@
       getEscalas(month, year) {
         const key = `${year}_${month}`;
         if (!this.allEscalas[key]) {
-          // Gerar código único para a escala do mês
           const codigo = this.gerarCodigoUnico(month, year);
           this.allEscalas[key] = {
             codigo: codigo,
@@ -1067,7 +1162,6 @@
       },
 
       gerarCodigoUnico(month, year) {
-        // Formato: ESC-YYYY-MM-XXXX (ex: ESC-2024-05-ABC1)
         const timestamp = Date.now().toString(36).slice(-4).toUpperCase();
         const mesStr = String(month + 1).padStart(2, '0');
         return `ESC-${year}-${mesStr}-${timestamp}`;
@@ -1150,11 +1244,10 @@
     };
 
     // ============================================
-    // HORAS SERVICE - MODIFICADO PARA AGRUPAR HUSE E HRP
+    // HORAS SERVICE
     // ============================================
     const HorasService = {
       calcularHorasHospitalGrupo(grupo, escalas) {
-        // Cada plantão tem 12 horas
         let total = 0;
         if (grupo === 'HUSE') {
           total += escalas['HUSE Diurno'].length * 12;
@@ -1175,7 +1268,6 @@
           const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
           semanaAtual.push(dia);
           
-          // Se é sábado ou último dia do mês, finaliza a semana
           if (data.getDay() === 6 || dia === daysInMonth) {
             semanas.push([...semanaAtual]);
             semanaAtual = [];
@@ -1200,7 +1292,7 @@
           });
         }
         
-        return total * 12; // 12 horas por plantão
+        return total * 12;
       },
 
       renderizarContadoresHoras() {
@@ -1262,7 +1354,6 @@
           </div>
         `;
         
-        // Atualizar ambos os containers
         if (containerNormal) {
           containerNormal.innerHTML = html;
         }
@@ -1273,29 +1364,22 @@
     };
 
     // ============================================
-    // ESCALA DISTRIBUIÇÃO SERVICE - MODIFICADO PARA DATAS PARES NO HRP DIURNO
+    // ESCALA DISTRIBUIÇÃO SERVICE
     // ============================================
     const EscalaDistribuicaoService = {
       aplicarDistribuicaoInteligente() {
         const escalas = AppState.getCurrentEscalas();
         const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
         
-        // Limpar todas as escalas
         AppState.hospitais.forEach(hospital => {
           escalas[hospital] = [];
         });
         
-        // Distribuição inteligente com regras específicas
         const semanas = this.calcularSemanasNoMes(AppState.currentMonth, AppState.currentYear);
         
         semanas.forEach(semana => {
-          // Prioridade 1: HUSE Noturno - dias úteis (segunda a sexta)
           this.distribuirHUSENoturno(semana, escalas);
-          
-          // Prioridade 2: HRP Diurno - DATAS PARES (priorizando dias úteis)
           this.distribuirHRPDiurnoPares(semana, escalas);
-          
-          // Distribuir plantões restantes para outros hospitais
           this.distribuirPlantoesRestantes(semana, escalas);
         });
         
@@ -1311,7 +1395,6 @@
           const data = new Date(year, month, dia);
           semanaAtual.push(dia);
           
-          // Se é sábado ou último dia do mês, finaliza a semana
           if (data.getDay() === 6 || dia === daysInMonth) {
             semanas.push([...semanaAtual]);
             semanaAtual = [];
@@ -1327,20 +1410,17 @@
           return data.getDay() >= 1 && data.getDay() <= 5;
         });
         
-        // Distribuir HUSE Noturno nos dias úteis (até 3 por semana)
         diasUteis.slice(0, 3).forEach(dia => {
           escalas['HUSE Noturno'].push(dia);
         });
       },
       
       distribuirHRPDiurnoPares(semana, escalas) {
-        // Primeiro, pegar dias pares úteis (segunda a sexta)
         const diasParesUteis = semana.filter(dia => {
           const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
           return dia % 2 === 0 && data.getDay() >= 1 && data.getDay() <= 5;
         });
         
-        // Se não houver dias pares úteis suficientes, incluir fins de semana pares
         let diasPares = [...diasParesUteis];
         if (diasPares.length < 3) {
           const diasParesFimDeSemana = semana.filter(dia => {
@@ -1350,15 +1430,12 @@
           diasPares = [...diasPares, ...diasParesFimDeSemana];
         }
         
-        // Distribuir HRP Diurno nas datas pares (até 3 por semana)
         diasPares.slice(0, 3).forEach(dia => {
-          // Verificar se não há conflito com HUSE Noturno
           if (!escalas['HUSE Noturno'].includes(dia)) {
             escalas['HRP Diurno'].push(dia);
           }
         });
         
-        // Se ainda não tiver 3 plantões, completar com dias ímpares úteis
         if (escalas['HRP Diurno'].length < 3) {
           const diasUteis = semana.filter(dia => {
             const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
@@ -1376,17 +1453,13 @@
       },
       
       distribuirPlantoesRestantes(semana, escalas) {
-        // Distribuir HUSE Diurno nos dias restantes
         semana.forEach(dia => {
-          // Verificar se pode alocar HUSE Diurno (não pode ter HUSE Noturno no mesmo dia)
           if (!escalas['HUSE Noturno'].includes(dia) && !escalas['HUSE Diurno'].includes(dia)) {
             escalas['HUSE Diurno'].push(dia);
           }
         });
         
-        // Distribuir HRP Noturno nos dias restantes
         semana.forEach(dia => {
-          // Verificar se pode alocar HRP Noturno (não pode ter HUSE Noturno no mesmo dia)
           if (!escalas['HUSE Noturno'].includes(dia) && !escalas['HRP Noturno'].includes(dia)) {
             escalas['HRP Noturno'].push(dia);
           }
@@ -1422,16 +1495,13 @@
         const semana = [];
         const diaSemana = data.getDay();
         
-        // Encontrar domingo da semana
         const domingo = new Date(data);
         domingo.setDate(dia - diaSemana);
         
-        // Preencher semana (domingo a sábado)
         for (let i = 0; i < 7; i++) {
           const diaDaSemana = new Date(domingo);
           diaDaSemana.setDate(domingo.getDate() + i);
           
-          // Verificar se o dia está dentro do mês atual
           if (diaDaSemana.getMonth() === AppState.currentMonth && 
               diaDaSemana.getFullYear() === AppState.currentYear) {
             semana.push(diaDaSemana.getDate());
@@ -1526,13 +1596,204 @@
             if (escalas[h].includes(dia)) plantoes.push(h);
           });
           
-          // Se há mais de um plantão no mesmo dia, é uma dobra
           if (plantoes.length > 1) {
             dobras[dia] = plantoes;
           }
         }
         
         return dobras;
+      }
+    };
+
+    // ============================================
+    // TROCA MANAGEMENT SERVICE
+    // ============================================
+    const TrocaManagementService = {
+      abrirModalEdicao(trocaId) {
+        const troca = AppState.observacoes[trocaId];
+        if (!troca) {
+          UIService.showNotification('Troca não encontrada!', 'error');
+          return;
+        }
+
+        AppState.currentEditId = trocaId;
+        
+        document.getElementById('editar-origem-hospital').value = troca.hospital || '';
+        document.getElementById('editar-destino-hospital').value = troca.hospitalTroca || '';
+        document.getElementById('editar-origem-data').value = troca.data || '';
+        document.getElementById('editar-destino-data').value = troca.dataTroca || '';
+        document.getElementById('editar-nome-troca').value = troca.nome || '';
+        document.getElementById('editar-obs-troca').value = troca.observacao || '';
+        document.getElementById('editar-troca-id').value = trocaId;
+
+        UIService.openModal('editar-troca-modal');
+      },
+
+      salvarEdicao() {
+        const trocaId = AppState.currentEditId;
+        if (trocaId === null || trocaId >= AppState.observacoes.length) {
+          UIService.showNotification('ID de troca inválido!', 'error');
+          return;
+        }
+
+        const troca = AppState.observacoes[trocaId];
+        
+        const origemHospital = document.getElementById('editar-origem-hospital').value.trim();
+        const destinoHospital = document.getElementById('editar-destino-hospital').value.trim();
+        const nome = document.getElementById('editar-nome-troca').value.trim();
+        const observacao = document.getElementById('editar-obs-troca').value.trim();
+        const origemDataInput = document.getElementById('editar-origem-data').value;
+        const destinoDataInput = document.getElementById('editar-destino-data').value;
+
+        if (!origemHospital || !destinoHospital || !nome || !origemDataInput || !destinoDataInput) {
+          UIService.showNotification('Preencha todos os campos obrigatórios!', 'error');
+          return;
+        }
+
+        const dataOrigem = DateService.parseDate(origemDataInput);
+        const dataDestino = DateService.parseDate(destinoDataInput);
+
+        if (!dataOrigem || !dataDestino) {
+          UIService.showNotification('Datas inválidas!', 'error');
+          return;
+        }
+
+        // Primeiro, reverter a troca original nas escalas
+        this.reverterTrocaNoBackend(troca);
+
+        // Aplicar a nova troca
+        const origemMes = dataOrigem.getMonth();
+        const origemAno = dataOrigem.getFullYear();
+        const destinoMes = dataDestino.getMonth();
+        const destinoAno = dataDestino.getFullYear();
+        const diaOrigNum = dataOrigem.getDate();
+        const diaDestNum = dataDestino.getDate();
+
+        const escalasOrigem = AppState.getEscalas(origemMes, origemAno);
+        const escalasDestino = AppState.getEscalas(destinoMes, destinoAno);
+
+        // Verificar se a nova origem existe
+        if (!escalasOrigem[origemHospital].includes(diaOrigNum)) {
+          UIService.showNotification(`Não existe plantão de ${origemHospital} no dia ${DateService.formatDateBR(dataOrigem)}!`, 'error');
+          return;
+        }
+
+        // Verificar se o novo destino está disponível
+        if (escalasDestino[destinoHospital].includes(diaDestNum)) {
+          UIService.showNotification(`Já existe plantão de ${destinoHospital} no dia ${DateService.formatDateBR(dataDestino)}!`, 'error');
+          return;
+        }
+
+        // Remover da origem e adicionar no destino
+        const idx = escalasOrigem[origemHospital].indexOf(diaOrigNum);
+        if (idx > -1) escalasOrigem[origemHospital].splice(idx, 1);
+
+        escalasDestino[destinoHospital].push(diaDestNum);
+        escalasDestino[destinoHospital].sort((a, b) => a - b);
+
+        // Atualizar os dados da troca
+        troca.hospital = origemHospital;
+        troca.hospitalTroca = destinoHospital;
+        troca.data = origemDataInput;
+        troca.dataTroca = destinoDataInput;
+        troca.nome = nome;
+        troca.observacao = observacao || `${origemHospital} → ${destinoHospital}`;
+
+        AppState.save();
+
+        // Atualizar a interface se necessário
+        if ((origemMes === AppState.currentMonth && origemAno === AppState.currentYear) ||
+            (destinoMes === AppState.currentMonth && destinoAno === AppState.currentYear)) {
+          RenderService.renderTable();
+          HorasService.renderizarContadoresHoras();
+        }
+
+        RenderService.updateCounter();
+        UIService.closeModal('editar-troca-modal');
+        RenderService.renderTrocasTable();
+        UIService.showNotification(`✅ Troca editada com sucesso!`);
+      },
+
+      reverterTroca(trocaId) {
+        const troca = AppState.observacoes[trocaId];
+        if (!troca) {
+          UIService.showNotification('Troca não encontrada!', 'error');
+          return;
+        }
+
+        if (!confirm(`Deseja reverter a troca de ${troca.hospital} (${DateService.formatDateBR(DateService.parseDate(troca.data))}) para ${troca.hospitalTroca} (${DateService.formatDateBR(DateService.parseDate(troca.dataTroca))})?`)) {
+          return;
+        }
+
+        // Reverter a troca nas escalas
+        this.reverterTrocaNoBackend(troca);
+
+        // Remover a observação
+        AppState.observacoes.splice(trocaId, 1);
+
+        AppState.save();
+
+        // Atualizar a interface
+        RenderService.renderTable();
+        HorasService.renderizarContadoresHoras();
+        RenderService.updateCounter();
+        RenderService.renderTrocasTable();
+
+        UIService.showNotification('✅ Troca revertida com sucesso!');
+      },
+
+      reverterTrocaNoBackend(troca) {
+        const dataOrigem = DateService.parseDate(troca.data);
+        const dataDestino = DateService.parseDate(troca.dataTroca);
+        
+        if (!dataOrigem || !dataDestino) return;
+
+        const origemMes = dataOrigem.getMonth();
+        const origemAno = dataOrigem.getFullYear();
+        const destinoMes = dataDestino.getMonth();
+        const destinoAno = dataDestino.getFullYear();
+        const diaOrigNum = dataOrigem.getDate();
+        const diaDestNum = dataDestino.getDate();
+
+        const escalasOrigem = AppState.getEscalas(origemMes, origemAno);
+        const escalasDestino = AppState.getEscalas(destinoMes, destinoAno);
+
+        // Remover do destino
+        const idxDest = escalasDestino[troca.hospitalTroca]?.indexOf(diaDestNum);
+        if (idxDest > -1) {
+          escalasDestino[troca.hospitalTroca].splice(idxDest, 1);
+        }
+
+        // Adicionar na origem
+        if (!escalasOrigem[troca.hospital]?.includes(diaOrigNum)) {
+          escalasOrigem[troca.hospital]?.push(diaOrigNum);
+          escalasOrigem[troca.hospital]?.sort((a, b) => a - b);
+        }
+      },
+
+      excluirTroca(trocaId) {
+        const troca = AppState.observacoes[trocaId];
+        if (!troca) {
+          UIService.showNotification('Troca não encontrada!', 'error');
+          return;
+        }
+
+        if (!confirm(`Deseja excluir permanentemente a troca de ${troca.hospital} (${DateService.formatDateBR(DateService.parseDate(troca.data))}) para ${troca.hospitalTroca} (${DateService.formatDateBR(DateService.parseDate(troca.dataTroca))})?`)) {
+          return;
+        }
+
+        // Remover a observação sem reverter a troca nas escalas
+        AppState.observacoes.splice(trocaId, 1);
+
+        AppState.save();
+
+        // Atualizar a interface
+        RenderService.renderTable();
+        HorasService.renderizarContadoresHoras();
+        RenderService.updateCounter();
+        RenderService.renderTrocasTable();
+
+        UIService.showNotification('✅ Troca excluída com sucesso!');
       }
     };
 
@@ -1708,16 +1969,35 @@
           return;
         }
 
-        filtradas.forEach((obs) => {
+        filtradas.forEach((obs, index) => {
           const tr = document.createElement('tr');
+          const btnGroup = document.createElement('div');
+          btnGroup.className = 'btn-group';
+          
+          btnGroup.innerHTML = `
+            <button class="btn btn-edit btn-small" onclick="TrocaManagementService.abrirModalEdicao(${index})">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="btn btn-reverter btn-small" onclick="TrocaManagementService.reverterTroca(${index})">
+              <i class="fas fa-undo"></i> Reverter
+            </button>
+            <button class="btn btn-danger btn-small" onclick="TrocaManagementService.excluirTroca(${index})">
+              <i class="fas fa-trash"></i> Excluir
+            </button>
+          `;
+          
           tr.innerHTML = `
             <td>${obs.hospital || '--'}</td>
             <td>${DateService.formatDateBR(DateService.parseDate(obs.data)) || '--'}</td>
             <td>${DateService.formatDateBR(DateService.parseDate(obs.dataTroca)) || '--'}</td>
             <td>${obs.nome || '--'}</td>
             <td>${obs.observacao || '--'}</td>
-            <td><button class="btn btn-danger" style="font-size: 0.7rem; padding: 4px 8px; margin-bottom: 0;" onclick="const idx = AppState.observacoes.indexOf(${AppState.observacoes.indexOf(obs)}); if(idx > -1) AppState.observacoes.splice(idx, 1); AppState.save(); RenderService.renderTrocasTable();">Remover</button></td>
           `;
+          
+          const tdAcoes = document.createElement('td');
+          tdAcoes.appendChild(btnGroup);
+          tr.appendChild(tdAcoes);
+          
           tbody.appendChild(tr);
         });
       }
@@ -1922,7 +2202,7 @@
     };
 
     // ============================================
-    // PDF SERVICE - MODIFICADO PARA A3
+    // PDF SERVICE
     // ============================================
     const PDFService = {
       exportarPDF() {
@@ -1931,14 +2211,12 @@
         const mes = AppState.monthNames[AppState.currentMonth];
         const ano = AppState.currentYear;
         
-        // Container principal
         const container = document.createElement('div');
         container.style.padding = '20px';
         container.style.fontFamily = 'Arial, sans-serif';
-        container.style.width = '297mm'; // Largura A3
-        container.style.minHeight = '420mm'; // Altura A3
+        container.style.width = '297mm';
+        container.style.minHeight = '420mm';
         
-        // Título principal
         const titulo = document.createElement('h1');
         titulo.textContent = `ESCALA DE PLANTÕES - ${mes.toUpperCase()}/${ano}`;
         titulo.style.textAlign = 'center';
@@ -1950,7 +2228,6 @@
         titulo.style.paddingBottom = '10px';
         container.appendChild(titulo);
         
-        // Sub-título com o nome
         const subtitulo = document.createElement('h2');
         subtitulo.textContent = 'Plantões de Mª de Fatima Velame';
         subtitulo.style.textAlign = 'center';
@@ -1961,7 +2238,6 @@
         subtitulo.style.fontStyle = 'italic';
         container.appendChild(subtitulo);
         
-        // Mostrar contador no topo para PDF
         const contadorHoras = document.getElementById('horas-info-container').cloneNode(true);
         contadorHoras.style.display = 'flex';
         contadorHoras.style.flexDirection = 'column';
@@ -1972,7 +2248,6 @@
         contadorHoras.style.border = '1px solid #e5e7eb';
         container.appendChild(contadorHoras);
         
-        // Informações da jornada
         const infoContainer = document.createElement('div');
         infoContainer.style.display = 'flex';
         infoContainer.style.justifyContent = 'space-between';
@@ -2023,7 +2298,6 @@
         
         container.appendChild(infoContainer);
         
-        // Data de geração
         const dataGeracao = document.createElement('div');
         dataGeracao.textContent = `Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
         dataGeracao.style.textAlign = 'right';
@@ -2033,14 +2307,12 @@
         dataGeracao.style.fontStyle = 'italic';
         container.appendChild(dataGeracao);
         
-        // Tabela de escala
         const table = document.getElementById('escala-table').cloneNode(true);
         table.style.marginBottom = '30px';
         table.style.width = '100%';
         table.style.borderCollapse = 'collapse';
         table.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
         
-        // Ajustar tamanho da fonte e padding da tabela para A3
         const allCells = table.querySelectorAll('td, th');
         allCells.forEach(cell => {
           cell.style.padding = '8px 4px';
@@ -2049,7 +2321,6 @@
           cell.style.verticalAlign = 'middle';
         });
         
-        // Aumentar largura da coluna do hospital
         const hospitalCells = table.querySelectorAll('.hospital-name');
         hospitalCells.forEach(cell => {
           cell.style.width = '180px';
@@ -2061,30 +2332,27 @@
           cell.style.zIndex = '2';
         });
         
-        // Destacar sábados e domingos no PDF
         const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
         const headerCells = table.querySelectorAll('th');
         const bodyRows = table.querySelectorAll('tbody tr');
         
-        // Destacar cabeçalhos de fim de semana
         headerCells.forEach((th, index) => {
-          if (index === 0) return; // Pular coluna do hospital
+          if (index === 0) return;
           
           const dia = index;
           if (dia <= daysInMonth) {
             const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
-            if (diaSemana === 0) { // Domingo
+            if (diaSemana === 0) {
               th.style.background = '#fee2e2';
               th.style.color = '#dc2626';
               th.style.fontWeight = 'bold';
               th.style.border = '2px solid #dc2626';
-            } else if (diaSemana === 6) { // Sábado
+            } else if (diaSemana === 6) {
               th.style.background = '#dbeafe';
               th.style.color = '#2563eb';
               th.style.fontWeight = 'bold';
               th.style.border = '2px solid #2563eb';
             } else {
-              // Cabeçalho normal
               th.style.background = 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)';
               th.style.color = 'white';
               th.style.fontWeight = 'bold';
@@ -2094,16 +2362,15 @@
           }
         });
         
-        // Destacar células de fim de semana no corpo
         bodyRows.forEach(tr => {
           const cells = tr.querySelectorAll('td');
           cells.forEach((td, index) => {
-            if (index === 0) return; // Pular coluna do hospital
+            if (index === 0) return;
             
             const dia = index;
             if (dia <= daysInMonth) {
               const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
-              if (diaSemana === 0) { // Domingo
+              if (diaSemana === 0) {
                 td.style.background = '#fef2f2';
                 td.style.border = '2px solid #fecaca';
                 const contentDiv = td.querySelector('div');
@@ -2111,7 +2378,7 @@
                   contentDiv.style.color = '#dc2626';
                   contentDiv.style.fontWeight = 'bold';
                 }
-              } else if (diaSemana === 6) { // Sábado
+              } else if (diaSemana === 6) {
                 td.style.background = '#eff6ff';
                 td.style.border = '2px solid #bfdbfe';
                 const contentDiv = td.querySelector('div');
@@ -2124,7 +2391,6 @@
           });
         });
         
-        // Adicionar legendas na tabela
         const caption = document.createElement('caption');
         caption.style.captionSide = 'bottom';
         caption.style.padding = '10px';
@@ -2171,7 +2437,6 @@
         
         container.appendChild(table);
         
-        // Seção de Trocas
         const trocasDoMes = AppState.observacoes.filter(obs => {
           const dataOrigem = DateService.parseDate(obs.data);
           const dataTroca = DateService.parseDate(obs.dataTroca);
@@ -2199,7 +2464,6 @@
           tabelaTrocas.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
           tabelaTrocas.style.marginBottom = '20px';
           
-          // Header da tabela de trocas
           const headerTrocas = document.createElement('thead');
           headerTrocas.innerHTML = `
             <tr style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
@@ -2212,7 +2476,6 @@
           `;
           tabelaTrocas.appendChild(headerTrocas);
           
-          // Corpo da tabela de trocas
           const bodyTrocas = document.createElement('tbody');
           
           trocasDoMes.forEach((obs, idx) => {
@@ -2245,7 +2508,6 @@
           container.appendChild(trocasSection);
         }
         
-        // Rodapé
         const footer = document.createElement('div');
         footer.style.marginTop = '40px';
         footer.style.paddingTop = '20px';
@@ -2271,15 +2533,15 @@
         container.appendChild(footer);
 
         const opt = {
-          margin: [10, 10, 10, 10], // [top, left, bottom, right]
+          margin: [10, 10, 10, 10],
           filename: `escala_${mes.toLowerCase()}_${ano}_A3.pdf`,
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { 
-            scale: 2, // Maior qualidade para A3
+            scale: 2,
             useCORS: true,
             logging: false,
-            windowWidth: 1123, // Largura A3 em pixels (297mm * 3.78)
-            windowHeight: 1587 // Altura A3 em pixels (420mm * 3.78)
+            windowWidth: 1123,
+            windowHeight: 1587
           },
           jsPDF: { 
             orientation: 'landscape', 
@@ -2309,7 +2571,6 @@
       AppState.load();
       RenderService.populateSelects();
       
-      // Aplicar distribuição inteligente se for um novo mês
       const escalasAtuais = AppState.getCurrentEscalas();
       const estaVazio = escalasAtuais['HUSE Diurno'].length === 0 && 
                        escalasAtuais['HUSE Noturno'].length === 0 &&
@@ -2381,6 +2642,10 @@
       document.getElementById('close-modal').addEventListener('click', () => UIService.closeModal('troca-modal'));
       document.getElementById('cancelar-troca').addEventListener('click', () => UIService.closeModal('troca-modal'));
       document.getElementById('confirmar-troca').addEventListener('click', () => TrocaService.realizar());
+
+      document.getElementById('close-editar-modal').addEventListener('click', () => UIService.closeModal('editar-troca-modal'));
+      document.getElementById('cancelar-edicao').addEventListener('click', () => UIService.closeModal('editar-troca-modal'));
+      document.getElementById('salvar-edicao').addEventListener('click', () => TrocaManagementService.salvarEdicao());
 
       document.getElementById('close-trocas-modal').addEventListener('click', () => UIService.closeModal('trocas-modal'));
       document.getElementById('fechar-trocas-modal').addEventListener('click', () => UIService.closeModal('trocas-modal'));
