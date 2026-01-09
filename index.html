@@ -1,2662 +1,2354 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plantões - Mª de Fatima Velame</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary-color: #2563eb;
-      --primary-dark: #1e40af;
-      --success-color: #10b981;
-      --danger-color: #ef4444;
-      --warning-color: #f59e0b;
-      --info-color: #06b6d4;
-      --purple-color: #8b5cf6;
-      --bg-primary: #f9fafb;
-      --bg-secondary: #ffffff;
-      --bg-tertiary: #f3f4f6;
-      --text-primary: #111827;
-      --text-secondary: #6b7280;
-      --border-color: #e5e7eb;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s ease;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.6;
-      padding: 12px;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      background: var(--bg-secondary);
-      border-radius: 12px;
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 24px);
-    }
-
-    /* ===== HEADER ===== */
-    header {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-      color: white;
-      padding: 15px 20px;
-      text-align: center;
-      flex-shrink: 0;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .main-title {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin: 0;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 8px 0;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      letter-spacing: 0.5px;
-      position: relative;
-    }
-
-    .main-title i {
-      color: #fbbf24;
-      font-size: 1.6rem;
-      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
-    }
-
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .header-counter {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      padding: 8px 12px;
-      text-align: center;
-      min-width: 100px;
-      transition: var(--transition);
-      order: 2;
-    }
-
-    .counter-label {
-      font-size: 0.7rem;
-      opacity: 0.9;
-      margin-bottom: 4px;
-      font-weight: 500;
-    }
-
-    .counter-value {
-      font-size: 1.4rem;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .counter-subtitle {
-      font-size: 0.6rem;
-      opacity: 0.8;
-      margin-top: 2px;
-    }
-
-    .month-selector {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      order: 1;
-      margin: 0 auto;
-    }
-
-    .month-selector select {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: var(--transition);
-      min-width: 120px;
-    }
-
-    .month-selector select:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .horas-info-container {
-      display: none;
-    }
-
-    /* ===== CONTROLS ===== */
-    .controls {
-      padding: 12px 15px;
-      background: var(--bg-tertiary);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .btn {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: clamp(0.75rem, 2vw, 0.85rem);
-      flex: 1;
-      min-width: 120px;
-      justify-content: center;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .btn:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background: var(--primary-dark);
-    }
-
-    .btn-success {
-      background: var(--success-color);
-      color: white;
-    }
-
-    .btn-success:hover:not(:disabled) {
-      background: #059669;
-    }
-
-    .btn-danger {
-      background: var(--danger-color);
-      color: white;
-    }
-
-    .btn-danger:hover:not(:disabled) {
-      background: #dc2626;
-    }
-
-    .btn-warning {
-      background: var(--warning-color);
-      color: white;
-    }
-
-    .btn-warning:hover:not(:disabled) {
-      background: #d97706;
-    }
-
-    .btn-info {
-      background: var(--info-color);
-      color: white;
-    }
-
-    .btn-info:hover:not(:disabled) {
-      background: #0891b2;
-    }
-
-    .btn-purple {
-      background: var(--purple-color);
-      color: white;
-    }
-
-    .btn-purple:hover:not(:disabled) {
-      background: #7c3aed;
-    }
-
-    /* ===== CONTENT ===== */
-    .content {
-      padding: 15px;
-      overflow: auto;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .table-container {
-      overflow-x: auto;
-      border-radius: 8px;
-      box-shadow: var(--shadow-sm);
-      background: var(--bg-secondary);
-    }
-
-    .editable-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0;
-      background: var(--bg-secondary);
-      min-width: 900px;
-    }
-
-    .editable-table thead tr {
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-      color: white;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .editable-table th {
-      padding: 10px 6px;
-      font-weight: 600;
-      text-align: center;
-      border: 1px solid var(--primary-dark);
-      font-size: clamp(0.7rem, 1.5vw, 0.85rem);
-      white-space: nowrap;
-    }
-
-    .editable-table tbody tr {
-      border-bottom: 1px solid var(--border-color);
-      transition: background-color 0.2s;
-    }
-
-    .editable-table tbody tr:nth-child(even) {
-      background: var(--bg-tertiary);
-    }
-
-    .editable-table tbody tr:hover {
-      background: #e0e7ff;
-    }
-
-    .editable-table td {
-      padding: 8px 4px;
-      text-align: center;
-      border: 1px solid var(--border-color);
-      transition: var(--transition);
-      font-size: clamp(0.65rem, 1.5vw, 0.8rem);
-      white-space: nowrap;
-    }
-
-    .hospital-name {
-      text-align: left;
-      padding-left: 10px;
-      font-weight: 600;
-      background: #f0f9ff;
-      width: 130px;
-      font-size: clamp(0.7rem, 1.5vw, 0.85rem);
-      position: sticky;
-      left: 0;
-      z-index: 5;
-    }
-
-    .plantao-cell {
-      border-radius: 6px;
-      padding: 5px 3px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      min-width: 28px;
-      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
-    }
-
-    .plantao-cell:hover {
-      transform: scale(1.05);
-    }
-
-    .plantao {
-      background: var(--success-color);
-      color: white;
-    }
-
-    .conflito-cell {
-      background: linear-gradient(135deg, #ef4444, #f59e0b);
-      color: white;
-      border: 2px solid var(--danger-color);
-      animation: pulse-danger 2s infinite;
-    }
-
-    .alerta-carro-cell {
-      background: var(--warning-color);
-      color: #333;
-      font-weight: bold;
-      animation: bounce-warning 2s infinite;
-    }
-
-    .dobra-cell {
-      background: linear-gradient(135deg, #f59e0b, #eab308);
-      color: #333;
-      font-weight: bold;
-      animation: pulse-dobra 2s infinite;
-    }
-
-    .empty-cell {
-      background: var(--bg-tertiary);
-      color: var(--text-secondary);
-      cursor: pointer;
-      border-radius: 6px;
-      padding: 5px 3px;
-      transition: var(--transition);
-      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
-    }
-
-    .empty-cell:hover {
-      background: #e5e7eb;
-      transform: scale(1.05);
-    }
-
-    .weekend, .sunday {
-      background: #f9fafb;
-      color: var(--text-secondary);
-    }
-
-    .folga-cell {
-      background: #d1fae5;
-      color: #065f46;
-      font-style: italic;
-      font-weight: 500;
-      border-radius: 6px;
-      padding: 5px 3px;
-      cursor: pointer;
-      transition: var(--transition);
-      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
-    }
-
-    .folga-cell:hover {
-      background: #a7f3d0;
-      transform: scale(1.05);
-    }
-
-    .day-header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
-
-    .day-number {
-      font-size: 1em;
-      font-weight: bold;
-    }
-
-    .day-name {
-      font-size: 0.7em;
-      opacity: 0.9;
-    }
-
-    .carro-indicator {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      font-size: 0.8em;
-      animation: drive 3s infinite;
-      z-index: 2;
-    }
-
-    /* ===== HORAS FOOTER CONTAINER ===== */
-    .horas-footer-container {
-      padding: 12px 15px;
-      background: var(--bg-tertiary);
-      border-top: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
-    }
-
-    .horas-hospital-linha {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 5px 10px;
-      background: rgba(37, 99, 235, 0.05);
-      border-radius: 6px;
-      border: 1px solid rgba(37, 99, 235, 0.1);
-      transition: var(--transition);
-      min-width: 280px;
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .horas-hospital-nome {
-      font-size: 0.85rem;
-      font-weight: 700;
-      min-width: 70px;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .horas-semanas-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      flex: 1;
-    }
-
-    .horas-semana-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 3px 6px;
-      background: rgba(37, 99, 235, 0.05);
-      border-radius: 4px;
-      min-width: 60px;
-      border: 1px solid rgba(37, 99, 235, 0.1);
-    }
-
-    .horas-semana-label {
-      font-size: 0.65rem;
-      opacity: 0.9;
-      font-weight: 500;
-    }
-
-    .horas-semana-valor {
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-top: 2px;
-    }
-
-    .huse-icon {
-      color: #3b82f6;
-    }
-
-    .hrp-icon {
-      color: #ef4444;
-    }
-
-    /* ===== ANIMATIONS ===== */
-    @keyframes pulse-danger {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-      50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-    }
-
-    @keyframes bounce-warning {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    @keyframes pulse-dobra {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-      50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-    }
-
-    @keyframes drive {
-      0%, 100% { transform: translateX(0) rotate(0deg); }
-      25% { transform: translateX(2px) rotate(5deg); }
-      75% { transform: translateX(-2px) rotate(-5deg); }
-    }
-
-    /* ===== MODAL ===== */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-      overflow-y: auto;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--bg-secondary);
-      border-radius: 12px;
-      padding: 20px;
-      width: 100%;
-      max-width: 700px;
-      box-shadow: var(--shadow-lg);
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      background: var(--bg-secondary);
-      z-index: 1;
-    }
-
-    .modal-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--primary-color);
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: var(--transition);
-      flex-shrink: 0;
-      padding: 0;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-    }
-
-    .close-modal:hover {
-      color: var(--danger-color);
-      background: var(--bg-tertiary);
-    }
-
-    /* ===== FORMS ===== */
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: var(--text-primary);
-      font-size: 0.95rem;
-    }
-
-    .form-group select,
-    .form-group input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: var(--transition);
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-    }
-
-    .form-group select:focus,
-    .form-group input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .form-row {
-      display: flex;
-      gap: 12px;
-    }
-
-    .form-row .form-group {
-      flex: 1;
-    }
-
-    .data-fields {
-      background: var(--bg-tertiary);
-      padding: 15px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 15px;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px solid var(--border-color);
-      position: sticky;
-      bottom: 0;
-      background: var(--bg-secondary);
-      padding-bottom: 5px;
-    }
-
-    .btn-cancel {
-      background: var(--text-secondary);
-      color: white;
-      flex: 0.5;
-    }
-
-    .btn-cancel:hover:not(:disabled) {
-      background: #4b5563;
-    }
-
-    .btn-confirm {
-      background: var(--success-color);
-      color: white;
-      flex: 0.5;
-    }
-
-    .btn-confirm:hover:not(:disabled) {
-      background: #059669;
-    }
-
-    /* ===== ACTION BUTTONS ===== */
-    .btn-group {
-      display: flex;
-      gap: 5px;
-      flex-wrap: nowrap;
-    }
-
-    .btn-small {
-      padding: 4px 8px;
-      font-size: 0.7rem;
-      min-width: auto;
-      flex: none;
-    }
-
-    .btn-edit {
-      background: var(--warning-color);
-      color: white;
-    }
-
-    .btn-edit:hover:not(:disabled) {
-      background: #d97706;
-    }
-
-    .btn-reverter {
-      background: var(--info-color);
-      color: white;
-    }
-
-    .btn-reverter:hover:not(:disabled) {
-      background: #0891b2;
-    }
-
-    /* ===== NOTIFICATION ===== */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      background: var(--success-color);
-      color: white;
-      border-radius: 8px;
-      box-shadow: var(--shadow-lg);
-      transform: translateX(150%);
-      transition: transform 0.3s ease;
-      z-index: 1001;
-      max-width: 300px;
-      font-size: clamp(0.8rem, 2vw, 0.95rem);
-      font-weight: 500;
-    }
-
-    .notification.show {
-      transform: translateX(0);
-    }
-
-    .notification.error {
-      background: var(--danger-color);
-    }
-
-    .notification.warning {
-      background: var(--warning-color);
-      color: #333;
-    }
-
-    /* ===== LOADING ===== */
-    .loading {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: white;
-    }
-
-    .loading.show {
-      display: flex;
-    }
-
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 15px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* ===== FOOTER ===== */
-    .footer {
-      text-align: center;
-      padding: 12px 15px;
-      background: var(--bg-tertiary);
-      border-top: 1px solid var(--border-color);
-      color: var(--text-secondary);
-      font-size: clamp(0.75rem, 2vw, 0.8rem);
-      flex-shrink: 0;
-    }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .month-selector { gap: 8px; }
-      .controls { gap: 6px; padding: 10px; }
-      .btn { min-width: 100px; padding: 6px 8px; font-size: 0.7rem; }
-      .modal-content { padding: 15px; max-height: 95vh; margin-top: 20px; margin-bottom: 20px; }
-      .form-row { flex-direction: column; gap: 10px; }
-      .hospital-name { width: 110px; }
-      .horas-footer-container { padding: 10px; gap: 10px; }
-      .horas-hospital-linha { padding: 4px 8px; min-width: 250px; }
-      .horas-semana-item { min-width: 55px; padding: 2px 5px; }
-      .header-counter { padding: 6px 10px; min-width: 90px; }
-      .counter-value { font-size: 1.2rem; }
-      .month-selector select { padding: 5px 8px; font-size: 0.85rem; min-width: 100px; }
-      .main-title { font-size: 1.4rem; }
-      .btn-small { padding: 3px 6px; font-size: 0.65rem; }
-      .btn-group { gap: 3px; }
-    }
-
-    @media (max-width: 576px) {
-      body { padding: 8px; }
-      .container { height: calc(100vh - 16px); }
-      header { padding: 10px 12px; gap: 8px; }
-      .header-content { flex-direction: column; gap: 8px; }
-      .header-counter { order: 1; margin: 0 auto; }
-      .month-selector { order: 2; }
-      .controls { padding: 8px; gap: 5px; }
-      .btn { min-width: 80px; padding: 5px 6px; font-size: 0.65rem; }
-      .editable-table { min-width: 650px; }
-      .editable-table td, .editable-table th { padding: 5px 2px; font-size: 0.6rem; }
-      .hospital-name { width: 90px; }
-      .horas-footer-container { padding: 8px; gap: 8px; }
-      .horas-hospital-linha { flex-direction: column; align-items: flex-start; gap: 5px; padding: 8px; }
-      .horas-hospital-nome { min-width: 60px; }
-      .horas-semanas-container { width: 100%; justify-content: flex-start; }
-      .horas-semana-item { min-width: 50px; }
-      .footer { padding: 10px; font-size: 0.7rem; }
-      .main-title { font-size: 1.2rem; flex-direction: column; gap: 4px; }
-      .main-title i { font-size: 1.3rem; }
-      .btn-small { padding: 2px 4px; font-size: 0.6rem; }
-      .btn-group { flex-direction: column; gap: 2px; }
-    }
-
-    @media (max-height: 500px) and (orientation: landscape) {
-      .container { height: auto; min-height: 100vh; }
-      header, .controls, .horas-footer-container { flex-shrink: 0; }
-      .content { flex: 1; min-height: 300px; }
-    }
-
-    /* ===== PRINT STYLES ===== */
-    @media print {
-      body { margin: 0; padding: 0; }
-      .editable-table { width: 100%; }
-      .editable-table td, .editable-table th { padding: 6px 3px; font-size: 0.75rem; }
-      header .horas-info-container {
-        display: flex !important;
-      }
-      .horas-footer-container {
-        display: none !important;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Atendimento Escolar | Sistema Técnico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary: #10b981;
+            --secondary-light: #34d399;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --danger: #ef4444;
+            --danger-light: #fca5a5;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --dark: #1f2937;
+            --dark-light: #374151;
+            --light: #f9fafb;
+            --gray: #9ca3af;
+            --gray-light: #e5e7eb;
+            --gray-dark: #4b5563;
+            --card-bg: #ffffff;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 35px 40px;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary-light));
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 35px;
+            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Grid de escolas */
+        .schools-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .schools-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 350px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-weight: 500;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .school-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid var(--gray-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .school-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--gray);
+            transition: var(--transition);
+        }
+        
+        .school-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .school-card:hover::before {
+            background: var(--primary);
+        }
+        
+        .school-card.selected {
+            border-color: var(--secondary);
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.03), white);
+            transform: translateY(-5px);
+        }
+        
+        .school-card.selected::before {
+            background: var(--secondary);
+        }
+        
+        .school-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 700;
+            line-height: 1.4;
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 24px;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+        
+        .status-pendente {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+        
+        .status-andamento {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            border: 1px solid #60a5fa;
+        }
+        
+        .status-concluido {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border: 1px solid #34d399;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 6px currentColor;
+        }
+        
+        .status-pendente .status-dot { background: var(--warning); }
+        .status-andamento .status-dot { background: var(--primary); }
+        .status-concluido .status-dot { background: var(--success); }
+        
+        /* Checklist items styling - Novo design */
+        .checklist-section {
+            margin-bottom: 35px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--gray-dark);
+            margin-bottom: 25px;
+            font-weight: 500;
+            line-height: 1.6;
+            padding-left: 10px;
+            border-left: 4px solid var(--gray-light);
+            padding-left: 20px;
+        }
+        
+        /* Grid layout para formulários */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.05rem;
+            gap: 10px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--danger);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        input[type="date"],
+        input[type="number"],
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: white;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            background-color: #fafafa;
+        }
+        
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        
+        /* Toggle switch - Design aprimorado */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 14px;
+            background: linear-gradient(to right, #f8fafc, #ffffff);
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        
+        .toggle-container:hover {
+            background: linear-gradient(to right, #f1f5f9, #ffffff);
+            border-color: var(--primary-light);
+        }
+        
+        .toggle-label {
+            font-weight: 600;
+            color: var(--dark);
+            flex: 1;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .toggle-label i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 68px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            display: none;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray);
+            transition: var(--transition);
+            border-radius: 34px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(34px);
+        }
+        
+        /* Checkbox styling - Design moderno */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 18px;
+            border-radius: 12px;
+            background: linear-gradient(to right, #f8fafc, #ffffff);
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .checkbox-container:hover {
+            background: linear-gradient(to right, #f1f5f9, #ffffff);
+            border-color: var(--primary-light);
+            transform: translateX(5px);
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 18px;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        .checkbox-container label {
+            margin-bottom: 0;
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .checkbox-container label i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        /* Campo de upload de imagem */
+        .image-upload-container {
+            margin: 25px 0;
+            padding: 25px;
+            background: linear-gradient(to right, #f8fafc, #ffffff);
+            border: 2px dashed var(--gray-light);
+            border-radius: 14px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .image-upload-container:hover {
+            border-color: var(--primary);
+            background: linear-gradient(to right, #f1f5f9, #ffffff);
+        }
+        
+        .image-upload-container label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+        
+        .image-upload-container i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+        
+        .image-upload-text {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .image-upload-subtext {
+            font-size: 0.9rem;
+            color: var(--gray-dark);
+        }
+        
+        #print-velocidade {
+            display: none;
+        }
+        
+        .image-preview-container {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            border: 2px solid var(--gray-light);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .remove-image-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--danger-light);
+            color: var(--danger);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .remove-image-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Buttons - Design moderno */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 32px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active:not(:disabled) {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        /* Progress bar - Design aprimorado */
+        .progress-container {
+            background: var(--gray-light);
+            border-radius: 14px;
+            height: 20px;
+            overflow: hidden;
+            margin: 30px 0;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--secondary));
+            width: 0%;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-weight: 700;
+            color: var(--dark);
+            margin-top: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .progress-stats {
+            font-size: 1rem;
+            color: var(--gray-dark);
+            font-weight: 600;
+            background: var(--gray-light);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        
+        /* Validation messages */
+        .validation-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+            font-weight: 600;
+            padding-left: 10px;
+            border-left: 3px solid var(--danger);
+        }
+        
+        .validation-message.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: shake 0.4s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        
+        .input-error {
+            border-color: var(--danger) !important;
+            background-color: #fef2f2 !important;
+        }
+        
+        .input-error:focus {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+        }
+        
+        /* Success message */
+        .success-message {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            padding: 20px;
+            border-radius: 14px;
+            margin: 20px 0;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+            border: 2px solid #34d399;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+        
+        .success-message.show {
+            display: flex;
+            animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--gray-dark);
+            font-size: 0.95rem;
+            padding-top: 25px;
+            border-top: 2px solid var(--gray-light);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .schools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+            
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .schools-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+        }
+        
+        /* Checklist visibility */
+        #checklist-section {
+            display: none;
+        }
+        
+        #checklist-section.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-flex;
+            margin-left: 8px;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 240px;
+            background: var(--dark);
+            color: white;
+            text-align: left;
+            border-radius: 10px;
+            padding: 14px;
+            position: absolute;
+            z-index: 100;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: normal;
+            line-height: 1.5;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tooltip .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+            transition: var(--transition);
+            z-index: 100;
+            border: none;
+        }
+        
+        .fab:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 12px 30px rgba(79, 70, 229, 0.5);
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-left: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge-success {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+        }
+        
+        .badge-warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+        
+        .badge-info {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Stats cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--gray-dark);
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1 class="main-title">
-        <i class="fas fa-user-nurse"></i> Plantões de Mª de Fatima Velame
-      </h1>
-      
-      <div class="header-content">
-        <div class="month-selector">
-          <select id="month-select"></select>
-          <select id="year-select"></select>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1><i class="fas fa-clipboard-check"></i> Checklist de Atendimento Escolar</h1>
+                <p class="subtitle">Sistema completo para verificação e registro de infraestrutura escolar técnica</p>
+            </div>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="total-escolas">0</div>
+                <div class="stat-label">Escolas Cadastradas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="concluidas-count">0</div>
+                <div class="stat-label">Checklists Concluídos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="andamento-count">0</div>
+                <div class="stat-label">Em Andamento</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendentes-count">0</div>
+                <div class="stat-label">Pendentes</div>
+            </div>
         </div>
         
-        <div class="header-counter">
-          <div class="counter-label">Trocas HRP</div>
-          <div class="counter-value" id="hrp-trocas-count">0</div>
-          <div class="counter-subtitle">este mês</div>
-        </div>
-      </div>
-      
-      <div class="horas-info-container" id="horas-info-container">
-        <!-- Contadores de horas por hospital por semana serão injetados aqui -->
-      </div>
-    </header>
-
-    <div class="controls">
-      <button class="btn btn-primary" id="save-data"><i class="fas fa-save"></i> Salvar</button>
-      <button class="btn btn-danger" id="reset-data"><i class="fas fa-redo"></i> Redefinir</button>
-      <button class="btn btn-purple" id="gerar-trocas"><i class="fas fa-lightbulb"></i> Sugerir Trocas</button>
-      <button class="btn btn-success" id="export-pdf"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
-      <button class="btn btn-warning" id="nova-troca"><i class="fas fa-exchange-alt"></i> Nova Troca</button>
-      <button class="btn btn-info" id="ver-trocas"><i class="fas fa-list"></i> Ver Trocas</button>
-    </div>
-
-    <div class="content">
-      <div class="table-container">
-        <table class="editable-table" id="escala-table">
-          <thead><tr id="table-header"></tr></thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Contador de horas movido para baixo (visualização normal) -->
-    <div class="horas-footer-container" id="horas-footer-container">
-      <!-- Contadores de horas serão injetados aqui -->
-    </div>
-
-    <div class="footer">
-      <p><strong>Escala de Plantões</strong> • Sistema de Gerenciamento Flexível</p>
-    </div>
-  </div>
-
-  <!-- Modal: Nova Troca -->
-  <div class="modal" id="troca-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title"><i class="fas fa-exchange-alt"></i> Registrar Troca</h3>
-        <button class="close-modal" id="close-modal">&times;</button>
-      </div>
-
-      <div class="form-group">
-        <label for="origem-hospital">Plantão Origem:</label>
-        <select id="origem-hospital">
-          <option value="">-- Selecione --</option>
-          <option value="HUSE Diurno">HUSE Diurno</option>
-          <option value="HUSE Noturno">HUSE Noturno</option>
-          <option value="HRP Diurno">HRP Diurno</option>
-          <option value="HRP Noturno">HRP Noturno</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="origem-data">Data de Origem:</label>
-        <input type="date" id="origem-data">
-      </div>
-
-      <div class="form-group">
-        <label for="destino-hospital">Plantão Destino:</label>
-        <select id="destino-hospital">
-          <option value="">-- Selecione --</option>
-          <option value="HUSE Diurno">HUSE Diurno</option>
-          <option value="HUSE Noturno">HUSE Noturno</option>
-          <option value="HRP Diurno">HRP Diurno</option>
-          <option value="HRP Noturno">HRP Noturno</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="destino-data">Data de Destino:</label>
-        <input type="date" id="destino-data">
-      </div>
-
-      <div class="form-group">
-        <label for="nome-troca">Nome:</label>
-        <input type="text" id="nome-troca" placeholder="Seu nome">
-      </div>
-
-      <div class="form-group">
-        <label for="obs-troca">Observação (opcional):</label>
-        <input type="text" id="obs-troca" placeholder="Motivo da troca">
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn btn-cancel" id="cancelar-troca">Cancelar</button>
-        <button class="btn btn-confirm" id="confirmar-troca">Confirmar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Editar Troca -->
-  <div class="modal" id="editar-troca-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title"><i class="fas fa-edit"></i> Editar Troca</h3>
-        <button class="close-modal" id="close-editar-modal">&times;</button>
-      </div>
-
-      <div class="form-group">
-        <label for="editar-origem-hospital">Plantão Origem:</label>
-        <select id="editar-origem-hospital">
-          <option value="">-- Selecione --</option>
-          <option value="HUSE Diurno">HUSE Diurno</option>
-          <option value="HUSE Noturno">HUSE Noturno</option>
-          <option value="HRP Diurno">HRP Diurno</option>
-          <option value="HRP Noturno">HRP Noturno</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="editar-origem-data">Data de Origem:</label>
-        <input type="date" id="editar-origem-data">
-      </div>
-
-      <div class="form-group">
-        <label for="editar-destino-hospital">Plantão Destino:</label>
-        <select id="editar-destino-hospital">
-          <option value="">-- Selecione --</option>
-          <option value="HUSE Diurno">HUSE Diurno</option>
-          <option value="HUSE Noturno">HUSE Noturno</option>
-          <option value="HRP Diurno">HRP Diurno</option>
-          <option value="HRP Noturno">HRP Noturno</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="editar-destino-data">Data de Destino:</label>
-        <input type="date" id="editar-destino-data">
-      </div>
-
-      <div class="form-group">
-        <label for="editar-nome-troca">Nome:</label>
-        <input type="text" id="editar-nome-troca" placeholder="Seu nome">
-      </div>
-
-      <div class="form-group">
-        <label for="editar-obs-troca">Observação (opcional):</label>
-        <input type="text" id="editar-obs-troca" placeholder="Motivo da troca">
-      </div>
-
-      <input type="hidden" id="editar-troca-id">
-
-      <div class="modal-actions">
-        <button class="btn btn-cancel" id="cancelar-edicao">Cancelar</button>
-        <button class="btn btn-confirm" id="salvar-edicao">Salvar Alterações</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Ver Trocas -->
-  <div class="modal" id="trocas-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title"><i class="fas fa-list"></i> Trocas Registradas</h3>
-        <button class="close-modal" id="close-trocas-modal">&times;</button>
-      </div>
-
-      <div style="display: flex; gap: 12px; margin-bottom: 15px;">
-        <div class="form-group" style="flex: 1; margin-bottom: 0;">
-          <label for="filter-month">Mês:</label>
-          <select id="filter-month"></select>
-        </div>
-        <div class="form-group" style="flex: 1; margin-bottom: 0;">
-          <label for="filter-year">Ano:</label>
-          <select id="filter-year"></select>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table class="editable-table" id="trocas-table">
-          <thead>
-            <tr>
-              <th>Hospital</th>
-              <th>Data Origem</th>
-              <th>Data Destino</th>
-              <th>Nome</th>
-              <th>Observação</th>
-              <th style="min-width: 160px;">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="trocas-body"></tbody>
-        </table>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn btn-cancel" id="fechar-trocas-modal">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="notification" id="notification"></div>
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p>Gerando PDF...</p>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  
-  <script>
-    // ============================================
-    // STORAGE SERVICE
-    // ============================================
-    const StorageService = {
-      STORAGE_KEY: 'escala_plantoes_data',
-      
-      get() {
-        try {
-          const raw = localStorage.getItem(this.STORAGE_KEY);
-          return raw ? JSON.parse(raw) : { allEscalas: {}, observacoes: [], dataSalvamento: null };
-        } catch (err) {
-          console.error('Erro ao carregar dados:', err);
-          return { allEscalas: {}, observacoes: [], dataSalvamento: null };
-        }
-      },
-
-      set(data) {
-        try {
-          data.dataSalvamento = new Date().toISOString();
-          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-          return true;
-        } catch (err) {
-          console.error('Erro ao salvar dados:', err);
-          return false;
-        }
-      },
-
-      reset() {
-        try {
-          localStorage.removeItem(this.STORAGE_KEY);
-          return true;
-        } catch (err) {
-          console.error('Erro ao resetar dados:', err);
-          return false;
-        }
-      }
-    };
-
-    // ============================================
-    // APP STATE
-    // ============================================
-    const AppState = {
-      allEscalas: {},
-      observacoes: [],
-      currentMonth: new Date().getMonth(),
-      currentYear: new Date().getFullYear(),
-      monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-      diasDaSemana: ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'],
-      hospitais: ['HUSE Diurno', 'HUSE Noturno', 'HRP Diurno', 'HRP Noturno'],
-      codigoUnico: '',
-      currentEditId: null,
-
-      load() {
-        const data = StorageService.get();
-        this.allEscalas = data.allEscalas;
-        this.observacoes = data.observacoes || [];
-      },
-
-      save() {
-        return StorageService.set({ allEscalas: this.allEscalas, observacoes: this.observacoes });
-      },
-
-      getCurrentEscalas() {
-        return this.getEscalas(this.currentMonth, this.currentYear);
-      },
-
-      getEscalas(month, year) {
-        const key = `${year}_${month}`;
-        if (!this.allEscalas[key]) {
-          const codigo = this.gerarCodigoUnico(month, year);
-          this.allEscalas[key] = {
-            codigo: codigo,
-            'HUSE Diurno': [],
-            'HUSE Noturno': [],
-            'HRP Diurno': [],
-            'HRP Noturno': []
-          };
-        }
-        return this.allEscalas[key];
-      },
-
-      gerarCodigoUnico(month, year) {
-        const timestamp = Date.now().toString(36).slice(-4).toUpperCase();
-        const mesStr = String(month + 1).padStart(2, '0');
-        return `ESC-${year}-${mesStr}-${timestamp}`;
-      },
-
-      atualizarCodigoExibicao() {
-        // Não exibir mais o código na interface
-      }
-    };
-
-    // ============================================
-    // DATE SERVICE
-    // ============================================
-    const DateService = {
-      parseDate(dateString) {
-        if (!dateString) return null;
-        const parts = dateString.split('-');
-        if (parts.length !== 3) return null;
-        const year = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const day = parseInt(parts[2], 10);
-        return new Date(year, month, day);
-      },
-
-      formatDateBR(date) {
-        if (!date || isNaN(date.getTime())) return '';
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-      },
-
-      formatDateForInput(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      },
-
-      getDaysInMonth(month, year) {
-        return new Date(year, month + 1, 0).getDate();
-      },
-
-      getDateDay(year, month, day) {
-        return new Date(year, month, day).getDay();
-      },
-
-      getWeekNumber(date) {
-        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-      }
-    };
-
-    // ============================================
-    // UI SERVICE
-    // ============================================
-    const UIService = {
-      showNotification(message, type = 'success') {
-        const notif = document.getElementById('notification');
-        notif.textContent = message;
-        notif.className = `notification ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
-        notif.classList.add('show');
-        setTimeout(() => notif.classList.remove('show'), 4000);
-      },
-
-      showLoading(show) {
-        const loading = document.getElementById('loading');
-        if (show) loading.classList.add('show');
-        else loading.classList.remove('show');
-      },
-
-      openModal(modalId) {
-        document.getElementById(modalId).classList.add('show');
-      },
-
-      closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('show');
-      }
-    };
-
-    // ============================================
-    // HORAS SERVICE
-    // ============================================
-    const HorasService = {
-      calcularHorasHospitalGrupo(grupo, escalas) {
-        let total = 0;
-        if (grupo === 'HUSE') {
-          total += escalas['HUSE Diurno'].length * 12;
-          total += escalas['HUSE Noturno'].length * 12;
-        } else if (grupo === 'HRP') {
-          total += escalas['HRP Diurno'].length * 12;
-          total += escalas['HRP Noturno'].length * 12;
-        }
-        return total;
-      },
-
-      obterSemanasDoMes() {
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-        const semanas = [];
-        let semanaAtual = [];
-        
-        for (let dia = 1; dia <= daysInMonth; dia++) {
-          const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
-          semanaAtual.push(dia);
-          
-          if (data.getDay() === 6 || dia === daysInMonth) {
-            semanas.push([...semanaAtual]);
-            semanaAtual = [];
-          }
-        }
-        
-        return semanas;
-      },
-
-      calcularHorasGrupoNaSemana(grupo, semana, escalas) {
-        let total = 0;
-        
-        if (grupo === 'HUSE') {
-          semana.forEach(dia => {
-            if (escalas['HUSE Diurno'].includes(dia)) total++;
-            if (escalas['HUSE Noturno'].includes(dia)) total++;
-          });
-        } else if (grupo === 'HRP') {
-          semana.forEach(dia => {
-            if (escalas['HRP Diurno'].includes(dia)) total++;
-            if (escalas['HRP Noturno'].includes(dia)) total++;
-          });
-        }
-        
-        return total * 12;
-      },
-
-      renderizarContadoresHoras() {
-        const containerNormal = document.getElementById('horas-footer-container');
-        const containerPDF = document.getElementById('horas-info-container');
-        
-        if (!containerNormal && !containerPDF) return;
-        
-        const escalas = AppState.getCurrentEscalas();
-        const semanas = this.obterSemanasDoMes();
-        
-        let html = '';
-        
-        // HUSE
-        html += `
-          <div class="horas-hospital-linha">
-            <div class="horas-hospital-nome">
-              <i class="fas fa-hospital huse-icon"></i> HUSE
+        <div class="card fade-in">
+            <div class="schools-header">
+                <h2 class="section-title"><i class="fas fa-school"></i> Selecionar Escola</h2>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-school" placeholder="Buscar por nome da escola...">
+                </div>
             </div>
-            <div class="horas-semanas-container">
-        `;
-        
-        semanas.forEach((semana, index) => {
-          const horas = this.calcularHorasGrupoNaSemana('HUSE', semana, escalas);
-          html += `
-            <div class="horas-semana-item">
-              <div class="horas-semana-label">Semana ${index + 1}</div>
-              <div class="horas-semana-valor">${horas}h</div>
-            </div>
-          `;
-        });
-        
-        html += `
-            </div>
-          </div>
-        `;
-        
-        // HRP
-        html += `
-          <div class="horas-hospital-linha">
-            <div class="horas-hospital-nome">
-              <i class="fas fa-hospital hrp-icon"></i> HRP
-            </div>
-            <div class="horas-semanas-container">
-        `;
-        
-        semanas.forEach((semana, index) => {
-          const horas = this.calcularHorasGrupoNaSemana('HRP', semana, escalas);
-          html += `
-            <div class="horas-semana-item">
-              <div class="horas-semana-label">Semana ${index + 1}</div>
-              <div class="horas-semana-valor">${horas}h</div>
-            </div>
-          `;
-        });
-        
-        html += `
-            </div>
-          </div>
-        `;
-        
-        if (containerNormal) {
-          containerNormal.innerHTML = html;
-        }
-        if (containerPDF) {
-          containerPDF.innerHTML = html;
-        }
-      }
-    };
-
-    // ============================================
-    // ESCALA DISTRIBUIÇÃO SERVICE
-    // ============================================
-    const EscalaDistribuicaoService = {
-      aplicarDistribuicaoInteligente() {
-        const escalas = AppState.getCurrentEscalas();
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-        
-        AppState.hospitais.forEach(hospital => {
-          escalas[hospital] = [];
-        });
-        
-        const semanas = this.calcularSemanasNoMes(AppState.currentMonth, AppState.currentYear);
-        
-        semanas.forEach(semana => {
-          this.distribuirHUSENoturno(semana, escalas);
-          this.distribuirHRPDiurnoPares(semana, escalas);
-          this.distribuirPlantoesRestantes(semana, escalas);
-        });
-        
-        AppState.save();
-      },
-      
-      calcularSemanasNoMes(month, year) {
-        const daysInMonth = DateService.getDaysInMonth(month, year);
-        const semanas = [];
-        let semanaAtual = [];
-        
-        for (let dia = 1; dia <= daysInMonth; dia++) {
-          const data = new Date(year, month, dia);
-          semanaAtual.push(dia);
-          
-          if (data.getDay() === 6 || dia === daysInMonth) {
-            semanas.push([...semanaAtual]);
-            semanaAtual = [];
-          }
-        }
-        
-        return semanas;
-      },
-      
-      distribuirHUSENoturno(semana, escalas) {
-        const diasUteis = semana.filter(dia => {
-          const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
-          return data.getDay() >= 1 && data.getDay() <= 5;
-        });
-        
-        diasUteis.slice(0, 3).forEach(dia => {
-          escalas['HUSE Noturno'].push(dia);
-        });
-      },
-      
-      distribuirHRPDiurnoPares(semana, escalas) {
-        const diasParesUteis = semana.filter(dia => {
-          const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
-          return dia % 2 === 0 && data.getDay() >= 1 && data.getDay() <= 5;
-        });
-        
-        let diasPares = [...diasParesUteis];
-        if (diasPares.length < 3) {
-          const diasParesFimDeSemana = semana.filter(dia => {
-            const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
-            return dia % 2 === 0 && (data.getDay() === 0 || data.getDay() === 6);
-          });
-          diasPares = [...diasPares, ...diasParesFimDeSemana];
-        }
-        
-        diasPares.slice(0, 3).forEach(dia => {
-          if (!escalas['HUSE Noturno'].includes(dia)) {
-            escalas['HRP Diurno'].push(dia);
-          }
-        });
-        
-        if (escalas['HRP Diurno'].length < 3) {
-          const diasUteis = semana.filter(dia => {
-            const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
-            return data.getDay() >= 1 && data.getDay() <= 5;
-          });
-          
-          const diasDisponiveis = diasUteis.filter(dia => {
-            return !escalas['HUSE Noturno'].includes(dia) && !escalas['HRP Diurno'].includes(dia);
-          });
-          
-          diasDisponiveis.slice(0, 3 - escalas['HRP Diurno'].length).forEach(dia => {
-            escalas['HRP Diurno'].push(dia);
-          });
-        }
-      },
-      
-      distribuirPlantoesRestantes(semana, escalas) {
-        semana.forEach(dia => {
-          if (!escalas['HUSE Noturno'].includes(dia) && !escalas['HUSE Diurno'].includes(dia)) {
-            escalas['HUSE Diurno'].push(dia);
-          }
-        });
-        
-        semana.forEach(dia => {
-          if (!escalas['HUSE Noturno'].includes(dia) && !escalas['HRP Noturno'].includes(dia)) {
-            escalas['HRP Noturno'].push(dia);
-          }
-        });
-      }
-    };
-
-    // ============================================
-    // ESCALA SERVICE
-    // ============================================
-    const EscalaService = {
-      togglePlantao(hospital, dia) {
-        const escalas = AppState.getCurrentEscalas();
-        const idx = escalas[hospital].indexOf(dia);
-        
-        if (idx === -1) {
-          escalas[hospital].push(dia);
-          escalas[hospital].sort((a, b) => a - b);
-        } else {
-          escalas[hospital].splice(idx, 1);
-        }
-        AppState.save();
-      },
-
-      obterHospitalBase(hospital) {
-        if (hospital.includes('HUSE')) return 'HUSE';
-        if (hospital.includes('HRP')) return 'HRP';
-        return null;
-      },
-
-      obterSemanaDoDia(dia) {
-        const data = new Date(AppState.currentYear, AppState.currentMonth, dia);
-        const semana = [];
-        const diaSemana = data.getDay();
-        
-        const domingo = new Date(data);
-        domingo.setDate(dia - diaSemana);
-        
-        for (let i = 0; i < 7; i++) {
-          const diaDaSemana = new Date(domingo);
-          diaDaSemana.setDate(domingo.getDate() + i);
-          
-          if (diaDaSemana.getMonth() === AppState.currentMonth && 
-              diaDaSemana.getFullYear() === AppState.currentYear) {
-            semana.push(diaDaSemana.getDate());
-          }
-        }
-        
-        return semana;
-      },
-
-      contarPlantoesHospitalNaSemana(hospital, semana) {
-        const escalas = AppState.getCurrentEscalas();
-        let total = 0;
-        
-        if (hospital === 'HUSE') {
-          total += this.contarPlantoesNaSemana(escalas['HUSE Diurno'], semana);
-          total += this.contarPlantoesNaSemana(escalas['HUSE Noturno'], semana);
-        } else if (hospital === 'HRP') {
-          total += this.contarPlantoesNaSemana(escalas['HRP Diurno'], semana);
-          total += this.contarPlantoesNaSemana(escalas['HRP Noturno'], semana);
-        }
-        
-        return total;
-      },
-
-      contarPlantoesNaSemana(plantoes, semana) {
-        return plantoes.filter(dia => semana.includes(dia)).length;
-      },
-
-      detectarConflitos() {
-        const escalas = AppState.getCurrentEscalas();
-        const conflitos = {};
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-        for (let dia = 1; dia <= daysInMonth; dia++) {
-          const plantoes = [];
-          AppState.hospitais.forEach(h => {
-            if (escalas[h].includes(dia)) plantoes.push(h);
-          });
-          if (plantoes.length > 1) conflitos[dia] = plantoes;
-        }
-        return conflitos;
-      },
-
-      obterDiasComTransicao() {
-        const escalas = AppState.getCurrentEscalas();
-        const dias = new Set();
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-        const noturnos = ['HUSE Noturno', 'HRP Noturno'];
-        const diurnos = ['HUSE Diurno', 'HRP Diurno'];
-
-        for (let d = 1; d <= daysInMonth; d++) {
-          const diaAnterior = d - 1;
-          if (diaAnterior >= 1) {
-            const temNoturnoAnterior = noturnos.some(n => escalas[n].includes(diaAnterior));
-            const temDiurnoAtual = diurnos.some(di => escalas[di].includes(d));
-            if (temNoturnoAnterior && temDiurnoAtual) {
-              dias.add(diaAnterior);
-              dias.add(d);
-            }
-          }
-        }
-
-        for (let d = 1; d <= daysInMonth; d++) {
-          const temDiurno = diurnos.some(di => escalas[di].includes(d));
-          const temNoturno = noturnos.some(no => escalas[no].includes(d));
-          if (temDiurno && temNoturno) dias.add(d);
-        }
-        return Array.from(dias);
-      },
-
-      contarTrocasHRP() {
-        let count = 0;
-        AppState.observacoes.forEach(obs => {
-          const dataOrigem = DateService.parseDate(obs.data);
-          const dataTroca = DateService.parseDate(obs.dataTroca);
-          const matches = (dataOrigem && dataOrigem.getMonth() === AppState.currentMonth && dataOrigem.getFullYear() === AppState.currentYear) ||
-                          (dataTroca && dataTroca.getMonth() === AppState.currentMonth && dataTroca.getFullYear() === AppState.currentYear);
-          if (matches && ((obs.hospital?.includes('HRP')) || (obs.hospitalTroca?.includes('HRP')))) {
-            count++;
-          }
-        });
-        return count;
-      },
-
-      verificarDobras() {
-        const escalas = AppState.getCurrentEscalas();
-        const dobras = {};
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-        
-        for (let dia = 1; dia <= daysInMonth; dia++) {
-          const plantoes = [];
-          AppState.hospitais.forEach(h => {
-            if (escalas[h].includes(dia)) plantoes.push(h);
-          });
-          
-          if (plantoes.length > 1) {
-            dobras[dia] = plantoes;
-          }
-        }
-        
-        return dobras;
-      }
-    };
-
-    // ============================================
-    // TROCA MANAGEMENT SERVICE
-    // ============================================
-    const TrocaManagementService = {
-      abrirModalEdicao(trocaId) {
-        const troca = AppState.observacoes[trocaId];
-        if (!troca) {
-          UIService.showNotification('Troca não encontrada!', 'error');
-          return;
-        }
-
-        AppState.currentEditId = trocaId;
-        
-        document.getElementById('editar-origem-hospital').value = troca.hospital || '';
-        document.getElementById('editar-destino-hospital').value = troca.hospitalTroca || '';
-        document.getElementById('editar-origem-data').value = troca.data || '';
-        document.getElementById('editar-destino-data').value = troca.dataTroca || '';
-        document.getElementById('editar-nome-troca').value = troca.nome || '';
-        document.getElementById('editar-obs-troca').value = troca.observacao || '';
-        document.getElementById('editar-troca-id').value = trocaId;
-
-        UIService.openModal('editar-troca-modal');
-      },
-
-      salvarEdicao() {
-        const trocaId = AppState.currentEditId;
-        if (trocaId === null || trocaId >= AppState.observacoes.length) {
-          UIService.showNotification('ID de troca inválido!', 'error');
-          return;
-        }
-
-        const troca = AppState.observacoes[trocaId];
-        
-        const origemHospital = document.getElementById('editar-origem-hospital').value.trim();
-        const destinoHospital = document.getElementById('editar-destino-hospital').value.trim();
-        const nome = document.getElementById('editar-nome-troca').value.trim();
-        const observacao = document.getElementById('editar-obs-troca').value.trim();
-        const origemDataInput = document.getElementById('editar-origem-data').value;
-        const destinoDataInput = document.getElementById('editar-destino-data').value;
-
-        if (!origemHospital || !destinoHospital || !nome || !origemDataInput || !destinoDataInput) {
-          UIService.showNotification('Preencha todos os campos obrigatórios!', 'error');
-          return;
-        }
-
-        const dataOrigem = DateService.parseDate(origemDataInput);
-        const dataDestino = DateService.parseDate(destinoDataInput);
-
-        if (!dataOrigem || !dataDestino) {
-          UIService.showNotification('Datas inválidas!', 'error');
-          return;
-        }
-
-        // Primeiro, reverter a troca original nas escalas
-        this.reverterTrocaNoBackend(troca);
-
-        // Aplicar a nova troca
-        const origemMes = dataOrigem.getMonth();
-        const origemAno = dataOrigem.getFullYear();
-        const destinoMes = dataDestino.getMonth();
-        const destinoAno = dataDestino.getFullYear();
-        const diaOrigNum = dataOrigem.getDate();
-        const diaDestNum = dataDestino.getDate();
-
-        const escalasOrigem = AppState.getEscalas(origemMes, origemAno);
-        const escalasDestino = AppState.getEscalas(destinoMes, destinoAno);
-
-        // Verificar se a nova origem existe
-        if (!escalasOrigem[origemHospital].includes(diaOrigNum)) {
-          UIService.showNotification(`Não existe plantão de ${origemHospital} no dia ${DateService.formatDateBR(dataOrigem)}!`, 'error');
-          return;
-        }
-
-        // Verificar se o novo destino está disponível
-        if (escalasDestino[destinoHospital].includes(diaDestNum)) {
-          UIService.showNotification(`Já existe plantão de ${destinoHospital} no dia ${DateService.formatDateBR(dataDestino)}!`, 'error');
-          return;
-        }
-
-        // Remover da origem e adicionar no destino
-        const idx = escalasOrigem[origemHospital].indexOf(diaOrigNum);
-        if (idx > -1) escalasOrigem[origemHospital].splice(idx, 1);
-
-        escalasDestino[destinoHospital].push(diaDestNum);
-        escalasDestino[destinoHospital].sort((a, b) => a - b);
-
-        // Atualizar os dados da troca
-        troca.hospital = origemHospital;
-        troca.hospitalTroca = destinoHospital;
-        troca.data = origemDataInput;
-        troca.dataTroca = destinoDataInput;
-        troca.nome = nome;
-        troca.observacao = observacao || `${origemHospital} → ${destinoHospital}`;
-
-        AppState.save();
-
-        // Atualizar a interface se necessário
-        if ((origemMes === AppState.currentMonth && origemAno === AppState.currentYear) ||
-            (destinoMes === AppState.currentMonth && destinoAno === AppState.currentYear)) {
-          RenderService.renderTable();
-          HorasService.renderizarContadoresHoras();
-        }
-
-        RenderService.updateCounter();
-        UIService.closeModal('editar-troca-modal');
-        RenderService.renderTrocasTable();
-        UIService.showNotification(`✅ Troca editada com sucesso!`);
-      },
-
-      reverterTroca(trocaId) {
-        const troca = AppState.observacoes[trocaId];
-        if (!troca) {
-          UIService.showNotification('Troca não encontrada!', 'error');
-          return;
-        }
-
-        if (!confirm(`Deseja reverter a troca de ${troca.hospital} (${DateService.formatDateBR(DateService.parseDate(troca.data))}) para ${troca.hospitalTroca} (${DateService.formatDateBR(DateService.parseDate(troca.dataTroca))})?`)) {
-          return;
-        }
-
-        // Reverter a troca nas escalas
-        this.reverterTrocaNoBackend(troca);
-
-        // Remover a observação
-        AppState.observacoes.splice(trocaId, 1);
-
-        AppState.save();
-
-        // Atualizar a interface
-        RenderService.renderTable();
-        HorasService.renderizarContadoresHoras();
-        RenderService.updateCounter();
-        RenderService.renderTrocasTable();
-
-        UIService.showNotification('✅ Troca revertida com sucesso!');
-      },
-
-      reverterTrocaNoBackend(troca) {
-        const dataOrigem = DateService.parseDate(troca.data);
-        const dataDestino = DateService.parseDate(troca.dataTroca);
-        
-        if (!dataOrigem || !dataDestino) return;
-
-        const origemMes = dataOrigem.getMonth();
-        const origemAno = dataOrigem.getFullYear();
-        const destinoMes = dataDestino.getMonth();
-        const destinoAno = dataDestino.getFullYear();
-        const diaOrigNum = dataOrigem.getDate();
-        const diaDestNum = dataDestino.getDate();
-
-        const escalasOrigem = AppState.getEscalas(origemMes, origemAno);
-        const escalasDestino = AppState.getEscalas(destinoMes, destinoAno);
-
-        // Remover do destino
-        const idxDest = escalasDestino[troca.hospitalTroca]?.indexOf(diaDestNum);
-        if (idxDest > -1) {
-          escalasDestino[troca.hospitalTroca].splice(idxDest, 1);
-        }
-
-        // Adicionar na origem
-        if (!escalasOrigem[troca.hospital]?.includes(diaOrigNum)) {
-          escalasOrigem[troca.hospital]?.push(diaOrigNum);
-          escalasOrigem[troca.hospital]?.sort((a, b) => a - b);
-        }
-      },
-
-      excluirTroca(trocaId) {
-        const troca = AppState.observacoes[trocaId];
-        if (!troca) {
-          UIService.showNotification('Troca não encontrada!', 'error');
-          return;
-        }
-
-        if (!confirm(`Deseja excluir permanentemente a troca de ${troca.hospital} (${DateService.formatDateBR(DateService.parseDate(troca.data))}) para ${troca.hospitalTroca} (${DateService.formatDateBR(DateService.parseDate(troca.dataTroca))})?`)) {
-          return;
-        }
-
-        // Remover a observação sem reverter a troca nas escalas
-        AppState.observacoes.splice(trocaId, 1);
-
-        AppState.save();
-
-        // Atualizar a interface
-        RenderService.renderTable();
-        HorasService.renderizarContadoresHoras();
-        RenderService.updateCounter();
-        RenderService.renderTrocasTable();
-
-        UIService.showNotification('✅ Troca excluída com sucesso!');
-      }
-    };
-
-    // ============================================
-    // RENDER SERVICE
-    // ============================================
-    const RenderService = {
-      renderTable() {
-        const header = document.querySelector('#table-header');
-        const body = document.querySelector('#table-body');
-        const conflitos = EscalaService.detectarConflitos();
-        const dobras = EscalaService.verificarDobras();
-        const diasComTransicao = EscalaService.obterDiasComTransicao();
-        const escalas = AppState.getCurrentEscalas();
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-
-        header.innerHTML = '<th>Hospitais & Dias</th>';
-        body.innerHTML = '';
-
-        for (let dia = 1; dia <= daysInMonth; dia++) {
-          const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
-          const th = document.createElement('th');
-          if (diaSemana === 0 || diaSemana === 6) {
-            th.className = diaSemana === 0 ? 'sunday' : 'weekend';
-          }
-
-          const dayHeader = document.createElement('div');
-          dayHeader.className = 'day-header';
-
-          if (diasComTransicao.includes(dia)) {
-            const carro = document.createElement('div');
-            carro.className = 'carro-indicator';
-            carro.textContent = '🚗';
-            carro.title = 'Deslocamento necessário';
-            dayHeader.appendChild(carro);
-          }
-
-          const dayNum = document.createElement('div');
-          dayNum.className = 'day-number';
-          dayNum.textContent = dia;
-          dayHeader.appendChild(dayNum);
-
-          const dayName = document.createElement('div');
-          dayName.className = 'day-name';
-          dayName.textContent = AppState.diasDaSemana[diaSemana];
-          dayHeader.appendChild(dayName);
-
-          th.appendChild(dayHeader);
-          th.setAttribute('data-day', dia);
-          header.appendChild(th);
-        }
-
-        AppState.hospitais.forEach(hospital => {
-          const tr = document.createElement('tr');
-          const tdNome = document.createElement('td');
-          tdNome.className = 'hospital-name';
-          tdNome.textContent = hospital;
-          tr.appendChild(tdNome);
-
-          for (let dia = 1; dia <= daysInMonth; dia++) {
-            const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
-            const td = document.createElement('td');
-            if (diaSemana === 0 || diaSemana === 6) {
-              td.className = diaSemana === 0 ? 'sunday' : 'weekend';
-            }
-
-            if (escalas[hospital].includes(dia)) {
-              const div = document.createElement('div');
-              if (conflitos[dia]?.includes(hospital)) {
-                div.className = 'plantao-cell conflito-cell';
-                div.textContent = '⚠️';
-                div.title = 'Conflito de horário!';
-              } else if (dobras[dia]?.includes(hospital)) {
-                div.className = 'plantao-cell dobra-cell';
-                div.textContent = 'D';
-                div.title = 'Dobra - Cuidado com o limite de horas!';
-              } else if (diasComTransicao.includes(dia)) {
-                div.className = 'plantao-cell alerta-carro-cell';
-                div.textContent = 'S 🚗';
-                div.title = 'Plantão com deslocamento';
-              } else {
-                div.className = 'plantao-cell plantao';
-                div.textContent = 'S';
-                div.title = 'Plantão confirmado';
-              }
-              div.addEventListener('click', () => {
-                EscalaService.togglePlantao(hospital, dia);
-                this.renderTable();
-                this.updateCounter();
-                HorasService.renderizarContadoresHoras();
-              });
-              td.appendChild(div);
-            } else {
-              const div = document.createElement('div');
-              div.className = 'folga-cell';
-              div.textContent = 'F';
-              div.title = 'Folga';
-              div.addEventListener('click', () => {
-                EscalaService.togglePlantao(hospital, dia);
-                this.renderTable();
-                this.updateCounter();
-                HorasService.renderizarContadoresHoras();
-              });
-              td.appendChild(div);
-            }
-            tr.appendChild(td);
-          }
-          body.appendChild(tr);
-        });
-      },
-
-      updateCounter() {
-        const count = EscalaService.contarTrocasHRP();
-        document.getElementById('hrp-trocas-count').textContent = count;
-      },
-
-      populateSelects() {
-        ['month-select', 'filter-month'].forEach(id => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          el.innerHTML = id.includes('filter') ? '<option value="">Todos</option>' : '';
-          AppState.monthNames.forEach((m, i) => {
-            const opt = document.createElement('option');
-            opt.value = i;
-            opt.textContent = m;
-            el.appendChild(opt);
-          });
-          el.value = AppState.currentMonth;
-        });
-
-        ['year-select', 'filter-year'].forEach(id => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          el.innerHTML = '';
-          for (let y = AppState.currentYear - 2; y <= AppState.currentYear + 2; y++) {
-            const opt = document.createElement('option');
-            opt.value = y;
-            opt.textContent = y;
-            el.appendChild(opt);
-          }
-          el.value = AppState.currentYear;
-        });
-      },
-
-      renderTrocasTable() {
-        const tbody = document.getElementById('trocas-body');
-        tbody.innerHTML = '';
-
-        const filterMonth = document.getElementById('filter-month').value;
-        const filterYear = document.getElementById('filter-year').value;
-        const hasFilterMonth = filterMonth !== '';
-        const hasFilterYear = filterYear !== '';
-
-        const filtradas = AppState.observacoes.filter(obs => {
-          if (!hasFilterMonth && !hasFilterYear) return true;
-          const dataOrigem = DateService.parseDate(obs.data);
-          const dataTroca = DateService.parseDate(obs.dataTroca);
-          if (hasFilterMonth || hasFilterYear) {
-            if (dataOrigem && (!hasFilterMonth || dataOrigem.getMonth() == filterMonth) && (!hasFilterYear || dataOrigem.getFullYear() == filterYear)) {
-              return true;
-            }
-            if (dataTroca && (!hasFilterMonth || dataTroca.getMonth() == filterMonth) && (!hasFilterYear || dataTroca.getFullYear() == filterYear)) {
-              return true;
-            }
-          }
-          return false;
-        });
-
-        if (filtradas.length === 0) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = '<td colspan="6" style="text-align:center; color:#999;">Nenhuma troca registrada</td>';
-          tbody.appendChild(tr);
-          return;
-        }
-
-        filtradas.forEach((obs, index) => {
-          const tr = document.createElement('tr');
-          const btnGroup = document.createElement('div');
-          btnGroup.className = 'btn-group';
-          
-          btnGroup.innerHTML = `
-            <button class="btn btn-edit btn-small" onclick="TrocaManagementService.abrirModalEdicao(${index})">
-              <i class="fas fa-edit"></i> Editar
-            </button>
-            <button class="btn btn-reverter btn-small" onclick="TrocaManagementService.reverterTroca(${index})">
-              <i class="fas fa-undo"></i> Reverter
-            </button>
-            <button class="btn btn-danger btn-small" onclick="TrocaManagementService.excluirTroca(${index})">
-              <i class="fas fa-trash"></i> Excluir
-            </button>
-          `;
-          
-          tr.innerHTML = `
-            <td>${obs.hospital || '--'}</td>
-            <td>${DateService.formatDateBR(DateService.parseDate(obs.data)) || '--'}</td>
-            <td>${DateService.formatDateBR(DateService.parseDate(obs.dataTroca)) || '--'}</td>
-            <td>${obs.nome || '--'}</td>
-            <td>${obs.observacao || '--'}</td>
-          `;
-          
-          const tdAcoes = document.createElement('td');
-          tdAcoes.appendChild(btnGroup);
-          tr.appendChild(tdAcoes);
-          
-          tbody.appendChild(tr);
-        });
-      }
-    };
-
-    // ============================================
-    // SUGESTÃO SERVICE
-    // ============================================
-    const SuggestaoService = {
-      gerarSugestoes() {
-        const escalas = AppState.getCurrentEscalas();
-        const sugestoes = [];
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-        
-        for (let dia = 1; dia <= daysInMonth; dia++) {
-          const plantoes = [];
-          AppState.hospitais.forEach(h => {
-            if (escalas[h].includes(dia)) plantoes.push(h);
-          });
-          
-          if (plantoes.length > 1) {
-            for (let i = 0; i < plantoes.length - 1; i++) {
-              const h1 = plantoes[i];
-              const h2 = plantoes[i + 1];
-              
-              for (let dia2 = 1; dia2 <= daysInMonth; dia2++) {
-                if (!escalas[h1].includes(dia2) && !escalas[h2].includes(dia2) && dia !== dia2) {
-                  sugestoes.push({
-                    conflito: `${h1} e ${h2} no dia ${dia}`,
-                    sugestao: `Mover ${h2} do dia ${dia} para o dia ${dia2}`,
-                    diaOrigem: dia,
-                    diaDestino: dia2,
-                    hospitalOrigem: h2,
-                    hospitalDestino: h2
-                  });
-                  
-                  if (sugestoes.length >= 5) break;
-                }
-              }
-              if (sugestoes.length >= 5) break;
-            }
-          }
-        }
-        
-        if (sugestoes.length === 0) {
-          UIService.showNotification('Nenhuma sugestão de troca disponível. Escalas bem balanceadas!', 'info');
-          return;
-        }
-        
-        this.mostrarModalSugestoes(sugestoes);
-      },
-      
-      mostrarModalSugestoes(sugestoes) {
-        const html = `
-          <div class="modal" id="sugestoes-modal" style="display: flex;">
-            <div class="modal-content" style="max-width: 800px;">
-              <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-lightbulb"></i> Sugestões de Trocas (${sugestoes.length})</h3>
-                <button class="close-modal" onclick="document.getElementById('sugestoes-modal').remove()">&times;</button>
-              </div>
-              
-              <div style="max-height: 400px; overflow-y: auto;">
-                ${sugestoes.map((s, i) => `
-                  <div style="background: #f9fafb; padding: 12px; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid #2563eb;">
-                    <div style="font-weight: 600; color: #ef4444; margin-bottom: 6px;">⚠️ Conflito: ${s.conflito}</div>
-                    <div style="color: #6b7280; font-size: 0.9rem; margin-bottom: 8px;">✅ ${s.sugestao}</div>
-                    <button class="btn btn-success" style="padding: 6px 12px; font-size: 0.8rem;" onclick="SuggestaoService.aplicarSugestao({
-                      diaOrigem: ${s.diaOrigem},
-                      diaDestino: ${s.diaDestino},
-                      hospitalOrigem: '${s.hospitalOrigem}',
-                      hospitalDestino: '${s.hospitalDestino}'
-                    }); document.getElementById('sugestoes-modal').remove();">Aplicar</button>
-                  </div>
-                `).join('')}
-              </div>
-              
-              <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="document.getElementById('sugestoes-modal').remove()">Fechar</button>
-              </div>
-            </div>
-          </div>
-        `;
-        
-        document.body.insertAdjacentHTML('beforeend', html);
-      },
-      
-      aplicarSugestao(dados) {
-        const { diaOrigem, diaDestino, hospitalOrigem, hospitalDestino } = dados;
-        const escalas = AppState.getCurrentEscalas();
-        
-        const idx = escalas[hospitalOrigem].indexOf(diaOrigem);
-        if (idx > -1) escalas[hospitalOrigem].splice(idx, 1);
-        
-        if (!escalas[hospitalDestino].includes(diaDestino)) {
-          escalas[hospitalDestino].push(diaDestino);
-          escalas[hospitalDestino].sort((a, b) => a - b);
-        }
-        
-        const dataAtual = new Date();
-        const novaObs = {
-          hospital: hospitalOrigem,
-          hospitalTroca: hospitalDestino,
-          data: `${AppState.currentYear}-${String(AppState.currentMonth + 1).padStart(2, '0')}-${String(diaOrigem).padStart(2, '0')}`,
-          dataTroca: `${AppState.currentYear}-${String(AppState.currentMonth + 1).padStart(2, '0')}-${String(diaDestino).padStart(2, '0')}`,
-          nome: 'Sistema',
-          observacao: 'Sugestão automática - Resolução de conflito'
-        };
-        AppState.observacoes.push(novaObs);
-        
-        AppState.save();
-        RenderService.renderTable();
-        RenderService.updateCounter();
-        HorasService.renderizarContadoresHoras();
-        UIService.showNotification('✅ Sugestão aplicada com sucesso!');
-      }
-    };
-
-    // ============================================
-    // TROCA SERVICE
-    // ============================================
-    const TrocaService = {
-      abrirModal() {
-        const hoje = new Date();
-        document.getElementById('origem-data').value = DateService.formatDateForInput(hoje);
-        document.getElementById('destino-data').value = DateService.formatDateForInput(hoje);
-        document.getElementById('origem-hospital').value = '';
-        document.getElementById('destino-hospital').value = '';
-        document.getElementById('nome-troca').value = '';
-        document.getElementById('obs-troca').value = '';
-        UIService.openModal('troca-modal');
-      },
-
-      realizar() {
-        const origemHospital = document.getElementById('origem-hospital').value.trim();
-        const destinoHospital = document.getElementById('destino-hospital').value.trim();
-        const nome = document.getElementById('nome-troca').value.trim();
-        const observacao = document.getElementById('obs-troca').value.trim();
-        const origemDataInput = document.getElementById('origem-data').value;
-        const destinoDataInput = document.getElementById('destino-data').value;
-
-        if (!origemHospital || !destinoHospital || !nome || !origemDataInput || !destinoDataInput) {
-          UIService.showNotification('Preencha todos os campos obrigatórios!', 'error');
-          return;
-        }
-
-        const dataOrigem = DateService.parseDate(origemDataInput);
-        const dataDestino = DateService.parseDate(destinoDataInput);
-
-        if (!dataOrigem || !dataDestino) {
-          UIService.showNotification('Datas inválidas!', 'error');
-          return;
-        }
-
-        const origemMes = dataOrigem.getMonth();
-        const origemAno = dataOrigem.getFullYear();
-        const destinoMes = dataDestino.getMonth();
-        const destinoAno = dataDestino.getFullYear();
-        const diaOrigNum = dataOrigem.getDate();
-        const diaDestNum = dataDestino.getDate();
-
-        const escalasOrigem = AppState.getEscalas(origemMes, origemAno);
-        const escalasDestino = AppState.getEscalas(destinoMes, destinoAno);
-
-        if (!escalasOrigem[origemHospital].includes(diaOrigNum)) {
-          UIService.showNotification(`Não existe plantão de ${origemHospital} no dia ${DateService.formatDateBR(dataOrigem)}!`, 'error');
-          return;
-        }
-
-        if (escalasDestino[destinoHospital].includes(diaDestNum)) {
-          UIService.showNotification(`Já existe plantão de ${destinoHospital} no dia ${DateService.formatDateBR(dataDestino)}!`, 'error');
-          return;
-        }
-
-        const idx = escalasOrigem[origemHospital].indexOf(diaOrigNum);
-        if (idx > -1) escalasOrigem[origemHospital].splice(idx, 1);
-
-        escalasDestino[destinoHospital].push(diaDestNum);
-        escalasDestino[destinoHospital].sort((a, b) => a - b);
-
-        const novaObservacao = {
-          hospital: origemHospital,
-          hospitalTroca: destinoHospital,
-          data: origemDataInput,
-          dataTroca: destinoDataInput,
-          nome: nome,
-          observacao: observacao || `${origemHospital} → ${destinoHospital}`
-        };
-        AppState.observacoes.push(novaObservacao);
-
-        UIService.closeModal('troca-modal');
-        AppState.save();
-
-        if ((origemMes === AppState.currentMonth && origemAno === AppState.currentYear) ||
-            (destinoMes === AppState.currentMonth && destinoAno === AppState.currentYear)) {
-          RenderService.renderTable();
-          HorasService.renderizarContadoresHoras();
-        }
-
-        RenderService.updateCounter();
-        UIService.showNotification(`✅ Troca realizada: ${origemHospital} (${DateService.formatDateBR(dataOrigem)}) → ${destinoHospital} (${DateService.formatDateBR(dataDestino)})`);
-      }
-    };
-
-    // ============================================
-    // PDF SERVICE
-    // ============================================
-    const PDFService = {
-      exportarPDF() {
-        UIService.showLoading(true);
-        
-        const mes = AppState.monthNames[AppState.currentMonth];
-        const ano = AppState.currentYear;
-        
-        const container = document.createElement('div');
-        container.style.padding = '20px';
-        container.style.fontFamily = 'Arial, sans-serif';
-        container.style.width = '297mm';
-        container.style.minHeight = '420mm';
-        
-        const titulo = document.createElement('h1');
-        titulo.textContent = `ESCALA DE PLANTÕES - ${mes.toUpperCase()}/${ano}`;
-        titulo.style.textAlign = 'center';
-        titulo.style.marginBottom = '15px';
-        titulo.style.fontSize = '24px';
-        titulo.style.fontWeight = 'bold';
-        titulo.style.color = '#2563eb';
-        titulo.style.borderBottom = '3px solid #2563eb';
-        titulo.style.paddingBottom = '10px';
-        container.appendChild(titulo);
-        
-        const subtitulo = document.createElement('h2');
-        subtitulo.textContent = 'Plantões de Mª de Fatima Velame';
-        subtitulo.style.textAlign = 'center';
-        subtitulo.style.marginBottom = '20px';
-        subtitulo.style.fontSize = '18px';
-        subtitulo.style.fontWeight = '600';
-        subtitulo.style.color = '#4b5563';
-        subtitulo.style.fontStyle = 'italic';
-        container.appendChild(subtitulo);
-        
-        const contadorHoras = document.getElementById('horas-info-container').cloneNode(true);
-        contadorHoras.style.display = 'flex';
-        contadorHoras.style.flexDirection = 'column';
-        contadorHoras.style.marginBottom = '20px';
-        contadorHoras.style.padding = '15px';
-        contadorHoras.style.background = '#f8fafc';
-        contadorHoras.style.borderRadius = '8px';
-        contadorHoras.style.border = '1px solid #e5e7eb';
-        container.appendChild(contadorHoras);
-        
-        const infoContainer = document.createElement('div');
-        infoContainer.style.display = 'flex';
-        infoContainer.style.justifyContent = 'space-between';
-        infoContainer.style.marginBottom = '20px';
-        infoContainer.style.flexWrap = 'wrap';
-        infoContainer.style.gap = '10px';
-        
-        const infoBox = (titulo, conteudo, cor = '#2563eb') => {
-          const box = document.createElement('div');
-          box.style.flex = '1';
-          box.style.minWidth = '200px';
-          box.style.padding = '10px';
-          box.style.background = '#f8fafc';
-          box.style.borderRadius = '8px';
-          box.style.borderLeft = `4px solid ${cor}`;
-          
-          const titEl = document.createElement('div');
-          titEl.textContent = titulo;
-          titEl.style.fontSize = '12px';
-          titEl.style.fontWeight = '600';
-          titEl.style.color = '#4b5563';
-          titEl.style.marginBottom = '5px';
-          
-          const cont = document.createElement('div');
-          cont.textContent = conteudo;
-          cont.style.fontSize = '14px';
-          cont.style.fontWeight = '600';
-          cont.style.color = '#1f2937';
-          
-          box.appendChild(titEl);
-          box.appendChild(cont);
-          return box;
-        };
-        
-        infoContainer.appendChild(infoBox('JORNADA', 'Escala 12x36', '#10b981'));
-        
-        const totalTrocas = AppState.observacoes.filter(obs => {
-          const dataOrigem = DateService.parseDate(obs.data);
-          const dataTroca = DateService.parseDate(obs.dataTroca);
-          return (dataOrigem && dataOrigem.getMonth() === AppState.currentMonth && dataOrigem.getFullYear() === AppState.currentYear) ||
-                 (dataTroca && dataTroca.getMonth() === AppState.currentMonth && dataTroca.getFullYear() === AppState.currentYear);
-        }).length;
-        
-        infoContainer.appendChild(infoBox('TROCAS ESTE MÊS', totalTrocas.toString(), '#8b5cf6'));
-        
-        const dobras = EscalaService.verificarDobras();
-        infoContainer.appendChild(infoBox('DOBRAS', Object.keys(dobras).length.toString(), '#f59e0b'));
-        
-        container.appendChild(infoContainer);
-        
-        const dataGeracao = document.createElement('div');
-        dataGeracao.textContent = `Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
-        dataGeracao.style.textAlign = 'right';
-        dataGeracao.style.fontSize = '11px';
-        dataGeracao.style.color = '#6b7280';
-        dataGeracao.style.marginBottom = '20px';
-        dataGeracao.style.fontStyle = 'italic';
-        container.appendChild(dataGeracao);
-        
-        const table = document.getElementById('escala-table').cloneNode(true);
-        table.style.marginBottom = '30px';
-        table.style.width = '100%';
-        table.style.borderCollapse = 'collapse';
-        table.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-        
-        const allCells = table.querySelectorAll('td, th');
-        allCells.forEach(cell => {
-          cell.style.padding = '8px 4px';
-          cell.style.fontSize = '11px';
-          cell.style.border = '1px solid #d1d5db';
-          cell.style.verticalAlign = 'middle';
-        });
-        
-        const hospitalCells = table.querySelectorAll('.hospital-name');
-        hospitalCells.forEach(cell => {
-          cell.style.width = '180px';
-          cell.style.fontSize = '12px';
-          cell.style.fontWeight = 'bold';
-          cell.style.background = '#f0f9ff';
-          cell.style.position = 'sticky';
-          cell.style.left = '0';
-          cell.style.zIndex = '2';
-        });
-        
-        const daysInMonth = DateService.getDaysInMonth(AppState.currentMonth, AppState.currentYear);
-        const headerCells = table.querySelectorAll('th');
-        const bodyRows = table.querySelectorAll('tbody tr');
-        
-        headerCells.forEach((th, index) => {
-          if (index === 0) return;
-          
-          const dia = index;
-          if (dia <= daysInMonth) {
-            const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
-            if (diaSemana === 0) {
-              th.style.background = '#fee2e2';
-              th.style.color = '#dc2626';
-              th.style.fontWeight = 'bold';
-              th.style.border = '2px solid #dc2626';
-            } else if (diaSemana === 6) {
-              th.style.background = '#dbeafe';
-              th.style.color = '#2563eb';
-              th.style.fontWeight = 'bold';
-              th.style.border = '2px solid #2563eb';
-            } else {
-              th.style.background = 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)';
-              th.style.color = 'white';
-              th.style.fontWeight = 'bold';
-              th.style.fontSize = '12px';
-              th.style.border = '1px solid #1e40af';
-            }
-          }
-        });
-        
-        bodyRows.forEach(tr => {
-          const cells = tr.querySelectorAll('td');
-          cells.forEach((td, index) => {
-            if (index === 0) return;
             
-            const dia = index;
-            if (dia <= daysInMonth) {
-              const diaSemana = DateService.getDateDay(AppState.currentYear, AppState.currentMonth, dia);
-              if (diaSemana === 0) {
-                td.style.background = '#fef2f2';
-                td.style.border = '2px solid #fecaca';
-                const contentDiv = td.querySelector('div');
-                if (contentDiv) {
-                  contentDiv.style.color = '#dc2626';
-                  contentDiv.style.fontWeight = 'bold';
-                }
-              } else if (diaSemana === 6) {
-                td.style.background = '#eff6ff';
-                td.style.border = '2px solid #bfdbfe';
-                const contentDiv = td.querySelector('div');
-                if (contentDiv) {
-                  contentDiv.style.color = '#2563eb';
-                  contentDiv.style.fontWeight = 'bold';
-                }
-              }
-            }
-          });
-        });
+            <div class="schools-container">
+                <div class="schools-grid" id="schools-list">
+                    <!-- As escolas serão inseridas aqui via JavaScript -->
+                </div>
+            </div>
+        </div>
         
-        const caption = document.createElement('caption');
-        caption.style.captionSide = 'bottom';
-        caption.style.padding = '10px';
-        caption.style.fontSize = '10px';
-        caption.style.color = '#6b7280';
-        caption.style.textAlign = 'center';
-        caption.innerHTML = `
-          <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 3px;"></div>
-              <span>HUSE Dia</span>
+        <div id="checklist-section">
+            <div class="success-message" id="save-success">
+                <i class="fas fa-check-circle"></i>
+                <span>Checklist salvo com sucesso!</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: #1e3a8a; border-radius: 3px;"></div>
-              <span>HUSE Noite</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 3px;"></div>
-              <span>HRP Dia</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 3px;"></div>
-              <span>HRP Noite</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #f59e0b, #eab308); border-radius: 3px;"></div>
-              <span>Dobra</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: linear-gradient(135deg, #ef4444, #f59e0b); border-radius: 3px;"></div>
-              <span>Conflito</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: #fee2e2; border: 1px solid #dc2626; border-radius: 3px;"></div>
-              <span style="color: #dc2626;">Domingo</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 5px;">
-              <div style="width: 12px; height: 12px; background: #eff6ff; border: 1px solid #2563eb; border-radius: 3px;"></div>
-              <span style="color: #2563eb;">Sábado</span>
-            </div>
-          </div>
-        `;
-        table.appendChild(caption);
-        
-        container.appendChild(table);
-        
-        const trocasDoMes = AppState.observacoes.filter(obs => {
-          const dataOrigem = DateService.parseDate(obs.data);
-          const dataTroca = DateService.parseDate(obs.dataTroca);
-          return (dataOrigem && dataOrigem.getMonth() === AppState.currentMonth && dataOrigem.getFullYear() === AppState.currentYear) ||
-                 (dataTroca && dataTroca.getMonth() === AppState.currentMonth && dataTroca.getFullYear() === AppState.currentYear);
-        });
-        
-        if (trocasDoMes.length > 0) {
-          const trocasSection = document.createElement('div');
-          trocasSection.style.marginTop = '40px';
-          trocasSection.style.pageBreakInside = 'avoid';
-          
-          const tituloTrocas = document.createElement('h2');
-          tituloTrocas.textContent = 'TROCAS REGISTRADAS';
-          tituloTrocas.style.fontSize = '18px';
-          tituloTrocas.style.marginBottom = '15px';
-          tituloTrocas.style.paddingBottom = '8px';
-          tituloTrocas.style.borderBottom = '2px solid #2563eb';
-          tituloTrocas.style.color = '#1e40af';
-          trocasSection.appendChild(tituloTrocas);
-          
-          const tabelaTrocas = document.createElement('table');
-          tabelaTrocas.style.width = '100%';
-          tabelaTrocas.style.borderCollapse = 'collapse';
-          tabelaTrocas.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-          tabelaTrocas.style.marginBottom = '20px';
-          
-          const headerTrocas = document.createElement('thead');
-          headerTrocas.innerHTML = `
-            <tr style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white;">
-              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Hospital</th>
-              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Data Origem</th>
-              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Data Destino</th>
-              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Nome</th>
-              <th style="padding: 12px 8px; font-weight: bold; text-align: left; border: 1px solid #1e40af;">Observação</th>
-            </tr>
-          `;
-          tabelaTrocas.appendChild(headerTrocas);
-          
-          const bodyTrocas = document.createElement('tbody');
-          
-          trocasDoMes.forEach((obs, idx) => {
-            const tr = document.createElement('tr');
-            tr.style.background = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
-            tr.style.borderBottom = '1px solid #e5e7eb';
             
-            const dados = [
-              obs.hospital || '--',
-              DateService.formatDateBR(DateService.parseDate(obs.data)) || '--',
-              DateService.formatDateBR(DateService.parseDate(obs.dataTroca)) || '--',
-              obs.nome || '--',
-              obs.observacao || '--'
+            <div class="card fade-in">
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Informações Gerais</h2>
+                <p class="section-subtitle">Preencha os dados básicos do atendimento técnico realizado na escola.</p>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="escola-selecionada" class="required"><i class="fas fa-university"></i> Escola Selecionada</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-school"></i>
+                            <input type="text" id="escola-selecionada" readonly style="background-color: #f8fafc; font-weight: 700;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="data-atendimento" class="required"><i class="fas fa-calendar-alt"></i> Data do Atendimento</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar"></i>
+                            <input type="date" id="data-atendimento" name="data-atendimento">
+                        </div>
+                        <div class="validation-message" id="data-error">
+                            <i class="fas fa-exclamation-circle"></i> Por favor, selecione uma data válida
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tecnico-responsavel"><i class="fas fa-user-tie"></i> Técnico Responsável</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="tecnico-responsavel" name="tecnico-responsavel" placeholder="Nome completo do técnico responsável">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progress-text">0% Concluído</span>
+                    <span class="progress-stats" id="progress-stats">0 de 9 itens preenchidos</span>
+                </div>
+            </div>
+            
+            <div class="card fade-in">
+                <h2 class="section-title"><i class="fas fa-server"></i> Infraestrutura e Equipamentos</h2>
+                <p class="section-subtitle">Verifique e registre o estado da infraestrutura de TI da escola.</p>
+                
+                <div class="toggle-container">
+                    <div class="toggle-label">
+                        <i class="fas fa-flask"></i>
+                        <span>Laboratório de Informática existente</span>
+                        <span class="tooltip">
+                            <i class="fas fa-question-circle"></i>
+                            <span class="tooltip-text">Verifique se a escola possui um laboratório de informática funcional e em condições de uso.</span>
+                        </span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="existencia-lab" name="existencia-lab">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="qtd-computador-lab"><i class="fas fa-desktop"></i> Computadores no Laboratório</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-desktop"></i>
+                            <input type="number" id="qtd-computador-lab" name="qtd-computador-lab" min="0" value="0">
+                        </div>
+                        <div class="validation-message" id="lab-error">
+                            <i class="fas fa-exclamation-circle"></i> Quantidade inválida (deve ser um número positivo)
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adm-qtd-computador"><i class="fas fa-building"></i> Computadores no ADM</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-desktop"></i>
+                            <input type="number" id="adm-qtd-computador" name="adm-qtd-computador" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adm-qtd-impressora"><i class="fas fa-print"></i> Impressoras no ADM</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-print"></i>
+                            <input type="number" id="adm-qtd-impressora" name="adm-qtd-impressora" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="qtd-comp-sala-prof"><i class="fas fa-chalkboard-teacher"></i> Computadores na Sala dos Professores</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-desktop"></i>
+                            <input type="number" id="qtd-comp-sala-prof" name="qtd-comp-sala-prof" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="educacao-conectada" name="educacao-conectada">
+                    <label for="educacao-conectada">
+                        <i class="fas fa-wifi"></i>
+                        <span>Educação Conectada (Internet funcionando)</span>
+                        <span class="tooltip">
+                            <i class="fas fa-question-circle"></i>
+                            <span class="tooltip-text">Verifique se a conexão de internet está funcionando adequadamente para atividades pedagógicas.</span>
+                        </span>
+                    </label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="voip" name="voip">
+                    <label for="voip">
+                        <i class="fas fa-phone"></i>
+                        <span>Telefonia VoIP funcionando</span>
+                        <span class="tooltip">
+                            <i class="fas fa-question-circle"></i>
+                            <span class="tooltip-text">Verifique se o sistema de telefonia VoIP (voz sobre IP) está operacional.</span>
+                        </span>
+                    </label>
+                </div>
+                
+                <!-- Campo para upload de print da velocidade da internet -->
+                <div class="image-upload-container">
+                    <label for="print-velocidade">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <div class="image-upload-text">Print da Velocidade da Internet (Opcional)</div>
+                        <div class="image-upload-subtext">Clique para fazer upload de um print do teste de velocidade</div>
+                    </label>
+                    <input type="file" id="print-velocidade" accept="image/*">
+                    <div class="image-preview-container" id="image-preview-container">
+                        <img class="image-preview" id="image-preview" src="" alt="Preview da imagem">
+                        <button type="button" class="remove-image-btn" id="remove-image-btn">
+                            <i class="fas fa-trash"></i> Remover Imagem
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card fade-in">
+                <h2 class="section-title"><i class="fas fa-sticky-note"></i> Observações e Comentários</h2>
+                <p class="section-subtitle">Registre observações importantes, problemas encontrados e sugestões de melhorias.</p>
+                
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="fas fa-comment-alt"></i>
+                        <textarea id="observacoes" name="observacoes" placeholder="Descreva aqui quaisquer observações relevantes sobre o atendimento, problemas encontrados, necessidades de manutenção, sugestões, etc..."></textarea>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--gray-dark); margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-lightbulb" style="color: var(--accent);"></i>
+                        <span>Dica: Inclua detalhes sobre problemas específicos e sugestões de melhorias.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card fade-in">
+                <h2 class="section-title"><i class="fas fa-tasks"></i> Status e Próximos Passos</h2>
+                <p class="section-subtitle">Defina o status atual do atendimento e agende a próxima visita, se necessário.</p>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="status-geral"><i class="fas fa-flag"></i> Status Geral do Atendimento</label>
+                        <select id="status-geral" name="status-geral">
+                            <option value="pendente">⏳ Pendente</option>
+                            <option value="andamento">🔄 Em Andamento</option>
+                            <option value="concluido">✅ Concluído</option>
+                            <option value="pendente-corr">⚠️ Pendente com Correções</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="proxima-visita"><i class="fas fa-calendar-check"></i> Próxima Visita Sugerida</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar-check"></i>
+                            <input type="date" id="proxima-visita" name="proxima-visita">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" id="salvar-checklist">
+                    <i class="fas fa-save"></i> Salvar Checklist
+                </button>
+                <button class="btn btn-outline" id="visualizar-checklist">
+                    <i class="fas fa-eye"></i> Visualizar Relatório
+                </button>
+                <button class="btn btn-danger" id="limpar-checklist">
+                    <i class="fas fa-eraser"></i> Limpar Formulário
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Sistema de Checklist de Atendimento Escolar &copy; 2023 | Versão 4.0 | Desenvolvido para suporte técnico escolar</p>
+            <p style="margin-top: 15px; font-size: 0.9rem; color: var(--gray); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fas fa-shield-alt"></i> Seus dados são salvos localmente no seu navegador
+                <i class="fas fa-mobile-alt"></i> Design responsivo para todos os dispositivos
+            </p>
+        </div>
+    </div>
+
+    <button class="fab" id="scroll-top" title="Voltar ao topo">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lista de escolas
+            const escolas = [
+                "COLÉGIO ESTADUAL COELHO E CAMPOS",
+                "CENTRO DE EXCELÊNCIA EDELZIO VIEIRA DE MELO",
+                "COLÉGIO ESTADUAL IRMÃ MARIA CLEMÊNCIA",
+                "ESCOLA ESTADUAL MARIA DA GLORIA MOTA CABRAL",
+                "ESCOLA ESTADUAL MONSENHOR ERALDO BARBOSA DE ALMEIDA",
+                "ESCOLA ESTADUAL PROFª MARIA BERENICE B. ALVES",
+                "CENTRO ESTADUAL DE EDUCAÇÃO PROFISSIONAL GOVERNADOR MARCELO DÉDA CHAGAS",
+                "COLÉGIO ESTADUAL POETA JOSÉ SAMPAIO",
+                "CENTRO DE EXCELÊNCIA DOUTOR JOÃO DE MELO PRADO",
+                "CENTRO DE EXCELÊNCIA PROFESSORA MARIA CONCEIÇÃO DE SANTANA",
+                "CENTRO DE EXCELÊNCIA SENADOR GONÇALO ROLLEMBERG",
+                "COLÉGIO ESTADUAL JOSÉ DE MATOS TELES",
+                "COLÉGIO ESTADUAL JOSÉ AMARAL LEMOS",
+                "CENTRO DE EXCELÊNCIA LEANDRO MACIEL",
+                "CENTRO DE EXCELÊNCIA 'DR. EDELZIO VIEIRA DE MELO'",
+                "CENTRO DE EXCELÊNCIA CORONEL JOSÊ JOAQUIM BARBOSA",
+                "COLÉGIO ESTADUAL FRANCISCO FIGUEIREDO",
+                "CENTRO DE EXCELÊNCIA DE EDUCAÇÃO EM TEMPO INTEGRAL NAÇÕES UNIDAS",
+                "ESCOLA ESTADUAL MILTON AZEVEDO",
+                "COLÉGIO ESTADUAL ALCEBÍADES PAES",
+                "CENTRO DE EXCELÊNCIA DE EDUCAÇÃO EM TEMPO INTEGRAL MARIA MONTESSORI",
+                "COLÉGIO ESTADUAL MANOEL ALCINO DO NASCIMENTO",
+                "CENTRO DE EXCELÊNCIA MARIA DAS GRAÇAS MENEZES MOURA",
+                "CENTRO DE EXCELÊNCIA EDUCAÇÃO PROFISSIONALIZANTE BERILA ALVES DE ALMEIDA",
+                "COLÉGIO ESTADUAL GENERAL CALAZANS",
+                "COLÉGIO ESTADUAL PROFESSOR FERNANDO AZEVEDO"
             ];
             
-            dados.forEach(dado => {
-              const td = document.createElement('td');
-              td.textContent = dado;
-              td.style.padding = '10px 8px';
-              td.style.fontSize = '11px';
-              td.style.border = '1px solid #e5e7eb';
-              tr.appendChild(td);
+            // Objeto para armazenar os dados de cada escola (com localStorage)
+            let dadosEscolas = {};
+            
+            // Variável para armazenar imagem em base64
+            let imagemVelocidadeBase64 = null;
+            
+            // Carregar dados salvos do localStorage
+            function carregarDadosSalvos() {
+                const dadosSalvos = localStorage.getItem('checklistEscolas');
+                if (dadosSalvos) {
+                    dadosEscolas = JSON.parse(dadosSalvos);
+                } else {
+                    // Inicializar dados para cada escola
+                    escolas.forEach(escola => {
+                        dadosEscolas[escola] = {
+                            dataAtendimento: '',
+                            existenciaLab: false,
+                            qtdComputadorLab: 0,
+                            admQtdComputador: 0,
+                            admQtdImpressora: 0,
+                            qtdCompSalaProf: 0,
+                            educacaoConectada: false,
+                            voip: false,
+                            observacoes: '',
+                            tecnicoResponsavel: '',
+                            statusGeral: 'pendente',
+                            proximaVisita: '',
+                            dataSalvamento: '',
+                            progresso: 0,
+                            imagemVelocidade: null
+                        };
+                    });
+                }
+                
+                // Atualizar estatísticas
+                atualizarEstatisticas();
+            }
+            
+            // Salvar dados no localStorage
+            function salvarDadosLocalStorage() {
+                localStorage.setItem('checklistEscolas', JSON.stringify(dadosEscolas));
+            }
+            
+            // Atualizar estatísticas
+            function atualizarEstatisticas() {
+                let concluidas = 0;
+                let andamento = 0;
+                let pendentes = 0;
+                
+                escolas.forEach(escola => {
+                    const dados = dadosEscolas[escola];
+                    const progresso = dados.progresso || 0;
+                    
+                    if (progresso === 100) {
+                        concluidas++;
+                    } else if (progresso > 0 && progresso < 100) {
+                        andamento++;
+                    } else {
+                        pendentes++;
+                    }
+                });
+                
+                document.getElementById('total-escolas').textContent = escolas.length;
+                document.getElementById('concluidas-count').textContent = concluidas;
+                document.getElementById('andamento-count').textContent = andamento;
+                document.getElementById('pendentes-count').textContent = pendentes;
+            }
+            
+            // Inicializar dados
+            carregarDadosSalvos();
+            
+            // Preencher a lista de escolas
+            const schoolsList = document.getElementById('schools-list');
+            
+            function atualizarListaEscolas() {
+                // Limpar lista
+                schoolsList.innerHTML = '';
+                
+                // Obter termo de busca
+                const searchTerm = document.getElementById('search-school').value.toLowerCase();
+                
+                // Filtrar escolas
+                const escolasFiltradas = escolas.filter(escola => 
+                    escola.toLowerCase().includes(searchTerm)
+                );
+                
+                // Adicionar escolas filtradas
+                escolasFiltradas.forEach((escola) => {
+                    const dados = dadosEscolas[escola];
+                    const progresso = dados.progresso || 0;
+                    const status = determinarStatusEscola(dados, progresso);
+                    
+                    // Card da escola
+                    const schoolCard = document.createElement('div');
+                    schoolCard.className = 'school-card';
+                    schoolCard.dataset.escola = escola;
+                    schoolCard.dataset.status = status;
+                    
+                    let statusText, statusClass;
+                    if (status === 'concluido') {
+                        statusText = 'Concluído';
+                        statusClass = 'status-concluido';
+                    } else if (status === 'andamento') {
+                        statusText = 'Em Andamento';
+                        statusClass = 'status-andamento';
+                    } else {
+                        statusText = 'Pendente';
+                        statusClass = 'status-pendente';
+                    }
+                    
+                    schoolCard.innerHTML = `
+                        <h3>${escola}</h3>
+                        <div class="status-indicator ${statusClass}">
+                            <span class="status-dot"></span>
+                            ${statusText}
+                        </div>
+                        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.9rem; color: #666; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-chart-line" style="color: var(--primary);"></i> 
+                                <span style="font-weight: 700;">${progresso}%</span> concluído
+                            </span>
+                            <span style="font-size: 0.85rem; color: var(--gray); background: var(--gray-light); padding: 5px 12px; border-radius: 12px;">
+                                ${dados.dataAtendimento ? formatarData(dados.dataAtendimento) : 'Nunca atendida'}
+                            </span>
+                        </div>
+                    `;
+                    
+                    schoolsList.appendChild(schoolCard);
+                });
+                
+                // Mostrar mensagem se nenhuma escola for encontrada
+                if (escolasFiltradas.length === 0) {
+                    schoolsList.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--gray);">
+                            <i class="fas fa-search" style="font-size: 3.5rem; margin-bottom: 20px; color: var(--gray-light);"></i>
+                            <h3 style="margin-bottom: 15px; color: var(--dark);">Nenhuma escola encontrada</h3>
+                            <p style="max-width: 500px; margin: 0 auto;">Tente buscar com outros termos ou verifique se o nome está correto.</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Inicializar lista de escolas
+            atualizarListaEscolas();
+            
+            // Busca de escolas
+            document.getElementById('search-school').addEventListener('input', atualizarListaEscolas);
+            
+            // Botão de voltar ao topo
+            document.getElementById('scroll-top').addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             });
             
-            bodyTrocas.appendChild(tr);
-          });
-          
-          tabelaTrocas.appendChild(bodyTrocas);
-          trocasSection.appendChild(tabelaTrocas);
-          container.appendChild(trocasSection);
-        }
-        
-        const footer = document.createElement('div');
-        footer.style.marginTop = '40px';
-        footer.style.paddingTop = '20px';
-        footer.style.borderTop = '1px solid #e5e7eb';
-        footer.style.fontSize = '10px';
-        footer.style.color = '#6b7280';
-        footer.style.textAlign = 'center';
-        footer.innerHTML = `
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <div style="text-align: left;">
-              <strong>Sistema de Gerenciamento de Escalas</strong><br/>
-              Versão 2.0 • Gerador Inteligente
-            </div>
-            <div style="text-align: right;">
-              <strong>Documento oficial</strong><br/>
-              Página 1 de 1
-            </div>
-          </div>
-          <div style="font-style: italic;">
-            Este documento foi gerado automaticamente pelo sistema. Distribuição flexível de plantões.
-          </div>
-        `;
-        container.appendChild(footer);
-
-        const opt = {
-          margin: [10, 10, 10, 10],
-          filename: `escala_${mes.toLowerCase()}_${ano}_A3.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            windowWidth: 1123,
-            windowHeight: 1587
-          },
-          jsPDF: { 
-            orientation: 'landscape', 
-            unit: 'mm', 
-            format: 'a3',
-            compress: true
-          }
-        };
-
-        setTimeout(() => {
-          html2pdf().set(opt).from(container).save().then(() => {
-            UIService.showLoading(false);
-            UIService.showNotification('✅ PDF A3 exportado com sucesso!');
-          }).catch(err => {
-            UIService.showLoading(false);
-            UIService.showNotification('❌ Erro ao exportar PDF: ' + err.message, 'error');
-            console.error('Erro PDF:', err);
-          });
-        }, 500);
-      }
-    };
-
-    // ============================================
-    // INIT
-    // ============================================
-    function initApp() {
-      AppState.load();
-      RenderService.populateSelects();
-      
-      const escalasAtuais = AppState.getCurrentEscalas();
-      const estaVazio = escalasAtuais['HUSE Diurno'].length === 0 && 
-                       escalasAtuais['HUSE Noturno'].length === 0 &&
-                       escalasAtuais['HRP Diurno'].length === 0 &&
-                       escalasAtuais['HRP Noturno'].length === 0;
-      
-      if (estaVazio) {
-        EscalaDistribuicaoService.aplicarDistribuicaoInteligente();
-      }
-      
-      RenderService.renderTable();
-      RenderService.updateCounter();
-      HorasService.renderizarContadoresHoras();
-      bindEvents();
-    }
-
-    // ============================================
-    // EVENT HANDLERS
-    // ============================================
-    function bindEvents() {
-      document.getElementById('month-select').addEventListener('change', e => {
-        AppState.currentMonth = parseInt(e.target.value, 10);
-        RenderService.renderTable();
-        RenderService.updateCounter();
-        HorasService.renderizarContadoresHoras();
-      });
-
-      document.getElementById('year-select').addEventListener('change', e => {
-        AppState.currentYear = parseInt(e.target.value, 10);
-        RenderService.renderTable();
-        RenderService.updateCounter();
-        HorasService.renderizarContadoresHoras();
-      });
-
-      document.getElementById('save-data').addEventListener('click', () => {
-        AppState.save();
-        UIService.showNotification('✅ Dados salvos com sucesso!');
-      });
-
-      document.getElementById('reset-data').addEventListener('click', () => {
-        if (confirm('Tem certeza que deseja redefinir todos os dados deste mês/ano?')) {
-          const key = `${AppState.currentYear}_${AppState.currentMonth}`;
-          AppState.allEscalas[key] = {
-            codigo: AppState.gerarCodigoUnico(AppState.currentMonth, AppState.currentYear),
-            'HUSE Diurno': [],
-            'HUSE Noturno': [],
-            'HRP Diurno': [],
-            'HRP Noturno': []
-          };
-          AppState.observacoes = AppState.observacoes.filter(obs => {
-            const dt = DateService.parseDate(obs.data);
-            return !(dt && dt.getMonth() === AppState.currentMonth && dt.getFullYear() === AppState.currentYear);
-          });
-          AppState.save();
-          RenderService.renderTable();
-          RenderService.updateCounter();
-          HorasService.renderizarContadoresHoras();
-          UIService.showNotification('✅ Dados redefinidos!');
-        }
-      });
-
-      document.getElementById('export-pdf').addEventListener('click', () => PDFService.exportarPDF());
-      document.getElementById('nova-troca').addEventListener('click', () => TrocaService.abrirModal());
-      document.getElementById('ver-trocas').addEventListener('click', () => {
-        RenderService.renderTrocasTable();
-        UIService.openModal('trocas-modal');
-      });
-
-      document.getElementById('close-modal').addEventListener('click', () => UIService.closeModal('troca-modal'));
-      document.getElementById('cancelar-troca').addEventListener('click', () => UIService.closeModal('troca-modal'));
-      document.getElementById('confirmar-troca').addEventListener('click', () => TrocaService.realizar());
-
-      document.getElementById('close-editar-modal').addEventListener('click', () => UIService.closeModal('editar-troca-modal'));
-      document.getElementById('cancelar-edicao').addEventListener('click', () => UIService.closeModal('editar-troca-modal'));
-      document.getElementById('salvar-edicao').addEventListener('click', () => TrocaManagementService.salvarEdicao());
-
-      document.getElementById('close-trocas-modal').addEventListener('click', () => UIService.closeModal('trocas-modal'));
-      document.getElementById('fechar-trocas-modal').addEventListener('click', () => UIService.closeModal('trocas-modal'));
-
-      document.getElementById('filter-month').addEventListener('change', () => RenderService.renderTrocasTable());
-      document.getElementById('filter-year').addEventListener('change', () => RenderService.renderTrocasTable());
-
-      document.getElementById('gerar-trocas').addEventListener('click', () => SuggestaoService.gerarSugestoes());
-    }
-
-    document.addEventListener('DOMContentLoaded', initApp);
-  </script>
+            // Mostrar/ocultar botão de voltar ao topo
+            window.addEventListener('scroll', function() {
+                const scrollTopBtn = document.getElementById('scroll-top');
+                if (window.scrollY > 500) {
+                    scrollTopBtn.style.display = 'flex';
+                } else {
+                    scrollTopBtn.style.display = 'none';
+                }
+            });
+            
+            // Definir data atual como padrão
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('data-atendimento').value = hoje;
+            document.getElementById('proxima-visita').value = '';
+            
+            // Variável para armazenar a escola atualmente selecionada
+            let escolaAtual = '';
+            
+            // Selecionar escola (delegação de eventos)
+            document.addEventListener('click', function(e) {
+                const schoolCard = e.target.closest('.school-card');
+                if (schoolCard) {
+                    escolaAtual = schoolCard.dataset.escola;
+                    
+                    // Atualizar o campo da escola selecionada
+                    document.getElementById('escola-selecionada').value = escolaAtual;
+                    
+                    // Destacar a escola selecionada
+                    document.querySelectorAll('.school-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    schoolCard.classList.add('selected');
+                    
+                    // Mostrar a seção do checklist
+                    document.getElementById('checklist-section').classList.add('active');
+                    
+                    // Carregar dados salvos da escola selecionada
+                    carregarDadosEscola(escolaAtual);
+                    
+                    // Validar dados
+                    validarFormulario();
+                    
+                    // Rolar para o checklist
+                    document.getElementById('checklist-section').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+            
+            // Calcular progresso de uma escola
+            function calcularProgressoEscola(dados) {
+                const campos = [
+                    { nome: 'dataAtendimento', tipo: 'string', obrigatorio: true },
+                    { nome: 'qtdComputadorLab', tipo: 'number', obrigatorio: false },
+                    { nome: 'admQtdComputador', tipo: 'number', obrigatorio: false },
+                    { nome: 'admQtdImpressora', tipo: 'number', obrigatorio: false },
+                    { nome: 'qtdCompSalaProf', tipo: 'number', obrigatorio: false },
+                    { nome: 'existenciaLab', tipo: 'boolean', obrigatorio: false },
+                    { nome: 'educacaoConectada', tipo: 'boolean', obrigatorio: false },
+                    { nome: 'voip', tipo: 'boolean', obrigatorio: false },
+                    { nome: 'observacoes', tipo: 'string', obrigatorio: false }
+                ];
+                
+                let camposPreenchidos = 0;
+                
+                campos.forEach(campo => {
+                    let preenchido = false;
+                    
+                    if (campo.tipo === 'boolean') {
+                        preenchido = dados[campo.nome] === true;
+                    } else if (campo.tipo === 'number') {
+                        preenchido = parseInt(dados[campo.nome]) > 0;
+                    } else if (campo.tipo === 'string') {
+                        if (campo.nome === 'observacoes') {
+                            preenchido = dados[campo.nome] && dados[campo.nome].trim().length >= 10;
+                        } else {
+                            preenchido = dados[campo.nome] && dados[campo.nome].trim() !== '';
+                        }
+                    }
+                    
+                    if (preenchido) camposPreenchidos++;
+                });
+                
+                return Math.round((camposPreenchidos / campos.length) * 100);
+            }
+            
+            // Determinar status da escola
+            function determinarStatusEscola(dados, progresso) {
+                if (progresso === 100) return 'concluido';
+                if (progresso > 0 && progresso < 100) return 'andamento';
+                return 'pendente';
+            }
+            
+            // Formatar data para exibição - CORREÇÃO: Lidar corretamente com datas ISO
+            function formatarData(dataString) {
+                if (!dataString) return '';
+                
+                // Se já estiver no formato brasileiro, retornar como está
+                if (dataString.includes('/')) {
+                    return dataString;
+                }
+                
+                // Se for uma string ISO ou formato YYYY-MM-DD
+                let data;
+                if (dataString.includes('T')) {
+                    // Formato ISO com hora
+                    data = new Date(dataString);
+                } else {
+                    // Formato YYYY-MM-DD
+                    const partes = dataString.split('-');
+                    if (partes.length === 3) {
+                        data = new Date(partes[0], partes[1] - 1, partes[2]);
+                    } else {
+                        data = new Date(dataString);
+                    }
+                }
+                
+                // Verificar se a data é válida
+                if (isNaN(data.getTime())) {
+                    return dataString; // Retorna original se não puder converter
+                }
+                
+                // Formatar para DD/MM/YYYY
+                const dia = String(data.getDate()).padStart(2, '0');
+                const mes = String(data.getMonth() + 1).padStart(2, '0');
+                const ano = data.getFullYear();
+                
+                return `${dia}/${mes}/${ano}`;
+            }
+            
+            // Atualizar barra de progresso e estatísticas
+            function atualizarProgresso() {
+                const campos = [
+                    { id: 'data-atendimento', tipo: 'date', obrigatorio: true },
+                    { id: 'qtd-computador-lab', tipo: 'number', obrigatorio: false },
+                    { id: 'adm-qtd-computador', tipo: 'number', obrigatorio: false },
+                    { id: 'adm-qtd-impressora', tipo: 'number', obrigatorio: false },
+                    { id: 'qtd-comp-sala-prof', tipo: 'number', obrigatorio: false },
+                    { id: 'existencia-lab', tipo: 'checkbox', obrigatorio: false },
+                    { id: 'educacao-conectada', tipo: 'checkbox', obrigatorio: false },
+                    { id: 'voip', tipo: 'checkbox', obrigatorio: false },
+                    { id: 'observacoes', tipo: 'textarea', obrigatorio: false }
+                ];
+                
+                let camposPreenchidos = 0;
+                let totalCampos = campos.length;
+                
+                campos.forEach(campo => {
+                    const elemento = document.getElementById(campo.id);
+                    let preenchido = false;
+                    
+                    if (campo.tipo === 'checkbox') {
+                        preenchido = elemento.checked;
+                    } else if (campo.tipo === 'number') {
+                        preenchido = parseInt(elemento.value) > 0;
+                    } else if (campo.tipo === 'textarea') {
+                        preenchido = elemento.value.trim().length >= 10;
+                    } else if (campo.tipo === 'date') {
+                        preenchido = elemento.value !== '';
+                    }
+                    
+                    if (preenchido) camposPreenchidos++;
+                });
+                
+                const percentual = Math.round((camposPreenchidos / totalCampos) * 100);
+                
+                // Atualizar barra de progresso
+                document.getElementById('progress-bar').style.width = `${percentual}%`;
+                document.getElementById('progress-text').textContent = `${percentual}% Concluído`;
+                document.getElementById('progress-stats').textContent = `${camposPreenchidos} de ${totalCampos} itens preenchidos`;
+                
+                // Atualizar status na escola selecionada
+                if (escolaAtual) {
+                    atualizarStatusEscolaNaLista(escolaAtual, percentual);
+                }
+                
+                return percentual;
+            }
+            
+            // Atualizar status da escola na lista
+            function atualizarStatusEscolaNaLista(escola, progresso) {
+                const status = progresso === 100 ? 'concluido' : (progresso > 0 ? 'andamento' : 'pendente');
+                const statusText = progresso === 100 ? 'Concluído' : (progresso > 0 ? 'Em Andamento' : 'Pendente');
+                const statusClass = progresso === 100 ? 'status-concluido' : (progresso > 0 ? 'status-andamento' : 'status-pendente');
+                
+                // Atualizar o card da escola
+                const schoolCard = document.querySelector(`.school-card[data-escola="${escola}"]`);
+                if (schoolCard) {
+                    schoolCard.dataset.status = status;
+                    const statusElement = schoolCard.querySelector('.status-indicator');
+                    statusElement.className = `status-indicator ${statusClass}`;
+                    statusElement.innerHTML = `<span class="status-dot"></span> ${statusText}`;
+                    
+                    // Atualizar progresso
+                    const progressElement = schoolCard.querySelector('.fa-chart-line').parentElement;
+                    progressElement.innerHTML = `<i class="fas fa-chart-line" style="color: var(--primary);"></i> <span style="font-weight: 700;">${progresso}%</span> concluído`;
+                }
+            }
+            
+            // Adicionar listeners para atualizar o progresso
+            document.querySelectorAll('input, textarea, select').forEach(element => {
+                element.addEventListener('input', atualizarProgresso);
+                element.addEventListener('change', atualizarProgresso);
+            });
+            
+            // Inicializar barra de progresso
+            atualizarProgresso();
+            
+            // Função para carregar dados de uma escola específica
+            function carregarDadosEscola(escola) {
+                const dados = dadosEscolas[escola];
+                
+                // CORREÇÃO: Garantir que a data seja mostrada corretamente no formato YYYY-MM-DD
+                if (dados.dataAtendimento) {
+                    // Converter data de DD/MM/YYYY para YYYY-MM-DD se necessário
+                    let dataParaInput = dados.dataAtendimento;
+                    if (dados.dataAtendimento.includes('/')) {
+                        const partes = dados.dataAtendimento.split('/');
+                        if (partes.length === 3) {
+                            dataParaInput = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                        }
+                    }
+                    document.getElementById('data-atendimento').value = dataParaInput;
+                } else {
+                    document.getElementById('data-atendimento').value = hoje;
+                }
+                
+                document.getElementById('existencia-lab').checked = dados.existenciaLab;
+                document.getElementById('qtd-computador-lab').value = dados.qtdComputadorLab;
+                document.getElementById('adm-qtd-computador').value = dados.admQtdComputador;
+                document.getElementById('adm-qtd-impressora').value = dados.admQtdImpressora;
+                document.getElementById('qtd-comp-sala-prof').value = dados.qtdCompSalaProf;
+                document.getElementById('educacao-conectada').checked = dados.educacaoConectada;
+                document.getElementById('voip').checked = dados.voip;
+                document.getElementById('observacoes').value = dados.observacoes;
+                document.getElementById('tecnico-responsavel').value = dados.tecnicoResponsavel || '';
+                document.getElementById('status-geral').value = dados.statusGeral || 'pendente';
+                
+                // CORREÇÃO: Garantir que a data da próxima visita seja mostrada corretamente
+                if (dados.proximaVisita) {
+                    let proximaVisitaParaInput = dados.proximaVisita;
+                    if (dados.proximaVisita.includes('/')) {
+                        const partes = dados.proximaVisita.split('/');
+                        if (partes.length === 3) {
+                            proximaVisitaParaInput = `${partes[2]}-${partes[1]}-${partes[0]}`;
+                        }
+                    }
+                    document.getElementById('proxima-visita').value = proximaVisitaParaInput;
+                } else {
+                    document.getElementById('proxima-visita').value = '';
+                }
+                
+                // Carregar imagem da velocidade, se existir
+                if (dados.imagemVelocidade) {
+                    imagemVelocidadeBase64 = dados.imagemVelocidade;
+                    document.getElementById('image-preview').src = dados.imagemVelocidade;
+                    document.getElementById('image-preview-container').style.display = 'block';
+                } else {
+                    imagemVelocidadeBase64 = null;
+                    document.getElementById('image-preview-container').style.display = 'none';
+                }
+                
+                // Forçar atualização do progresso
+                setTimeout(atualizarProgresso, 100);
+            }
+            
+            // Função para validar formulário
+            function validarFormulario() {
+                let valido = true;
+                
+                // Limpar mensagens de erro
+                document.querySelectorAll('.validation-message').forEach(msg => {
+                    msg.classList.remove('show');
+                });
+                
+                document.querySelectorAll('.input-error').forEach(input => {
+                    input.classList.remove('input-error');
+                });
+                
+                // Validar data de atendimento
+                const dataAtendimento = document.getElementById('data-atendimento').value;
+                if (!dataAtendimento) {
+                    document.getElementById('data-error').classList.add('show');
+                    document.getElementById('data-atendimento').classList.add('input-error');
+                    valido = false;
+                }
+                
+                // Validar quantidade de computadores no lab (se lab existe)
+                const existenciaLab = document.getElementById('existencia-lab').checked;
+                const qtdLab = parseInt(document.getElementById('qtd-computador-lab').value);
+                if (existenciaLab && (isNaN(qtdLab) || qtdLab < 0)) {
+                    document.getElementById('lab-error').classList.add('show');
+                    document.getElementById('qtd-computador-lab').classList.add('input-error');
+                    valido = false;
+                }
+                
+                return valido;
+            }
+            
+            // Função para salvar dados de uma escola específica
+            function salvarDadosEscola(escola) {
+                if (!validarFormulario()) {
+                    alert('Por favor, corrija os erros no formulário antes de salvar.');
+                    return false;
+                }
+                
+                const progresso = atualizarProgresso();
+                
+                // CORREÇÃO: Salvar datas sempre no formato DD/MM/YYYY para consistência
+                const dataAtendimentoInput = document.getElementById('data-atendimento').value;
+                const dataAtendimentoFormatada = dataAtendimentoInput ? formatarData(dataAtendimentoInput) : '';
+                
+                const proximaVisitaInput = document.getElementById('proxima-visita').value;
+                const proximaVisitaFormatada = proximaVisitaInput ? formatarData(proximaVisitaInput) : '';
+                
+                dadosEscolas[escola] = {
+                    dataAtendimento: dataAtendimentoFormatada,
+                    existenciaLab: document.getElementById('existencia-lab').checked,
+                    qtdComputadorLab: parseInt(document.getElementById('qtd-computador-lab').value) || 0,
+                    admQtdComputador: parseInt(document.getElementById('adm-qtd-computador').value) || 0,
+                    admQtdImpressora: parseInt(document.getElementById('adm-qtd-impressora').value) || 0,
+                    qtdCompSalaProf: parseInt(document.getElementById('qtd-comp-sala-prof').value) || 0,
+                    educacaoConectada: document.getElementById('educacao-conectada').checked,
+                    voip: document.getElementById('voip').checked,
+                    observacoes: document.getElementById('observacoes').value,
+                    tecnicoResponsavel: document.getElementById('tecnico-responsavel').value,
+                    statusGeral: document.getElementById('status-geral').value,
+                    proximaVisita: proximaVisitaFormatada,
+                    dataSalvamento: new Date().toISOString(),
+                    progresso: progresso,
+                    imagemVelocidade: imagemVelocidadeBase64
+                };
+                
+                // Salvar no localStorage
+                salvarDadosLocalStorage();
+                
+                // Atualizar lista de escolas e estatísticas
+                atualizarListaEscolas();
+                atualizarEstatisticas();
+                
+                return true;
+            }
+            
+            // Função para visualizar relatório
+            function visualizarRelatorio(escola) {
+                if (!dadosEscolas[escola] || !dadosEscolas[escola].dataAtendimento) {
+                    alert(`Não existem dados salvos para ${escola}. Por favor, salve o checklist primeiro.`);
+                    return;
+                }
+                
+                const dados = dadosEscolas[escola];
+                const conteudoHTML = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Relatório - ${escola}</title>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                        <style>
+                            @page {
+                                margin: 15mm;
+                                size: A4;
+                            }
+                            
+                            body { 
+                                font-family: 'Inter', 'Segoe UI', Arial, sans-serif; 
+                                margin: 0;
+                                color: #1f2937; 
+                                background: white;
+                                font-size: 11pt;
+                                line-height: 1.4;
+                            }
+                            
+                            .report-container {
+                                width: 100%;
+                                padding: 15px;
+                            }
+                            
+                            .print-only {
+                                display: block;
+                            }
+                            
+                            .no-print {
+                                display: none;
+                            }
+                            
+                            h1 { 
+                                color: #4f46e5; 
+                                border-bottom: 2px solid #4f46e5; 
+                                padding-bottom: 10px; 
+                                margin-bottom: 20px;
+                                font-size: 18pt;
+                                text-align: center;
+                                page-break-after: avoid;
+                            }
+                            
+                            h2 { 
+                                color: #374151; 
+                                margin-top: 25px; 
+                                margin-bottom: 10px;
+                                padding-bottom: 5px; 
+                                border-bottom: 1px solid #e5e7eb; 
+                                font-size: 14pt;
+                                page-break-after: avoid;
+                            }
+                            
+                            .info-box { 
+                                background: #f8fafc; 
+                                padding: 15px; 
+                                border-radius: 8px; 
+                                border-left: 4px solid #4f46e5; 
+                                margin: 15px 0; 
+                                page-break-inside: avoid;
+                            }
+                            
+                            .info-box p { 
+                                margin: 5px 0; 
+                                font-size: 11pt;
+                            }
+                            
+                            table { 
+                                width: 100%; 
+                                border-collapse: collapse; 
+                                margin: 15px 0; 
+                                page-break-inside: avoid;
+                            }
+                            
+                            th, td { 
+                                border: 1px solid #d1d5db; 
+                                padding: 8px; 
+                                text-align: left; 
+                                font-size: 10pt;
+                            }
+                            
+                            th { 
+                                background: #4f46e5; 
+                                color: white; 
+                                font-weight: 600;
+                            }
+                            
+                            .status-badge { 
+                                padding: 4px 8px; 
+                                border-radius: 12px; 
+                                font-weight: 600; 
+                                display: inline-block;
+                                font-size: 10pt;
+                            }
+                            
+                            .concluido { background: #10b981; color: white; }
+                            .andamento { background: #3b82f6; color: white; }
+                            .pendente { background: #f59e0b; color: white; }
+                            .pendente-corr { background: #ef4444; color: white; }
+                            
+                            .progress-bar { 
+                                width: 100%; 
+                                background: #e5e7eb; 
+                                border-radius: 8px; 
+                                height: 16px; 
+                                margin: 8px 0; 
+                                overflow: hidden;
+                            }
+                            
+                            .progress-fill { 
+                                height: 100%; 
+                                background: linear-gradient(90deg, #4f46e5, #10b981); 
+                                border-radius: 8px; 
+                            }
+                            
+                            .section-break {
+                                page-break-before: always;
+                            }
+                            
+                            .observacoes-box {
+                                background: #fef3c7;
+                                border: 1px solid #fbbf24;
+                                border-radius: 8px;
+                                padding: 12px;
+                                margin: 15px 0;
+                                page-break-inside: avoid;
+                            }
+                            
+                            .footer-note {
+                                text-align: center;
+                                color: #6b7280;
+                                font-size: 9pt;
+                                margin-top: 30px;
+                                padding-top: 15px;
+                                border-top: 1px solid #e5e7eb;
+                                page-break-before: avoid;
+                            }
+                            
+                            .header-logo {
+                                text-align: center;
+                                margin-bottom: 20px;
+                            }
+                            
+                            .header-logo h2 {
+                                color: #4f46e5;
+                                margin: 0;
+                                padding: 0;
+                                border: none;
+                            }
+                            
+                            .image-container {
+                                text-align: center;
+                                margin: 20px 0;
+                                page-break-inside: avoid;
+                            }
+                            
+                            .image-container img {
+                                max-width: 100%;
+                                max-height: 300px;
+                                border-radius: 8px;
+                                border: 1px solid #d1d5db;
+                                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+                            }
+                            
+                            .image-caption {
+                                font-size: 10pt;
+                                color: #6b7280;
+                                margin-top: 8px;
+                                font-style: italic;
+                            }
+                            
+                            @media screen {
+                                body {
+                                    margin: 20px;
+                                    background: #f9fafb;
+                                }
+                                
+                                .report-container {
+                                    max-width: 800px;
+                                    margin: 0 auto;
+                                    background: white;
+                                    padding: 30px;
+                                    border-radius: 12px;
+                                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                                }
+                                
+                                .print-button {
+                                    position: fixed;
+                                    top: 20px;
+                                    right: 20px;
+                                    padding: 12px 24px;
+                                    background: linear-gradient(135deg, #4f46e5, #3730a3);
+                                    color: white;
+                                    border: none;
+                                    border-radius: 10px;
+                                    cursor: pointer;
+                                    font-weight: 600;
+                                    font-size: 11pt;
+                                    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+                                    transition: all 0.3s;
+                                    z-index: 1000;
+                                }
+                                
+                                .print-button:hover {
+                                    transform: translateY(-3px);
+                                    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
+                                }
+                                
+                                .back-button {
+                                    position: fixed;
+                                    top: 20px;
+                                    left: 20px;
+                                    padding: 12px 24px;
+                                    background: #6b7280;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 10px;
+                                    cursor: pointer;
+                                    font-weight: 600;
+                                    font-size: 11pt;
+                                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                                    transition: all 0.3s;
+                                    z-index: 1000;
+                                }
+                                
+                                .back-button:hover {
+                                    background: #4b5563;
+                                    transform: translateY(-3px);
+                                }
+                            }
+                            
+                            @media print {
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                
+                                .print-button, .back-button {
+                                    display: none !important;
+                                }
+                                
+                                .report-container {
+                                    padding: 0;
+                                    box-shadow: none;
+                                    border-radius: 0;
+                                }
+                                
+                                .no-print {
+                                    display: none !important;
+                                }
+                                
+                                .image-container img {
+                                    max-height: 250px;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <button class="print-button no-print" onclick="window.print()">
+                            <i class="fas fa-print"></i> Imprimir Relatório
+                        </button>
+                        
+                        <button class="back-button no-print" onclick="window.close()">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </button>
+                        
+                        <div class="report-container">
+                            <div class="header-logo">
+                                <h2><i class="fas fa-clipboard-check"></i> Checklist de Atendimento Escolar</h2>
+                                <p style="color: #6b7280; margin-top: 5px;">Relatório Técnico - ${escola}</p>
+                            </div>
+                            
+                            <div class="info-box">
+                                <p><strong><i class="fas fa-calendar-alt"></i> Data do Atendimento:</strong> ${dados.dataAtendimento}</p>
+                                ${dados.tecnicoResponsavel ? `<p><strong><i class="fas fa-user-tie"></i> Técnico Responsável:</strong> ${dados.tecnicoResponsavel}</p>` : ''}
+                                <p><strong><i class="fas fa-flag"></i> Status Geral:</strong> <span class="status-badge ${dados.statusGeral}">${dados.statusGeral.toUpperCase()}</span></p>
+                                ${dados.proximaVisita ? `<p><strong><i class="fas fa-calendar-check"></i> Próxima Visita Sugerida:</strong> ${dados.proximaVisita}</p>` : ''}
+                                <p><strong><i class="fas fa-chart-line"></i> Progresso do Checklist:</strong> ${dados.progresso || 0}%</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${dados.progresso || 0}%"></div>
+                                </div>
+                                <p><strong><i class="fas fa-clock"></i> Gerado em:</strong> ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</p>
+                            </div>
+                            
+                            <h2><i class="fas fa-server"></i> Infraestrutura e Equipamentos</h2>
+                            <table>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Status/Quantidade</th>
+                                </tr>
+                                <tr>
+                                    <td>Laboratório de Informática</td>
+                                    <td>${dados.existenciaLab ? '<span class="status-badge concluido">✅ DISPONÍVEL</span>' : '<span class="status-badge pendente">❌ INDISPONÍVEL</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Computadores no Laboratório</td>
+                                    <td><strong>${dados.qtdComputadorLab || 0}</strong> unidade(s)</td>
+                                </tr>
+                                <tr>
+                                    <td>Computadores no ADM</td>
+                                    <td><strong>${dados.admQtdComputador || 0}</strong> unidade(s)</td>
+                                </tr>
+                                <tr>
+                                    <td>Impressoras no ADM</td>
+                                    <td><strong>${dados.admQtdImpressora || 0}</strong> unidade(s)</td>
+                                </tr>
+                                <tr>
+                                    <td>Computadores na Sala dos Professores</td>
+                                    <td><strong>${dados.qtdCompSalaProf || 0}</strong> unidade(s)</td>
+                                </tr>
+                                <tr>
+                                    <td>Educação Conectada (Internet)</td>
+                                    <td>${dados.educacaoConectada ? '<span class="status-badge concluido">✅ FUNCIONANDO</span>' : '<span class="status-badge pendente">❌ COM PROBLEMAS</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Telefonia VoIP</td>
+                                    <td>${dados.voip ? '<span class="status-badge concluido">✅ FUNCIONANDO</span>' : '<span class="status-badge pendente">❌ COM PROBLEMAS</span>'}</td>
+                                </tr>
+                            </table>
+                            
+                            ${dados.imagemVelocidade ? `
+                            <h2><i class="fas fa-tachometer-alt"></i> Print da Velocidade da Internet</h2>
+                            <div class="image-container">
+                                <img src="${dados.imagemVelocidade}" alt="Print da velocidade da internet">
+                                <div class="image-caption">Teste de velocidade da internet realizado durante o atendimento</div>
+                            </div>
+                            ` : ''}
+                            
+                            <h2><i class="fas fa-sticky-note"></i> Observações</h2>
+                            <div class="observacoes-box">
+                                <p style="white-space: pre-line; line-height: 1.5; margin: 0;">${dados.observacoes || 'Nenhuma observação registrada.'}</p>
+                            </div>
+                            
+                            <div class="footer-note">
+                                Sistema de Checklist de Atendimento Escolar - Versão 4.0<br>
+                                Relatório gerado automaticamente. Documento válido para registro técnico.
+                            </div>
+                        </div>
+                        
+                        <script>
+                            // Configurar impressão
+                            window.onload = function() {
+                                // Adicionar tratamento para evitar quebras de página inadequadas
+                                const tables = document.querySelectorAll('table');
+                                tables.forEach(table => {
+                                    const tableHeight = table.offsetHeight;
+                                    if (tableHeight > 500) { // Se a tabela for muito grande
+                                        table.classList.add('section-break');
+                                    }
+                                });
+                            };
+                            
+                            // Configurar atalho de teclado para impressão (Ctrl+P)
+                            document.addEventListener('keydown', function(e) {
+                                if (e.ctrlKey && e.key === 'p') {
+                                    e.preventDefault();
+                                    window.print();
+                                }
+                            });
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+                
+                const janela = window.open('', '_blank', 'width=1024,height=768,scrollbars=yes');
+                janela.document.write(conteudoHTML);
+                janela.document.close();
+            }
+            
+            // Manipulação do upload de imagem
+            document.getElementById('print-velocidade').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Verificar se é uma imagem
+                    if (!file.type.match('image.*')) {
+                        alert('Por favor, selecione apenas arquivos de imagem.');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    // Verificar tamanho do arquivo (máximo 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('A imagem é muito grande. Por favor, selecione uma imagem menor que 5MB.');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagemVelocidadeBase64 = e.target.result;
+                        document.getElementById('image-preview').src = e.target.result;
+                        document.getElementById('image-preview-container').style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Remover imagem
+            document.getElementById('remove-image-btn').addEventListener('click', function() {
+                imagemVelocidadeBase64 = null;
+                document.getElementById('image-preview').src = '';
+                document.getElementById('image-preview-container').style.display = 'none';
+                document.getElementById('print-velocidade').value = '';
+            });
+            
+            // Event Listeners para botões
+            
+            // Salvar checklist
+            document.getElementById('salvar-checklist').addEventListener('click', function() {
+                if (!escolaAtual) {
+                    alert('Por favor, selecione uma escola primeiro.');
+                    return;
+                }
+                
+                const salvo = salvarDadosEscola(escolaAtual);
+                if (salvo) {
+                    // Feedback visual
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<span class="spinner"></span> Salvando...';
+                    btn.disabled = true;
+                    
+                    // Mostrar mensagem de sucesso
+                    const successMessage = document.getElementById('save-success');
+                    successMessage.classList.add('show');
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        
+                        // Destacar a escola salva com efeito de pulso
+                        const schoolCard = document.querySelector(`.school-card[data-escola="${escolaAtual}"]`);
+                        if (schoolCard) {
+                            schoolCard.style.transform = 'scale(1.05)';
+                            schoolCard.style.boxShadow = '0 20px 40px rgba(16, 185, 129, 0.3)';
+                            
+                            setTimeout(() => {
+                                schoolCard.style.transform = '';
+                                schoolCard.style.boxShadow = '';
+                            }, 1000);
+                        }
+                        
+                        // Ocultar mensagem de sucesso após 3 segundos
+                        setTimeout(() => {
+                            successMessage.classList.remove('show');
+                        }, 3000);
+                    }, 1500);
+                }
+            });
+            
+            // Visualizar relatório
+            document.getElementById('visualizar-checklist').addEventListener('click', function() {
+                if (!escolaAtual) {
+                    alert('Por favor, selecione uma escola primeiro.');
+                    return;
+                }
+                
+                const btn = this;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando Relatório...';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    visualizarRelatorio(escolaAtual);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 800);
+            });
+            
+            // Limpar formulário e zerar estatística da escola
+            document.getElementById('limpar-checklist').addEventListener('click', function() {
+                if (!escolaAtual) {
+                    alert('Por favor, selecione uma escola primeiro.');
+                    return;
+                }
+                
+                if (confirm('Tem certeza que deseja limpar todos os dados deste formulário? Isso irá resetar os dados salvos desta escola e zerar sua estatística.')) {
+                    // Resetar os campos do formulário para os valores padrão
+                    document.getElementById('data-atendimento').value = hoje;
+                    document.getElementById('existencia-lab').checked = false;
+                    document.getElementById('qtd-computador-lab').value = 0;
+                    document.getElementById('adm-qtd-computador').value = 0;
+                    document.getElementById('adm-qtd-impressora').value = 0;
+                    document.getElementById('qtd-comp-sala-prof').value = 0;
+                    document.getElementById('educacao-conectada').checked = false;
+                    document.getElementById('voip').checked = false;
+                    document.getElementById('observacoes').value = '';
+                    document.getElementById('tecnico-responsavel').value = '';
+                    document.getElementById('status-geral').value = 'pendente';
+                    document.getElementById('proxima-visita').value = '';
+                    
+                    // Resetar a imagem de velocidade
+                    imagemVelocidadeBase64 = null;
+                    document.getElementById('image-preview-container').style.display = 'none';
+                    document.getElementById('image-preview').src = '';
+                    document.getElementById('print-velocidade').value = '';
+                    
+                    // Limpar erros de validação
+                    document.querySelectorAll('.validation-message').forEach(msg => {
+                        msg.classList.remove('show');
+                    });
+                    document.querySelectorAll('.input-error').forEach(input => {
+                        input.classList.remove('input-error');
+                    });
+                    
+                    // Zerar estatística da escola no localStorage
+                    dadosEscolas[escolaAtual] = {
+                        dataAtendimento: '',
+                        existenciaLab: false,
+                        qtdComputadorLab: 0,
+                        admQtdComputador: 0,
+                        admQtdImpressora: 0,
+                        qtdCompSalaProf: 0,
+                        educacaoConectada: false,
+                        voip: false,
+                        observacoes: '',
+                        tecnicoResponsavel: '',
+                        statusGeral: 'pendente',
+                        proximaVisita: '',
+                        dataSalvamento: '',
+                        progresso: 0,
+                        imagemVelocidade: null
+                    };
+                    
+                    // Salvar no localStorage
+                    salvarDadosLocalStorage();
+                    
+                    // Atualizar lista de escolas
+                    atualizarListaEscolas();
+                    
+                    // Atualizar estatísticas
+                    atualizarEstatisticas();
+                    
+                    // Atualizar a barra de progresso
+                    atualizarProgresso();
+                    
+                    // Atualizar o card da escola na lista
+                    const schoolCard = document.querySelector(`.school-card[data-escola="${escolaAtual}"]`);
+                    if (schoolCard) {
+                        schoolCard.classList.remove('selected');
+                    }
+                }
+            });
+            
+            // Adicionar funcionalidade de atalhos de teclado
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S para salvar
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    document.getElementById('salvar-checklist').click();
+                }
+                
+                // Ctrl+R para visualizar relatório
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    document.getElementById('visualizar-checklist').click();
+                }
+                
+                // Ctrl+E para exportar todos os dados
+                if (e.ctrlKey && e.key === 'e') {
+                    e.preventDefault();
+                    const todosDados = {
+                        dataExportacao: new Date().toISOString(),
+                        totalEscolas: escolas.length,
+                        escolas: dadosEscolas
+                    };
+                    
+                    const dadosStr = JSON.stringify(todosDados, null, 2);
+                    const blob = new Blob([dadosStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `backup_checklist_${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('Backup de todos os dados exportado com sucesso!');
+                }
+            });
+            
+            // Notificação inicial
+            setTimeout(() => {
+                if (!localStorage.getItem('checklistWelcomeShown')) {
+                    alert('Bem-vindo ao Sistema de Checklist de Atendimento Escolar!\n\nDicas rápidas:\n1. Clique em uma escola para começar\n2. Use Ctrl+S para salvar rapidamente\n3. Use Ctrl+R para visualizar relatório\n4. Seus dados são salvos automaticamente');
+                    localStorage.setItem('checklistWelcomeShown', 'true');
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
